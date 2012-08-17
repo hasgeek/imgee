@@ -14,12 +14,7 @@ import coaster.app
 app = Flask(__name__, instance_relative_config=True)
 lastuser = LastUser()
 
-# Second, after config, import the models and views
-
-import imgee.models
-import imgee.views
-
-# Third, setup baseframe and assets
+# Second, setup baseframe and assets
 
 app.register_blueprint(baseframe)
 
@@ -29,6 +24,10 @@ css = Bundle(baseframe_css,
              'css/app.css')
 uploadedfiles = UploadSet(extensions=ALL)
 
+# Third, after config, import the models and views
+
+import imgee.models
+import imgee.views
 
 # Configure the app
 def init_for(env):

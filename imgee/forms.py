@@ -3,5 +3,5 @@
 from flask.ext.wtf import Form, FileField
 
 
-def UploadForm(Form):
+class UploadForm(Form):
     uploaded_file = FileField("Uploaded File")
