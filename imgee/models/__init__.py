@@ -7,3 +7,4 @@ from coaster.sqlalchemy import IdMixin, TimestampMixin, BaseMixin, BaseNameMixin
 db = SQLAlchemy(app)
 
 from imgee.models.user import *
+from imgee.models.uploaded_file import *

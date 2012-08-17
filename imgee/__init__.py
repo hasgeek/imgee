@@ -5,6 +5,7 @@
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flask.ext.lastuser import LastUser
+from flask.ext.uploads import UploadSet, configure_uploads, ALL
 from baseframe import baseframe, baseframe_js, baseframe_css
 import coaster.app
 
@@ -26,6 +27,8 @@ assets = Environment(app)
 js = Bundle(baseframe_js)
 css = Bundle(baseframe_css,
              'css/app.css')
+uploadedfiles = UploadSet(extensions=ALL)
+
 
 # Configure the app
 def init_for(env):
@@ -33,3 +36,4 @@ def init_for(env):
     assets.register('js_all', js)
     assets.register('css_all', css)
     lastuser.init_app(app)
+    configure_uploads(app, (uploadedfiles))
