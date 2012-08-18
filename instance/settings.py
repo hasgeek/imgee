@@ -32,4 +32,4 @@ ADMINS = []
 #: Log file
 LOGFILE = 'error.log'
 #: File uploads
-UPLOADED_FILES_DEST = 'imgee/static/img/uploads'
+UPLOADED_FILES_DEST = 'imgee/static/uploads'

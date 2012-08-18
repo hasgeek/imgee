@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, request
+from flask import render_template, request, flash
 from imgee import app, uploadedfiles
 from imgee.forms import UploadForm
 
@@ -14,8 +14,7 @@ def index():
 def upload_images():
     form = UploadForm(request.form)
     if form.validate_on_submit():
-        filename = uploadedfiles(request.files['uploaded_file'])
-        filename.store()
+        filename = uploadedfiles.save(request.files['uploaded_file'])
         flash("File saved.")
     return render_template('form.html', form=form)
 
