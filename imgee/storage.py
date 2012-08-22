@@ -3,17 +3,11 @@ from boto import connect_s3
 from boto.s3.key import Key
 from imgee import app
 
-def configure():
-    """
-    Configure the storage backend for the files
-    """
-    return connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
-
 def upload(name, title):
     """
     Upload a file to S3
     """
-    conn = configure()
+    conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
     bucket = conn.create_bucket(app.config['AWS_BUCKET'])
     k = Key(bucket)
     k.key = name
