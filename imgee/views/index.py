@@ -8,11 +8,6 @@ from imgee.views.login import lastuser
 from imgee.storage import upload
 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
 @app.route('/upload', methods=('GET', 'POST'))
 @lastuser.requires_login
 def upload_files():
@@ -22,7 +17,7 @@ def upload_files():
         db.session.add(uploaded_file)
         db.session.commit()
         upload(uploaded_file.name, uploaded_file.title)
-        return jsonify('url': '%s/%s' % (app.config['MEDIA_DOMAIN'], uploaded_file.name)
+        return jsonify({'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], uploaded_file.name)})
 
 
 @app.route('/list')
