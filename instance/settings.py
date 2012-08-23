@@ -36,4 +36,4 @@ UPLOADED_FILES_DEST = 'imgee/static/uploads'
 #: S3 Configuration
 AWS_ACCESS_KEY = 'Set aws access key here'
 AWS_SECRET_KEY = 'Set aws secret key here'
-AWS_BUCKET = 'media.hasgeek.com'
+AWS_BUCKET = 'set your bucketname here'
