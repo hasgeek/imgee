@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
-from flask import render_template, request, flash, g
+from flask import render_template, request, flash, g, jsonify
 from imgee import app, uploadedfiles
 from imgee.forms import UploadForm
 from imgee.models import UploadedFile, db
@@ -12,18 +12,22 @@ from imgee.storage import upload
 def index():
     return render_template('index.html')
 
+
 @app.route('/upload', methods=('GET', 'POST'))
 @lastuser.requires_login
-def upload_images():
-    form = UploadForm(request.form)
-    if form.validate_on_submit():
+def upload_files():
+    if request.files['uploaded_file']:
         filename = uploadedfiles.save(request.files['uploaded_file'])
         uploaded_file = UploadedFile(name=uuid4().hex, title=filename, user=g.user)
         db.session.add(uploaded_file)
         db.session.commit()
         upload(uploaded_file.name, uploaded_file.title)
-        flash("File saved.")
-    elif request.method == 'POST':
-        flash("There was an error")
-    return render_template('form.html', form=form)
+        return jsonify('url': '%s/%s' % (app.config['MEDIA_DOMAIN'], uploaded_file.name)
 
+
+@app.route('/list')
+@lastuser.requires_login
+def list_files():
+    files = UploadedFile.query.filter_by(user=g.user).all()
+    file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
+    return jsonify(file_list)
