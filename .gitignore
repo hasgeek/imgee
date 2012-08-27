@@ -20,3 +20,6 @@ instance/development.py
 baseframe-packed.css
 baseframe-packed.js
 error.log
+alembic.ini
+alembic
+imgee/static/uploads
