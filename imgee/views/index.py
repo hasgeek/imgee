@@ -3,9 +3,9 @@ from uuid import uuid4
 from flask import render_template, request, flash, g, jsonify
 from imgee import app, uploadedfiles
 from imgee.forms import UploadForm
-from imgee.models import UploadedFile, db
+from imgee.models import UploadedFile, Thumbnail, db
 from imgee.views.login import lastuser
-from imgee.storage import upload, check_file_type
+from imgee.storage import upload, is_image, create_thumbnail, convert_size
 
 
 @app.route('/upload', methods=('GET', 'POST'))
@@ -20,6 +20,7 @@ def upload_files():
         return jsonify({'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], uploaded_file.name)})
     return jsonify({'error': 'No file was uploaded'})
 
+
 @app.route('/list')
 @lastuser.requires_login
 def list_files():
@@ -31,5 +32,19 @@ def list_files():
 @app.route('/file/<filename>')
 @lastuser.requires_login
 def get_thumbnail(filename):
+    size = request.args.get('size')
+    if not size:
+        return jsonify({'error': 'Size not specified'})
     uploadedfile = UploadedFile.query.filter_by(name=filename).first()
-    if check_file_type
+    if not is_image(uploadedfile.name):
+        return jsonify({'error': 'File is not an image'})
+    existing_thumnail = Thumbnail.query.filter_by(size=size, uploadedfile=uploadedfile).first()
+    if existing_thumbnail:
+        return jsonify({'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], existing_thumnail.name)})
+    converted_size = convert_size(size)
+    if not converted_size:
+        return jsonify({'error': 'The size is invalid'})
+    new_thumbnail = create_thumbnail(uploadedfile, converted_size)
+    if new_thumbnail:
+        return jsonify({'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], new_thumnail.name)})
+    return jsonify({'error': 'Thumbnail creation error'})
