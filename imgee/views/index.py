@@ -5,7 +5,7 @@ from imgee import app, uploadedfiles
 from imgee.forms import UploadForm
 from imgee.models import UploadedFile, db
 from imgee.views.login import lastuser
-from imgee.storage import upload
+from imgee.storage import upload, check_file_type
 
 
 @app.route('/upload', methods=('GET', 'POST'))
@@ -18,7 +18,7 @@ def upload_files():
         db.session.commit()
         upload(uploaded_file.name, uploaded_file.title)
         return jsonify({'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], uploaded_file.name)})
-
+    return jsonify({'error': 'No file was uploaded'})
 
 @app.route('/list')
 @lastuser.requires_login
@@ -26,3 +26,10 @@ def list_files():
     files = UploadedFile.query.filter_by(user=g.user).all()
     file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
     return jsonify(file_list)
+
+
+@app.route('/file/<filename>')
+@lastuser.requires_login
+def get_thumbnail(filename):
+    uploadedfile = UploadedFile.query.filter_by(name=filename).first()
+    if check_file_type
