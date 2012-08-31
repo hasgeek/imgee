@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% from 'baseframe/forms.html' import renderform %}
+{% block titletags -%}
+  <title>{% block title %}{{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
+
+{% block content %}
+
+{{ renderform(form, multipart=True) }}
+{% endblock %}
+
