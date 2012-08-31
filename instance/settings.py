@@ -31,3 +31,11 @@ DEFAULT_MAIL_SENDER = ('HasGeek', 'test@example.com')
 ADMINS = []
 #: Log file
 LOGFILE = 'error.log'
+#: File uploads
+UPLOADED_FILES_DEST = 'imgee/static/uploads'
+#: S3 Configuration
+AWS_ACCESS_KEY = 'Set aws access key here'
+AWS_SECRET_KEY = 'Set aws secret key here'
+AWS_BUCKET = 'set your bucketname here'
+#: Domain name for files
+MEDIA_DOMAIN = 'set domain name here'
