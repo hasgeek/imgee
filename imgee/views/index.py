@@ -8,6 +8,9 @@ from imgee.views.login import lastuser
 from imgee.storage import upload, is_image, create_thumbnail, convert_size
 
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 @app.route('/upload', methods=('GET', 'POST'))
 @lastuser.requires_login
 def upload_files():
