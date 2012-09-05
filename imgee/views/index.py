@@ -11,8 +11,10 @@ from imgee.storage import upload, is_image, create_thumbnail, convert_size
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
 @app.route('/upload', methods=('GET', 'POST'))
-@lastuser.requires_login
+@lastuser.resource_handler
 def upload_files():
     if request.files['uploaded_file']:
         filename = uploadedfiles.save(request.files['uploaded_file'])
@@ -25,7 +27,7 @@ def upload_files():
 
 
 @app.route('/list')
-@lastuser.requires_login
+@lastuser.resource_handler
 def list_files():
     files = UploadedFile.query.filter_by(user=g.user).all()
     file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
@@ -33,7 +35,7 @@ def list_files():
 
 
 @app.route('/file/<filename>')
-@lastuser.requires_login
+@lastuser.resource_handler
 def get_thumbnail(filename):
     size = request.args.get('size')
     if not size:
