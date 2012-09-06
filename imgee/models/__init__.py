@@ -6,6 +6,6 @@ from imgee import app
 db = SQLAlchemy(app)
 
 from imgee.models.user import *
-from imgee.models.uploaded_file import *
+from imgee.models.stored_file import *
 from imgee.models.thumbnail import *
 from imgee.models.profile import *

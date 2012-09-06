@@ -3,7 +3,7 @@ from uuid import uuid4
 from flask import render_template, request, flash, g, jsonify, make_response
 from imgee import app, uploadedfiles
 from imgee.forms import UploadForm
-from imgee.models import FileStorage, Thumbnail, db
+from imgee.models import StoredFile, Thumbnail, db
 from imgee.views.login import lastuser
 from imgee.storage import upload, is_image, create_thumbnail, convert_size
 
@@ -18,7 +18,7 @@ def index():
 def upload_files():
     if request.files['uploaded_file']:
         filename = uploadedfiles.save(request.files['uploaded_file'])
-        uploaded_file = FileStorage(name=uuid4().hex, title=filename, user=g.user)
+        uploaded_file = StoredFile(name=uuid4().hex, title=filename, user=g.user)
         db.session.add(uploaded_file)
         db.session.commit()
         upload(uploaded_file.name, uploaded_file.title)
@@ -29,7 +29,7 @@ def upload_files():
 @app.route('/list')
 @lastuser.resource_handler
 def list_files():
-    files = FileStorage.query.filter_by(user=g.user).all()
+    files = StoredFile.query.filter_by(user=g.user).all()
     file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
     return jsonify(file_list)
 
@@ -40,7 +40,7 @@ def get_thumbnail(filename):
     size = request.args.get('size')
     if not size:
         return jsonify({'error': 'Size not specified'})
-    uploadedfile = FileStorage.query.filter_by(name=filename).first()
+    uploadedfile = StoredFile.query.filter_by(name=filename).first()
     if not is_image(uploadedfile.name):
         return jsonify({'error': 'File is not an image'})
     existing_thumnail = Thumbnail.query.filter_by(size=size, uploadedfile=uploadedfile).first()
