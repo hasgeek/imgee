@@ -7,4 +7,4 @@ class Thumbnail(BaseMixin, db.Model):
 
     name = db.Column(db.Unicode(250), nullable=False, unique=True, index=True)
     size = db.Column(db.Unicode(100), nullable=False, index=True)
-    file_storage_id = db.Column(db.Integer, db.ForeignKey('file_storage.id'))
+    stored_file_id = db.Column(db.Integer, db.ForeignKey('stored_file.id'))
