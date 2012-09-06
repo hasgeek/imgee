@@ -7,4 +7,4 @@ from imgee.models import db
 class User(UserBase, db.Model):
     __tablename__ = 'user'
 
-    files = db.relationship('UploadedFile', backref='user')
+    files = db.relationship('FileStorage', backref='user')
