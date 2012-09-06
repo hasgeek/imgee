@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from coaster.sqlalchemy import BaseNameMixin
-from imgee.models import db, Profile
+from imgee.models import db
 
 
 class FileStorage(BaseNameMixin, db.Model):
