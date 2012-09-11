@@ -22,12 +22,12 @@ def upload_files(callerinfo):
     if profileid not in g.user.user_organizations_owned_ids():
         return jsonify({'error': 'You do not have permission to access this resource'})
     if request.files.get('stored_file', None):
-        filename = uploadedfiles.save(request.files['stored_file'], name=os.path.basename(request.files['stored_file'].filename))
+        filename = uploadedfiles.save(request.files['stored_file'])
         profile = Profile.query.filter_by(userid=profileid).first()
-        stored_file = StoredFile(name=uuid4().hex, title=filename, profile=profile)
+        stored_file = StoredFile(name=uuid4().hex, title=os.path.basename(request.files['stored_file'].filename), profile=profile)
         db.session.add(stored_file)
         db.session.commit()
-        upload(stored_file.name, stored_file.title)
+        upload(stored_file.name, filename)
         return jsonify({'id':  stored_file.name})
     return jsonify({'error': 'No file was uploaded'})
 
