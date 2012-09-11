@@ -59,3 +59,21 @@ def get_thumbnail(filename):
     if new_thumbnail:
         return redirect('%s/%s' % (app.config['MEDIA_DOMAIN'], new_thumnail.name))
     return redirect('%s/%s' % (app.config['MEDIA_DOMAIN'], stored_file.name))
+
+
+@app.route('/delete')
+@lastuser.resource_handler('imgee/delete')
+def list_files(callerinfo):
+    profileid = request.args.get('profileid', g.user.userid)
+    fileid = request.args.get('fileid', g.user.userid)
+    if not fileid:
+        return jsonify({'error': 'No filename given'})
+    make_profiles()
+    if profileid in g.user.user_organizations_owned_ids():
+        stored_file = StoredFile.query.filter_by(name=fileid).first()
+        if stored_file:
+            db.session.delete(stored_file)
+            db.session.commit()
+            return jsonify({'success': 'File deleted'})
+        return jsonify({'error': 'No file found'})
+    return jsonify({'error': 'You do not have permission to access this resource'})
