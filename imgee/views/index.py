@@ -13,21 +13,21 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/upload', methods=('POST'))
+@app.route('/upload', methods=['POST'])
 @lastuser.resource_handler('imgee/upload')
 def upload_files(callerinfo):
     profileid = request.args.get('profileid', g.user.userid)
     make_profiles()
     if profileid not in g.user.user_organizations_owned_ids():
-        return jsonify({'error': 'You do not have permission to access this resource'})j
-    if 'uploaded_file' in request.files:
-        filename = uploadedfiles.save(request.files['uploaded_file'])
-        profile = Profile.query(userid=profileid).first()
+        return jsonify({'error': 'You do not have permission to access this resource'})
+    if request.files.get('stored_file', None):
+        filename = uploadedfiles.save(request.files['stored_file'])
+        profile = Profile.query.filter_by(userid=profileid).first()
         stored_file = StoredFile(name=uuid4().hex, title=filename, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
         upload(stored_file.name, stored_file.title)
-        return jsonify({'id':  uploaded_file.name})
+        return jsonify({'id':  stored_file.name})
     return jsonify({'error': 'No file was uploaded'})
 
 
