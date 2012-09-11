@@ -3,8 +3,8 @@ from uuid import uuid4
 from flask import render_template, request, flash, g, jsonify, make_response
 from imgee import app, uploadedfiles
 from imgee.forms import UploadForm
-from imgee.models import StoredFile, Thumbnail, db
-from imgee.views.login import lastuser
+from imgee.models import StoredFile, Thumbnail, db, Profile
+from imgee.views.login import lastuser, make_profiles
 from imgee.storage import upload, is_image, create_thumbnail, convert_size
 
 
@@ -13,30 +13,40 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/upload', methods=('GET', 'POST'))
-@lastuser.resource_handler
-def upload_files():
-    if request.files['uploaded_file']:
+@app.route('/upload', methods=('POST'))
+@lastuser.resource_handler('imgee/upload')
+def upload_files(callerinfo):
+    profileid = request.args.get('profileid', g.user.userid)
+    make_profiles()
+    if profileid not in g.user.user_organizations_owned_ids():
+        return jsonify({'error': 'You do not have permission to access this resource'})j
+    if 'uploaded_file' in request.files:
         filename = uploadedfiles.save(request.files['uploaded_file'])
-        uploaded_file = StoredFile(name=uuid4().hex, title=filename, user=g.user)
-        db.session.add(uploaded_file)
+        profile = Profile.query(userid=profileid).first()
+        stored_file = StoredFile(name=uuid4().hex, title=filename, profile=profile)
+        db.session.add(stored_file)
         db.session.commit()
-        upload(uploaded_file.name, uploaded_file.title)
-        return jsonify({'idl':  uploaded_file.name})
+        upload(stored_file.name, stored_file.title)
+        return jsonify({'id':  uploaded_file.name})
     return jsonify({'error': 'No file was uploaded'})
 
 
 @app.route('/list')
-@lastuser.resource_handler
-def list_files():
-    files = StoredFile.query.filter_by(user=g.user).all()
-    file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
-    return jsonify(file_list)
+@lastuser.resource_handler('imgee/list')
+def list_files(callerinfo):
+    profileid = request.args.get('profileid', g.user.userid)
+    make_profiles()
+    if profileid in g.user.user_organizations_owned_ids():
+        files = StoredFile.query.filter(Profile.userid == profileid).all()
+        file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
+        return jsonify(file_list)
+    return jsonify({'error': 'You do not have permission to access this resource'})
 
 
 @app.route('/file/<filename>')
-@lastuser.resource_handler
+@lastuser.resource_handler('imgee/thumbnail')
 def get_thumbnail(filename):
+    make_profiles()
     size = request.args.get('size')
     if not size:
         return jsonify({'error': 'Size not specified'})

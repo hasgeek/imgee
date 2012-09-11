@@ -31,16 +31,16 @@ def is_image(filename):
     return False
 
 
-def create_thumbnail(uploadedfile, size):
+def create_thumbnail(stored_file, size):
     """
     Create a thumbnail for a given file and given size
     """
-    thumbnail = Thumbnail(name=uuid4().hex, size=size, uploadedfile=uploadedfile)
+    thumbnail = Thumbnail(name=uuid4().hex, size=size, stored_file=stored_file)
     conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
     thumbnail_path = path.join(app.config['UPLOADED_FILES_DEST'], thumbnail.name)
     k = Key(bucket)
-    k.key = uploadedfile.name
+    k.key = stored_file.name
     k.get_contents_to_filename(thumbnail_path)
     try:
         img = Image.open(thumbnail_path)
