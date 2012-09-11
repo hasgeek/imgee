@@ -5,6 +5,7 @@ from boto.s3.bucket import Bucket
 from boto.s3.key import Key
 from PIL import Image
 from imgee import app
+from imgee.models import db
 
 
 IMAGES = list('jpg jpe jpeg png gif svg bmp'.split())
@@ -36,6 +37,8 @@ def create_thumbnail(stored_file, size):
     Create a thumbnail for a given file and given size
     """
     thumbnail = Thumbnail(name=uuid4().hex, size=size, stored_file=stored_file)
+    db.session.add(thumbnail)
+    db.session.commit()
     conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
     thumbnail_path = path.join(app.config['UPLOADED_FILES_DEST'], thumbnail.name)
@@ -46,7 +49,7 @@ def create_thumbnail(stored_file, size):
         img = Image.open(thumbnail_path)
         img.load()
         img.thumbnail(size, Image.ANTIALIAS)
-        img.save(thumbnail_pathj)
+        img.save(thumbnail_path)
     except IOError:
         return None
     return thumbnail.name
