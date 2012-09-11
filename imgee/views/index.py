@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os.path
 from uuid import uuid4
 from flask import render_template, request, flash, g, jsonify, make_response
 from imgee import app, uploadedfiles
@@ -21,7 +22,7 @@ def upload_files(callerinfo):
     if profileid not in g.user.user_organizations_owned_ids():
         return jsonify({'error': 'You do not have permission to access this resource'})
     if request.files.get('stored_file', None):
-        filename = uploadedfiles.save(request.files['stored_file'])
+        filename = uploadedfiles.save(request.files['stored_file'], name=os.path.basename(request.files['stored_file'].filename))
         profile = Profile.query.filter_by(userid=profileid).first()
         stored_file = StoredFile(name=uuid4().hex, title=filename, profile=profile)
         db.session.add(stored_file)
