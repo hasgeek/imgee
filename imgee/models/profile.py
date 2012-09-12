@@ -26,4 +26,3 @@ class Profile(BaseNameMixin, db.Model):
 
     def type_label(self):
         return profile_types.get(self.type, profile_types[0])
-

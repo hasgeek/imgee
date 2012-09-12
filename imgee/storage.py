@@ -5,7 +5,7 @@ from boto.s3.bucket import Bucket
 from boto.s3.key import Key
 from PIL import Image
 from imgee import app
-from imgee.models import db
+from imgee.models import db, Thumbnail
 
 
 IMAGES = list('jpg jpe jpeg png gif svg bmp'.split())

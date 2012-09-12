@@ -29,6 +29,7 @@ uploadedfiles = UploadSet(extensions=ALL)
 import imgee.models
 import imgee.views
 
+
 # Configure the app
 def init_for(env):
     coaster.app.init_app(app, env)
