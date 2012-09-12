@@ -6,7 +6,7 @@ from imgee import app, uploadedfiles
 from imgee.forms import UploadForm
 from imgee.models import StoredFile, Thumbnail, db, Profile
 from imgee.views.login import lastuser, make_profiles
-from imgee.storage import upload, is_image, create_thumbnail, convert_size
+from imgee.storage import upload, is_image, create_thumbnail, convert_size, delete_image
 
 
 @app.route('/')
@@ -72,6 +72,7 @@ def list_files(callerinfo):
     if profileid in g.user.user_organizations_owned_ids():
         stored_file = StoredFile.query.filter_by(name=fileid).first()
         if stored_file:
+            delete_image(stored_file)
             db.session.delete(stored_file)
             db.session.commit()
             return jsonify({'success': 'File deleted'})

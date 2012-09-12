@@ -65,3 +65,14 @@ def convert_size(size):
         else:
             return None
     return converted
+
+
+def delete_image(stored_file):
+    """
+    Delete all the thumbnails and images associated with a file
+    """
+    keys = [thumbnail.name for thumbnail in stored_file.thumbnails]
+    keys.append(stored_file.name)
+    conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
+    bucket = Bucket(conn, app.config['AWS_BUCKET'])
+    bucket.delete_keys(keys)
