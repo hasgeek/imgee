@@ -37,5 +37,12 @@ UPLOADED_FILES_DEST = 'imgee/static/uploads'
 AWS_ACCESS_KEY = 'Set aws access key here'
 AWS_SECRET_KEY = 'Set aws secret key here'
 AWS_BUCKET = 'set your bucketname here'
+
+# bear with the non-standard aws key names used in flask-storage
+
+AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY=AWS_SECRET_KEY
+AWS_STORAGE_BUCKET_NAME=AWS_BUCKET
+
 #: Domain name for files
 MEDIA_DOMAIN = 'set domain name here'
