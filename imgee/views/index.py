@@ -2,33 +2,35 @@
 import os.path
 from uuid import uuid4
 from flask import render_template, request, g, jsonify, redirect
-from imgee import app, uploadedfiles
+from imgee import app, forms
+from flask.ext.uploads import save
 from imgee.models import StoredFile, Thumbnail, db, Profile
 from imgee.views.login import lastuser, make_profiles
 from imgee.storage import upload, is_image, create_thumbnail, convert_size, delete_image
-
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['GET', 'POST'])
 @lastuser.resource_handler('imgee/upload')
-def upload_files(callerinfo):
-    profileid = request.args.get('profileid', g.user.userid)
-    make_profiles()
-    if profileid not in g.user.user_organizations_owned_ids():
-        return jsonify({'error': 'You do not have permission to access this resource'})
-    if request.files.get('stored_file', None):
-        filename = uploadedfiles.save(request.files['stored_file'])
+def upload_files():
+    if request.method == 'GET':
+        upload_form = forms.UploadForm()
+        return render_template('form.html', form=upload_form)
+    else:
+        profileid = request.args.get('profileid', g.user.userid)
+        make_profiles()
+        if profileid not in g.user.user_organizations_owned_ids():
+            return jsonify({'error': 'You do not have permission to access this resource'})
+        filename = save(request.files['uploaded_file'])
         profile = Profile.query.filter_by(userid=profileid).first()
         stored_file = StoredFile(name=uuid4().hex, title=os.path.basename(request.files['stored_file'].filename), profile=profile)
         db.session.add(stored_file)
         db.session.commit()
         upload(stored_file.name, filename)
         return jsonify({'id':  stored_file.name})
-    return jsonify({'error': 'No file was uploaded'})
 
 
 @app.route('/list')
@@ -60,7 +62,7 @@ def get_thumbnail(filename):
     return redirect('%s/%s' % (app.config['MEDIA_DOMAIN'], stored_file.name))
 
 
-@app.route('/delete')
+@app.route('/delete', methods=['POST'])
 @lastuser.resource_handler('imgee/delete')
 def delete_files(callerinfo):
     profileid = request.args.get('profileid', g.user.userid)
