@@ -5,7 +5,6 @@
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flask.ext.lastuser import LastUser
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.uploads import init
 from flask.ext.storage import get_default_storage_class
 from baseframe import baseframe, baseframe_js, baseframe_css
@@ -22,14 +21,12 @@ app.register_blueprint(baseframe)
 
 assets = Environment(app)
 js = Bundle(baseframe_js)
-css = Bundle(baseframe_css,
-             'css/app.css')
+css = Bundle(baseframe_css, 'css/app.css')
 
 # Third, after config, import the models and views
 
 import imgee.models
 import imgee.views
-
 
 # Configure the app
 def init_for(env):
@@ -37,4 +34,4 @@ def init_for(env):
     assets.register('js_all', js)
     assets.register('css_all', css)
     lastuser.init_app(app)
-    init(SQLAlchemy(app), get_default_storage_class(app))
+    init(imgee.models.db, get_default_storage_class(app))
