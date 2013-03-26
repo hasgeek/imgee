@@ -8,18 +8,18 @@ from imgee import app
 from imgee.models import db, Thumbnail
 
 
-IMAGES = list('jpg jpe jpeg png gif svg bmp'.split())
+IMAGES = 'jpg jpe jpeg png gif svg bmp'.split()
 
 
-def upload(name, title):
+def upload(local_name, remote_name=None):
     """
     Upload a file to S3
     """
     conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
     k = Key(bucket)
-    k.key = name
-    k.set_contents_from_filename(path.join(app.config['UPLOADED_FILES_DEST'], title))
+    k.key = remote_name or local_name
+    k.set_contents_from_filename(path.join(app.config['UPLOADED_FILES_DEST'], local_name))
 
 
 def is_image(filename):
@@ -27,9 +27,7 @@ def is_image(filename):
     Check if a given filename is an image or not
     """
     extension = filename.rsplit('.', 1)[-1]
-    if extension in IMAGES:
-        return True
-    return False
+    return extension in IMAGES
 
 
 def create_thumbnail(stored_file, size):
