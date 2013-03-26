@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from flask import Response, redirect, flash, g
+from functools import wraps
+
+from flask import Response, redirect, flash, g, url_for, request
 from flask.ext.lastuser.sqlalchemy import UserManager
 from coaster.views import get_next_url
 
@@ -9,6 +11,13 @@ from imgee.models import db, User, Profile, PROFILE_TYPE
 
 lastuser.init_usermanager(UserManager(db, User))
 
+def login_required(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        if g.user is None:
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_func
 
 @app.route('/login')
 @lastuser.login_handler

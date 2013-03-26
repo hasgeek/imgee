@@ -5,7 +5,7 @@ from flask import render_template, request, g, jsonify, redirect
 from imgee import app, forms
 from flask.ext.uploads import save
 from imgee.models import StoredFile, Thumbnail, db, Profile
-from imgee.views.login import lastuser, make_profiles
+from imgee.views.login import lastuser, make_profiles, login_required
 from imgee.storage import upload, is_image, create_thumbnail, convert_size, delete_image
 
 @app.route('/')
@@ -15,6 +15,7 @@ def index():
 
 @app.route('/upload', methods=['GET', 'POST'])
 @lastuser.resource_handler('imgee/upload')
+@login_required
 def upload_files():
     if request.method == 'GET':
         upload_form = forms.UploadForm()
@@ -36,6 +37,7 @@ def upload_files():
 
 @app.route('/list')
 @lastuser.resource_handler('imgee/list')
+@login_required
 def list_files(callerinfo):
     profileid = request.args.get('profileid', g.user.userid)
     make_profiles()
@@ -65,6 +67,7 @@ def get_thumbnail(filename):
 
 @app.route('/delete', methods=['POST'])
 @lastuser.resource_handler('imgee/delete')
+@login_required
 def delete_files(callerinfo):
     profileid = request.args.get('profileid', g.user.userid)
     fileid = request.args.get('fileid', g.user.userid)
