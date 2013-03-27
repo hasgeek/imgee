@@ -15,7 +15,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/upload', methods=('GET', 'POST'))
+@app.route('/new', methods=('GET', 'POST'))
 @lastuser.resource_handler('imgee/upload')
 @login_required
 def upload_files():
@@ -41,7 +41,7 @@ def upload_files():
 @app.route('/list')
 @lastuser.resource_handler('imgee/list')
 @login_required
-def list_files(callerinfo):
+def list_files():
     profileid = request.args.get('profileid', g.user.userid)
     make_profiles()
     if profileid in g.user.user_organizations_owned_ids():
