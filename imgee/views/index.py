@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import os.path
+from werkzeug import secure_filename
 from uuid import uuid4
 from flask import render_template, request, g, jsonify, redirect
-from imgee import app, forms
 from flask.ext.uploads import save
+
+from imgee import app, forms
 from imgee.models import StoredFile, Thumbnail, db, Profile
 from imgee.views.login import lastuser, make_profiles, login_required
 from imgee.storage import upload, is_image, create_thumbnail, convert_size, delete_image
@@ -13,20 +14,20 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/upload', methods=('GET', 'POST'))
 @lastuser.resource_handler('imgee/upload')
 @login_required
 def upload_files():
-    profileid = request.args.get('profileid', g.user.userid)
+    profileid = g.user.userid
     make_profiles()
     if profileid not in g.user.user_organizations_owned_ids():
         return jsonify({'error': 'You do not have permission to access this resource'})
 
     upload_form = forms.UploadForm()
     if upload_form.validate_on_submit():
-        localname = os.path.basename(request.files['uploaded_file'].filename)
+        filename = secure_filename(request.files['uploaded_file'].filename)
         profile = Profile.query.filter_by(userid=profileid).first()
-        stored_file = StoredFile(name=uuid4().hex, title=localname, profile=profile)
+        stored_file = StoredFile(name=uuid4().hex, title=filename, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
         save(request.files['uploaded_file'], stored_file.name)
