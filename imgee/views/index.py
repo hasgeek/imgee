@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os.path
 from werkzeug import secure_filename
 from uuid import uuid4
 from flask import render_template, request, g, jsonify, redirect
@@ -26,8 +27,10 @@ def upload_files():
     upload_form = forms.UploadForm()
     if upload_form.validate_on_submit():
         filename = secure_filename(request.files['uploaded_file'].filename)
+        extn = os.path.splitext(filename)[1]
+        uniq_name = uuid4().hex + extn
         profile = Profile.query.filter_by(userid=profileid).first()
-        stored_file = StoredFile(name=uuid4().hex, title=filename, profile=profile)
+        stored_file = StoredFile(name=uniq_name, title=filename, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
         save(request.files['uploaded_file'], stored_file.name)
