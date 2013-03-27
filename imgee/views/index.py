@@ -24,13 +24,12 @@ def upload_files():
 
     upload_form = forms.UploadForm()
     if upload_form.validate_on_submit():
-        save(request.files['uploaded_file'])
         localname = os.path.basename(request.files['uploaded_file'].filename)
         profile = Profile.query.filter_by(userid=profileid).first()
         stored_file = StoredFile(name=uuid4().hex, title=localname, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
-        upload(localname, stored_file.name)
+        save(request.files['uploaded_file'], stored_file.name)
         return jsonify({'id':  stored_file.name})
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
