@@ -1,5 +1,6 @@
-from os import path
+import os.path
 from uuid import uuid4
+import re
 from boto import connect_s3
 from boto.s3.bucket import Bucket
 from boto.s3.key import Key
@@ -8,19 +9,13 @@ from imgee import app
 from imgee.models import db, Thumbnail
 
 
+
 IMAGES = 'jpg jpe jpeg png gif svg bmp'.split()
 
-
-def upload(local_name, remote_name=None):
-    """
-    Upload a file to S3
-    """
+def get_s3_bucket():
     conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
-    k = Key(bucket)
-    k.key = remote_name or local_name
-    k.set_contents_from_filename(path.join(app.config['UPLOADED_FILES_DEST'], local_name))
-
+    return bucket
 
 def is_image(filename):
     """
@@ -37,9 +32,8 @@ def create_thumbnail(stored_file, size):
     thumbnail = Thumbnail(name=uuid4().hex, size=size, stored_file=stored_file)
     db.session.add(thumbnail)
     db.session.commit()
-    conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
-    bucket = Bucket(conn, app.config['AWS_BUCKET'])
-    thumbnail_path = path.join(app.config['UPLOADED_FILES_DEST'], thumbnail.name)
+    thumbnail_path = os.path.join(app.config['UPLOADED_FILES_DEST'], thumbnail.name)
+    bucket = get_s3_bucket()
     k = Key(bucket)
     k.key = stored_file.name
     k.get_contents_to_filename(thumbnail_path)
@@ -53,17 +47,14 @@ def create_thumbnail(stored_file, size):
     return thumbnail.name
 
 
-def convert_size(size):
-    converted = size.split('x')
-    if len(converted) != 2:
-        return None
-    for k, v in enumerate(converted):
-        if v.isdigit():
-            converted[k] = int(v)
-        else:
-            return None
-    return converted
-
+def split_size(size):
+    """ return (a, b) if size is 'axb'
+    """
+    r = r'^(\d+)x(\d+)$'
+    matched = re.match(r, size)
+    if matched:
+        a, b = matched.group(1, 2)
+        return int(a), int(b)
 
 def delete_image(stored_file):
     """
@@ -71,6 +62,5 @@ def delete_image(stored_file):
     """
     keys = [thumbnail.name for thumbnail in stored_file.thumbnails]
     keys.append(stored_file.name)
-    conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
-    bucket = Bucket(conn, app.config['AWS_BUCKET'])
+    bucket = get_s3_bucket()
     bucket.delete_keys(keys)

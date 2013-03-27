@@ -8,7 +8,7 @@ from flask.ext.uploads import save
 from imgee import app, forms
 from imgee.models import StoredFile, Thumbnail, db, Profile
 from imgee.views.login import lastuser, make_profiles, login_required
-from imgee.storage import upload, is_image, create_thumbnail, convert_size, delete_image
+from imgee.storage import is_image, create_thumbnail, split_size, delete_image
 
 @app.route('/')
 def index():
@@ -54,19 +54,15 @@ def list_files():
 @app.route('/file/<filename>')
 def get_thumbnail(filename):
     make_profiles()
-    size = request.args.get('size')
+    size = request.args.get('size', '')
+    converted_size = split_size(size)
     stored_file = StoredFile.query.filter_by(name=filename).first()
-    converted_size = convert_size(size)
-    if not size or is_image(stored_file.name) or not converted_size:
+    if (not size) and is_image(stored_file.name):
         return redirect('%s/%s' % (app.config['MEDIA_DOMAIN'], stored_file.name))
-    existing_thumbnail = Thumbnail.query.filter_by(size=size, stored_file=stored_file).first()
-    if existing_thumbnail:
-        return redirect('%s/%s' % (app.config['MEDIA_DOMAIN'], existing_thumbnail.name))
-    new_thumbnail = create_thumbnail(stored_file, converted_size)
-    if new_thumbnail:
-        return redirect('%s/%s' % (app.config['MEDIA_DOMAIN'], new_thumbnail.name))
-    return redirect('%s/%s' % (app.config['MEDIA_DOMAIN'], stored_file.name))
-
+    thumbnail = Thumbnail.query.filter_by(size=size, stored_file=stored_file).first()
+    if not thumbnail:
+        thumbnail = create_thumbnail(stored_file, converted_size)
+    return redirect('%s/%s' % (app.config['MEDIA_DOMAIN'], new_thumbnail.name))
 
 @app.route('/delete', methods=['POST'])
 @lastuser.resource_handler('imgee/delete')
