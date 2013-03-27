@@ -17,23 +17,23 @@ def index():
 @lastuser.resource_handler('imgee/upload')
 @login_required
 def upload_files():
-    if request.method == 'GET':
-        upload_form = forms.UploadForm()
-        return render_template('form.html', form=upload_form)
-    else:
-        profileid = request.args.get('profileid', g.user.userid)
-        make_profiles()
-        if profileid not in g.user.user_organizations_owned_ids():
-            return jsonify({'error': 'You do not have permission to access this resource'})
+    profileid = request.args.get('profileid', g.user.userid)
+    make_profiles()
+    if profileid not in g.user.user_organizations_owned_ids():
+        return jsonify({'error': 'You do not have permission to access this resource'})
+
+    upload_form = forms.UploadForm()
+    if upload_form.validate_on_submit():
         save(request.files['uploaded_file'])
-        localname = os.path.basename(request.files['stored_file'].filename)
+        localname = os.path.basename(request.files['uploaded_file'].filename)
         profile = Profile.query.filter_by(userid=profileid).first()
         stored_file = StoredFile(name=uuid4().hex, title=localname, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
         upload(localname, stored_file.name)
         return jsonify({'id':  stored_file.name})
-
+    # form invalid or request.method == 'GET'
+    return render_template('form.html', form=upload_form)
 
 @app.route('/list')
 @lastuser.resource_handler('imgee/list')
