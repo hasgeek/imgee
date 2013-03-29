@@ -2,12 +2,12 @@
 import os.path
 from werkzeug import secure_filename
 from uuid import uuid4
-from flask import render_template, request, g, jsonify, redirect, abort, send_from_directory
+from flask import render_template, request, g, jsonify, abort, send_from_directory
 
 from imgee import app, forms
-from imgee.models import StoredFile, Thumbnail, db, Profile
+from imgee.models import StoredFile, db, Profile
 from imgee.views.login import lastuser, make_profiles, login_required
-from imgee.storage import split_size, delete_image, resize_and_save, save, get_image_name
+from imgee.storage import delete_image, save, get_image_name
 
 @app.route('/')
 def index():
