@@ -1,12 +1,14 @@
 import os.path
 from uuid import uuid4
 import re
-from boto import connect_s3
-from boto.s3.bucket import Bucket
-from boto.s3.key import Key
 from PIL import Image
 import mimetypes
 from StringIO import StringIO
+
+from boto import connect_s3
+from boto.s3.bucket import Bucket
+from boto.s3.key import Key
+
 from flask.ext.uploads import save as uploads_save
 
 from imgee import app
