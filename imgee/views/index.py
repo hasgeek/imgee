@@ -55,7 +55,8 @@ def get_image(img_name):
     size = request.args.get('size', '')
     img_name = get_image_name(img, size)
     image_dir = os.path.abspath(app.config['UPLOADED_FILES_DEST'])
-    return send_from_directory(image_dir, img_name, mimetype='image/jpeg')
+    year = 60*60*24*365
+    return send_from_directory(image_dir, img_name, mimetype='image/jpeg', cache_timeout=year)
 
 @app.route('/delete', methods=['POST'])
 @lastuser.resource_handler('imgee/delete')
