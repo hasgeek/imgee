@@ -5,12 +5,14 @@ from boto import connect_s3
 from boto.s3.bucket import Bucket
 from boto.s3.key import Key
 from PIL import Image
+import mimetypes
+from StringIO import StringIO
+from flask.ext.uploads import save as uploads_save
+
 from imgee import app
 from imgee.models import db, Thumbnail
 
-
-
-IMAGES = 'jpg jpe jpeg png gif svg bmp'.split()
+IMAGES = 'jpg jpe jpeg png gif bmp'.split()
 
 def get_s3_bucket():
     conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
@@ -24,37 +26,71 @@ def is_image(filename):
     extension = filename.rsplit('.', 1)[-1]
     return extension in IMAGES
 
+def save(fp, img_name, remote=True):
+    local_path =  os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
+    with open(local_path, 'w') as img:
+        img.write(fp.read())
 
-def create_thumbnail(stored_file, size):
-    """
-    Create a thumbnail for a given file and given size
-    """
-    thumbnail = Thumbnail(name=uuid4().hex, size=size, stored_file=stored_file)
-    db.session.add(thumbnail)
+    if remote:
+        fp.seek(0)
+        uploads_save(fp, img_name)
+
+def path_for(img_name):
+    return os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
+
+def get_image_name(img, size):
+    img_name = img.name
+    size_t = split_size(size)
+    if size_t:
+        scaled = Thumbnail.query.filter_by(size=size, stored_file=img).first()
+        if scaled:
+            img_name = scaled.name
+        else:
+            img_name = resize_and_save(img, size, format)
+    return img_name
+
+def get_image_locally(img_name):
+    local_path =  path_for(img_name)
+    if not os.path.exists(local_path):
+        bucket = get_s3_bucket()
+        k = Key(bucket)
+        k.key = img_name
+        k.get_contents_to_filename(local_path)
+    return local_path
+
+def resize_and_save(img, size, format):
+    format = os.path.splitext(img.title)[1].lstrip('.')
+    src_path =  get_image_locally(img.name)
+    scaled_img_name = uuid4().hex
+    scaled_path = path_for(scaled_img_name)
+    resize_img(src_path, scaled_path, size, format)
+    scaled = Thumbnail(name=scaled_img_name, size=size, stored_file=img)
+    db.session.add(scaled)
     db.session.commit()
-    thumbnail_path = os.path.join(app.config['UPLOADED_FILES_DEST'], thumbnail.name)
-    bucket = get_s3_bucket()
-    k = Key(bucket)
-    k.key = stored_file.name
-    k.get_contents_to_filename(thumbnail_path)
-    try:
-        img = Image.open(thumbnail_path)
-        img.load()
-        img.thumbnail(size, Image.ANTIALIAS)
-        img.save(thumbnail_path)
-    except IOError:
-        return None
-    return thumbnail.name
+    return scaled_img_name
 
+def resize_img(src, dest, size, format):
+    """
+    `size` is a tuple (width, height) or a string '<width>x<height>'.
+    resize the image at `path` to the specified `size` and return the resized img.
+    """
+    if isinstance(size, (str, unicode)):
+        size = split_size(size)
+    if (not size) or (not os.path.exists(src)):
+        return
+    img = Image.open(src)
+    img.load()
+    resized = img.resize(size, Image.ANTIALIAS)
+    resized.save(dest, format=format, quality=100)
 
 def split_size(size):
-    """ return (a, b) if size is 'axb'
+    """ return (w, h) if size is 'wxh'
     """
     r = r'^(\d+)x(\d+)$'
     matched = re.match(r, size)
     if matched:
-        a, b = matched.group(1, 2)
-        return int(a), int(b)
+        w, h = matched.group(1, 2)
+        return int(w), int(h)
 
 def delete_image(stored_file):
     """
