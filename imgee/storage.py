@@ -64,8 +64,13 @@ def resize_and_save(img, size, format):
 
 def get_size((orig_w, orig_h), (w, h)):
     # return size which preserves the aspect ratio of the original image.
+    # w or h being None means square size
     if w != 0:
         size = (w, orig_h*w/orig_w)
+    elif w == None:
+        size = (h, h)
+    elif h == None:
+        size = (w, w)
     else:
         size = (orig_w*h/orig_h, h)
     return size
@@ -89,11 +94,12 @@ def resize_img(src, dest, size, format):
 def split_size(size):
     """ return (w, h) if size is 'wxh'
     """
-    r = r'^(\d+)x(\d+)$'
+    r= r'^(\d+)(x(\d+))?$'
     matched = re.match(r, size)
     if matched:
         w, h = matched.group(1, 2)
-        return int(w), int(h)
+        h = int(h.lstrip('x')) if h != None else None
+        return int(w), h
 
 def delete_image(stored_file):
     """
