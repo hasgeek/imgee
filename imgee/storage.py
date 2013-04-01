@@ -55,8 +55,9 @@ def resize_and_save(img, size, format):
     format = os.path.splitext(img.title)[1].lstrip('.')
     src_path =  get_image_locally(img.name)
     scaled_img_name = uuid4().hex
-    scaled_path = path_for(scaled_img_name)
-    resize_img(src_path, scaled_path, size, format)
+    scaled = resize_img(src_path, size, format)
+    uploads_save(scaled, scaled_img_name)
+
     scaled = Thumbnail(name=scaled_img_name, size=size, stored_file=img)
     db.session.add(scaled)
     db.session.commit()
@@ -75,7 +76,7 @@ def get_size((orig_w, orig_h), (w, h)):
         size = (orig_w*h/orig_h, h)
     return size
 
-def resize_img(src, dest, size, format):
+def resize_img(src, size, format):
     """
     `size` is a tuple (width, height) or a string '<width>x<height>'.
     resize the image at `path` to the specified `size` and return the resized img.
@@ -89,7 +90,10 @@ def resize_img(src, dest, size, format):
     img.load()
     size = get_size(img.size, size)
     resized = img.resize(size, Image.ANTIALIAS)
-    resized.save(dest, format=format, quality=100)
+    imgio = StringIO()
+    resized.save(imgio, format=format, quality=100)
+    imgio.seek(0)
+    return imgio
 
 def split_size(size):
     """ return (w, h) if size is 'wxh'

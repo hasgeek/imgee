@@ -2,7 +2,8 @@
 import os.path
 from werkzeug import secure_filename
 from uuid import uuid4
-from flask import render_template, request, g, jsonify, abort, send_from_directory
+from flask import render_template, request, g, jsonify, abort, send_from_directory, redirect
+from urlparse import urljoin
 
 from imgee import app, forms
 from imgee.models import StoredFile, db, Profile
@@ -47,16 +48,14 @@ def list_files():
         return jsonify(file_list)
     return jsonify({'error': 'You do not have permission to access this resource'})
 
-@app.route('/<img_name>')
+@app.route('/file/<img_name>')
 def get_image(img_name):
     make_profiles()
     img = StoredFile.query.filter_by(name=img_name).first()
     if not img: abort(404)
     size = request.args.get('size', '')
     img_name = get_image_name(img, size)
-    image_dir = os.path.abspath(app.config['UPLOADED_FILES_DEST'])
-    year = 60*60*24*365
-    return send_from_directory(image_dir, img_name, mimetype='image/jpeg', cache_timeout=year)
+    return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
 @app.route('/delete', methods=['POST'])
 @lastuser.resource_handler('imgee/delete')
