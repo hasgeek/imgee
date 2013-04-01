@@ -14,19 +14,10 @@ from flask.ext.uploads import save as uploads_save
 from imgee import app
 from imgee.models import db, Thumbnail
 
-IMAGES = 'jpg jpe jpeg png gif bmp'.split()
-
 def get_s3_bucket():
     conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
     return bucket
-
-def is_image(filename):
-    """
-    Check if a given filename is an image or not
-    """
-    extension = filename.rsplit('.', 1)[-1]
-    return extension in IMAGES
 
 def save(fp, img_name, remote=True):
     local_path =  os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
