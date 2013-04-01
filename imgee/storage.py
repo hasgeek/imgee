@@ -62,6 +62,14 @@ def resize_and_save(img, size, format):
     db.session.commit()
     return scaled_img_name
 
+def get_size((orig_w, orig_h), (w, h)):
+    # return size which preserves the aspect ratio of the original image.
+    if w != 0:
+        size = (w, orig_h*w/orig_w)
+    else:
+        size = (orig_w*h/orig_h, h)
+    return size
+
 def resize_img(src, dest, size, format):
     """
     `size` is a tuple (width, height) or a string '<width>x<height>'.
@@ -69,10 +77,12 @@ def resize_img(src, dest, size, format):
     """
     if isinstance(size, (str, unicode)):
         size = split_size(size)
+
     if (not size) or (not os.path.exists(src)):
         return
     img = Image.open(src)
     img.load()
+    size = get_size(img.size, size)
     resized = img.resize(size, Image.ANTIALIAS)
     resized.save(dest, format=format, quality=100)
 
