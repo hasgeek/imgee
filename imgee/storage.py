@@ -9,8 +9,6 @@ from boto import connect_s3
 from boto.s3.bucket import Bucket
 from boto.s3.key import Key
 
-from flask.ext.uploads import save as uploads_save
-
 from imgee import app
 from imgee.models import db, Thumbnail
 
@@ -19,14 +17,27 @@ def get_s3_bucket():
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
     return bucket
 
-def save(fp, img_name, remote=True):
+def save(fp, img_name, remote=True, content_type=None):
     local_path =  os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
     with open(local_path, 'w') as img:
         img.write(fp.read())
 
     if remote:
         fp.seek(0)
-        uploads_save(fp, img_name)
+        save_on_s3(fp, img_name, content_type=content_type)
+
+def get_file_type(filename):
+    return mimetypes.guess_type(filename)[0]
+
+def save_on_s3(fp, filename, content_type=''):
+    b = get_s3_bucket()
+    k = b.new_key(filename)
+    content_type = content_type or get_file_type(filename)
+    headers = {
+        'Cache-Control': 'max-age=31536000',    #60*60*24*365
+        'Content-Type': content_type,
+    }
+    k.set_contents_from_file(fp, policy='public-read', headers=headers)
 
 def path_for(img_name):
     return os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
@@ -39,7 +50,7 @@ def get_image_name(img, size):
         if scaled:
             img_name = scaled.name
         else:
-            img_name = resize_and_save(img, size, format)
+            img_name = resize_and_save(img, size)
     return img_name
 
 def get_image_locally(img_name):
@@ -51,12 +62,13 @@ def get_image_locally(img_name):
         k.get_contents_to_filename(local_path)
     return local_path
 
-def resize_and_save(img, size, format):
-    format = os.path.splitext(img.title)[1].lstrip('.')
+def resize_and_save(img, size):
     src_path =  get_image_locally(img.name)
     scaled_img_name = uuid4().hex
+    content_type = get_file_type(img.title) # eg: image/jpeg
+    format = content_type.split('/')[1] if content_type else None
     scaled = resize_img(src_path, size, format)
-    uploads_save(scaled, scaled_img_name)
+    save_on_s3(scaled, scaled_img_name, content_type)
 
     scaled = Thumbnail(name=scaled_img_name, size=size, stored_file=img)
     db.session.add(scaled)

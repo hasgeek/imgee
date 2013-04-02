@@ -8,7 +8,7 @@ from urlparse import urljoin
 from imgee import app, forms
 from imgee.models import StoredFile, db, Profile
 from imgee.views.login import lastuser, make_profiles, login_required
-from imgee.storage import delete_image, save, get_image_name
+from imgee.storage import delete_image, save, get_image_name, get_file_type
 
 @app.route('/')
 def index():
@@ -31,7 +31,8 @@ def upload_files():
         stored_file = StoredFile(name=uniq_name, title=filename, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
-        save(request.files['uploaded_file'], stored_file.name)
+        content_type = get_file_type(filename)
+        save(request.files['uploaded_file'], stored_file.name, content_type=content_type)
         return jsonify({'id':  stored_file.name})
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
