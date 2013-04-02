@@ -5,6 +5,4 @@ Flask-SQLAlchemy
 https://github.com/hasgeek/flask-lastuser/zipball/master
 Flask-Admin
 boto
--e git+http://github.com/FelixLoether/flask-uploads#egg=Flask-Uploads
--e git://github.com/kvesteri/flask-storage.git#egg=Flask-Storage
 PIL

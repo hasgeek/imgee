@@ -5,8 +5,6 @@
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flask.ext.lastuser import LastUser
-from flask.ext.uploads import init
-from flask.ext.storage import get_default_storage_class
 from baseframe import baseframe, baseframe_js, baseframe_css
 import coaster.app
 
@@ -34,4 +32,3 @@ def init_for(env):
     assets.register('js_all', js)
     assets.register('css_all', css)
     lastuser.init_app(app)
-    init(imgee.models.db, get_default_storage_class(app))
