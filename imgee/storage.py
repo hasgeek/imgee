@@ -42,15 +42,18 @@ def save_on_s3(fp, filename, content_type=''):
 def path_for(img_name):
     return os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
 
-def get_image_name(img, size):
+def get_resized_image(img, size, thumbnail=False):
     img_name = img.name
-    size_t = split_size(size)
+    if isinstance(size, (str, unicode)):
+        size_t = split_size(size)
+    elif isinstance(size, tuple):
+        size_t, size = size, "%sx%s" % size
     if size_t:
         scaled = Thumbnail.query.filter_by(size=size, stored_file=img).first()
         if scaled:
             img_name = scaled.name
         else:
-            img_name = resize_and_save(img, size)
+            img_name = resize_and_save(img, size_t, thumbnail=thumbnail)
     return img_name
 
 def get_image_locally(img_name):
@@ -62,46 +65,58 @@ def get_image_locally(img_name):
         k.get_contents_to_filename(local_path)
     return local_path
 
-def resize_and_save(img, size):
+def resize_and_save(img, size, thumbnail=False):
     src_path =  get_image_locally(img.name)
     scaled_img_name = uuid4().hex
     content_type = get_file_type(img.title) # eg: image/jpeg
     format = content_type.split('/')[1] if content_type else None
-    scaled = resize_img(src_path, size, format)
+    scaled = resize_img(src_path, size, format, thumbnail=thumbnail)
     save_on_s3(scaled, scaled_img_name, content_type)
 
-    scaled = Thumbnail(name=scaled_img_name, size=size, stored_file=img)
+    size_s = "%sx%s" % size
+    scaled = Thumbnail(name=scaled_img_name, size=size_s, stored_file=img)
     db.session.add(scaled)
     db.session.commit()
     return scaled_img_name
 
 def get_size((orig_w, orig_h), (w, h)):
-    # return size which preserves the aspect ratio of the original image.
     # w or h being None means square size
-    if w != 0:
+    # w or h being 0 means preserve aspect ratio with that height or width
+    # else return w, h
+    if h == 0:
         size = (w, orig_h*w/orig_w)
+    elif w == 0:
+        size = (orig_w*h/orig_h, h)
     elif w == None:
         size = (h, h)
     elif h == None:
         size = (w, w)
     else:
-        size = (orig_w*h/orig_h, h)
+        size = (w, h)
     return size
 
-def resize_img(src, size, format):
+def resize_img(src, size, format, thumbnail):
     """
-    `size` is a tuple (width, height) or a string '<width>x<height>'.
-    resize the image at `path` to the specified `size` and return the resized img.
+    `size` is a tuple (width, height)
+    resize the image at `src` to the specified `size` and return the resized img.
     """
-    if isinstance(size, (str, unicode)):
-        size = split_size(size)
-
     if (not size) or (not os.path.exists(src)):
         return
     img = Image.open(src)
     img.load()
+    if thumbnail:
+        # fit the image to the box along the smaller side and preserve aspect ratio.
+        (ow, oh), (w, h) = img.size, size
+        size = (0, h) if ow>=oh else (w, 0)
+
     size = get_size(img.size, size)
     resized = img.resize(size, Image.ANTIALIAS)
+
+    if thumbnail:
+        # and crop the rest
+        right, lower = app.config.get('THUMBNAIL_SIZE')
+        resized = resized.crop((0, 0, right, lower))
+
     imgio = StringIO()
     resized.save(imgio, format=format, quality=100)
     imgio.seek(0)
