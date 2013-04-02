@@ -8,7 +8,7 @@ from urlparse import urljoin
 from imgee import app, forms
 from imgee.models import StoredFile, db, Profile
 from imgee.views.login import lastuser, make_profiles, login_required
-from imgee.storage import delete_image, save, get_image_name, get_file_type
+from imgee.storage import delete_image, save, get_resized_image, get_file_type
 
 @app.route('/')
 def index():
@@ -55,8 +55,16 @@ def get_image(img_name):
     img = StoredFile.query.filter_by(name=img_name).first()
     if not img: abort(404)
     size = request.args.get('size', '')
-    img_name = get_image_name(img, size)
+    img_name = get_resized_image(img, size)
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
+
+@app.route('/thumbnail/<img_name>')
+def get_thumbnail(img_name):
+    img = StoredFile.query.filter_by(name=img_name).first()
+    if not img: abort(404)
+    tn_size = app.config.get('THUMBNAIL_SIZE')
+    thumbnail = get_resized_image(img, tn_size, thumbnail=True)
+    return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
 @app.route('/delete', methods=['POST'])
 @lastuser.resource_handler('imgee/delete')
