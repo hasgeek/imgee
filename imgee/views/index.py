@@ -8,7 +8,7 @@ from urlparse import urljoin
 from imgee import app, forms
 from imgee.models import StoredFile, db, Profile
 from imgee.views.login import lastuser, make_profiles, login_required
-from imgee.storage import delete_image, save, get_resized_image, get_file_type
+from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type
 
 @app.route('/')
 def index():
@@ -66,21 +66,21 @@ def get_thumbnail(img_name):
     thumbnail = get_resized_image(img, tn_size, thumbnail=True)
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
-@app.route('/delete', methods=['POST'])
+@app.route('/delete/<img_name>', methods=('GET','POST'))
 @lastuser.resource_handler('imgee/delete')
 @login_required
-def delete_files(callerinfo):
-    profileid = request.args.get('profileid', g.user.userid)
-    fileid = request.args.get('fileid', g.user.userid)
-    if not fileid:
-        return jsonify({'error': 'No filename given'})
+def delete_files(img_name):
+    profileid = g.user.userid
     make_profiles()
     if profileid in g.user.user_organizations_owned_ids():
-        stored_file = StoredFile.query.filter_by(name=fileid).first()
-        if stored_file:
-            delete_image(stored_file)
-            db.session.delete(stored_file)
-            db.session.commit()
-            return jsonify({'success': 'File deleted'})
-        return jsonify({'error': 'No file found'})
+        form = forms.DeleteForm()
+        if form.validate_on_submit():
+            stored_file = StoredFile.query.filter_by(name=img_name).first()
+            if stored_file:
+                delete_on_s3(stored_file)
+                db.session.delete(stored_file)
+                db.session.commit()
+                return jsonify({'success': 'File deleted'})
+            return jsonify({'error': 'No file found'})
+        return render_template('delete.html', form=form, filename=img_name)
     return jsonify({'error': 'You do not have permission to access this resource'})
