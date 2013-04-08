@@ -132,7 +132,7 @@ def split_size(size):
         h = int(h.lstrip('x')) if h != None else None
         return int(w), h
 
-def delete_image(stored_file):
+def delete_on_s3(stored_file):
     """
     Delete all the thumbnails and images associated with a file
     """

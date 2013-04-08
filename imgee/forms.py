@@ -14,3 +14,6 @@ def valid_image(form, field):
 
 class UploadForm(Form):
     uploaded_file = FileField("Uploaded File", validators=[Required(), valid_image])
+
+class DeleteForm(Form):
+    pass
