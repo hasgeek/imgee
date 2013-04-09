@@ -19,6 +19,16 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_func
 
+def authorize(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        profileid = g.user.userid
+        make_profiles()
+        if profileid in g.user.user_organizations_owned_ids():
+            return f(*args, **kwargs)
+        return jsonify({'error': 'You do not have permission to access this resource'})
+    return decorated_func
+
 @app.route('/login')
 @lastuser.login_handler
 def login():
