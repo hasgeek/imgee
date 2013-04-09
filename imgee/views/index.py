@@ -78,7 +78,7 @@ def delete_file(img_name):
             db.session.commit()
             flash("%s is deleted" % stored_file.title)
         else:
-            return render_template('delete.html', form=form, filename=img_name)
+            return render_template('delete.html', form=form, filename=img_name, profile_name=profile_name)
     else:
         flash("No file found", category="error") # put in appropriate message
     return redirect(url_for('profile', profile_name=profile_name))
