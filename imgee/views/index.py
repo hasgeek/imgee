@@ -16,13 +16,10 @@ def index():
 
 @app.route('/new', methods=('GET', 'POST'))
 @lastuser.resource_handler('imgee/upload')
+@authorize
 @login_required
 def upload_files():
     profileid = g.user.userid
-    make_profiles()
-    if profileid not in g.user.user_organizations_owned_ids():
-        return jsonify({'error': 'You do not have permission to access this resource'})
-
     upload_form = forms.UploadForm()
     if upload_form.validate_on_submit():
         filename = secure_filename(request.files['uploaded_file'].filename)
@@ -42,16 +39,12 @@ def upload_files():
 @login_required
 def list_files():
     profileid = request.args.get('profileid', g.user.userid)
-    make_profiles()
-    if profileid in g.user.user_organizations_owned_ids():
-        files = StoredFile.query.filter(Profile.userid == profileid).all()
-        file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
-        return jsonify(file_list)
-    return jsonify({'error': 'You do not have permission to access this resource'})
+    files = StoredFile.query.filter(Profile.userid == profileid).all()
+    file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
+    return jsonify(file_list)
 
 @app.route('/file/<img_name>')
 def get_image(img_name):
-    make_profiles()
     img = StoredFile.query.filter_by(name=img_name).first()
     if not img: abort(404)
     size = request.args.get('size', '')
@@ -68,19 +61,16 @@ def get_thumbnail(img_name):
 
 @app.route('/delete/<img_name>', methods=('GET','POST'))
 @lastuser.resource_handler('imgee/delete')
+@authorize
 @login_required
 def delete_files(img_name):
-    profileid = g.user.userid
-    make_profiles()
-    if profileid in g.user.user_organizations_owned_ids():
-        form = forms.DeleteForm()
-        if form.validate_on_submit():
-            stored_file = StoredFile.query.filter_by(name=img_name).first()
-            if stored_file:
-                delete_on_s3(stored_file)
-                db.session.delete(stored_file)
-                db.session.commit()
-                return jsonify({'success': 'File deleted'})
-            return jsonify({'error': 'No file found'})
-        return render_template('delete.html', form=form, filename=img_name)
-    return jsonify({'error': 'You do not have permission to access this resource'})
+    form = forms.DeleteForm()
+    if form.validate_on_submit():
+        stored_file = StoredFile.query.filter_by(name=img_name).first()
+        if stored_file:
+            delete_on_s3(stored_file)
+            db.session.delete(stored_file)
+            db.session.commit()
+            return jsonify({'success': 'File deleted'})
+        return jsonify({'error': 'No file found'})
+    return render_template('delete.html', form=form, filename=img_name)
