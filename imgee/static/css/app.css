@@ -1,0 +1,32 @@
+div.gallery div.image
+  {
+  margin:2px;
+  border:1px solid #b7b7b7;
+  height:auto;
+  width:auto;
+  float:left;
+  text-align:center;
+  }
+div.gallery div.image img
+  {
+  display:inline;
+  margin:3px;
+  border:1px solid #ffffff;
+  }
+div.gallery div.image a:hover img
+  {
+  border:1px solid #0000ff;
+  }
+div.gallery div.image div.title
+  {
+  text-align:center;
+  font-weight:normal;
+  width:120px;
+  margin:2px;
+  }
+div.gallery div.image span.delete
+{
+    font-weight:bold;
+    float: right;
+    padding-right: 2px;
+}

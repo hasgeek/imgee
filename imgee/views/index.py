@@ -7,7 +7,7 @@ from urlparse import urljoin
 
 from imgee import app, forms
 from imgee.models import StoredFile, db, Profile
-from imgee.views.login import lastuser, make_profiles, login_required
+from imgee.views.login import lastuser, authorize, login_required
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type
 
 @app.route('/')
@@ -34,14 +34,18 @@ def upload_files():
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
 
-@app.route('/list')
+@app.route('/<profile_name>')
 @lastuser.resource_handler('imgee/list')
 @login_required
-def list_files():
-    profileid = request.args.get('profileid', g.user.userid)
-    files = StoredFile.query.filter(Profile.userid == profileid).all()
-    file_list = {'files': [{'name': x.title, 'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name)} for x in files]}
-    return jsonify(file_list)
+@authorize
+def profile(profile_name):
+    files = StoredFile.query.filter(Profile.name == profile_name).all()
+    data = {'files': [{'title': x.title,
+                        'name': x.name,
+                        'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name),
+                        'thumbnail': 'thumbnail/%s' % x.name}
+                for x in files]}
+    return render_template('profile.html', files=data['files'])
 
 @app.route('/file/<img_name>')
 def get_image(img_name):
@@ -61,9 +65,9 @@ def get_thumbnail(img_name):
 
 @app.route('/delete/<img_name>', methods=('GET','POST'))
 @lastuser.resource_handler('imgee/delete')
-@authorize
 @login_required
-def delete_files(img_name):
+@authorize
+def delete_file(img_name):
     form = forms.DeleteForm()
     if form.validate_on_submit():
         stored_file = StoredFile.query.filter_by(name=img_name).first()
