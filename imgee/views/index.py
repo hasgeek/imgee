@@ -15,7 +15,6 @@ def index():
     return render_template('index.html')
 
 @app.route('/new', methods=('GET', 'POST'))
-@lastuser.resource_handler('imgee/upload')
 @authorize
 @login_required
 def upload_files():
@@ -35,7 +34,6 @@ def upload_files():
     return render_template('form.html', form=upload_form)
 
 @app.route('/<profile_name>')
-@lastuser.resource_handler('imgee/list')
 @login_required
 @authorize
 def profile(profile_name):
@@ -64,7 +62,6 @@ def get_thumbnail(img_name):
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
 @app.route('/delete/<img_name>', methods=('GET','POST'))
-@lastuser.resource_handler('imgee/delete')
 @login_required
 @authorize
 def delete_file(img_name):
