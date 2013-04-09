@@ -32,14 +32,14 @@ def upload_file():
         save(request.files['uploaded_file'], stored_file.name, content_type=content_type)
         profile_name = Profile.query.filter_by(userid=profileid).one().name
         flash('"%s" uploaded successfully.' % filename)
-        return redirect(url_for('profile', profile_name=profile_name))
+        return redirect(url_for('show_profile', profile_name=profile_name))
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
 
 @app.route('/<profile_name>')
 @login_required
 @authorize
-def profile(profile_name):
+def show_profile(profile_name):
     files = StoredFile.query.filter(Profile.name == profile_name).all()
     data = {'files': [{'title': x.title,
                         'name': x.name,
@@ -81,5 +81,5 @@ def delete_file(img_name):
             return render_template('delete.html', form=form, filename=img_name, profile_name=profile_name)
     else:
         flash("No file found", category="error") # put in appropriate message
-    return redirect(url_for('profile', profile_name=profile_name))
+    return redirect(url_for('show_profile', profile_name=profile_name))
 
