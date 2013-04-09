@@ -9,6 +9,7 @@
 
 Are you sure that you want to delete this image?
 <img src='/thumbnail/{{filename}}' />
-{{ renderform(form, "delete", "Yes, delete it") }}
+{% set cancel_url=url_for('profile', profile_name=profile_name) %}
+{{ renderform(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}
 {% endblock %}
 
