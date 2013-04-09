@@ -2,7 +2,8 @@
 import os.path
 from werkzeug import secure_filename
 from uuid import uuid4
-from flask import render_template, request, g, jsonify, abort, send_from_directory, redirect
+from flask import (render_template, request, g, jsonify, url_for,
+                abort, send_from_directory, redirect, flash)
 from urlparse import urljoin
 
 from imgee import app, forms
@@ -17,7 +18,7 @@ def index():
 @app.route('/new', methods=('GET', 'POST'))
 @authorize
 @login_required
-def upload_files():
+def upload_file():
     profileid = g.user.userid
     upload_form = forms.UploadForm()
     if upload_form.validate_on_submit():
@@ -29,7 +30,9 @@ def upload_files():
         db.session.commit()
         content_type = get_file_type(filename)
         save(request.files['uploaded_file'], stored_file.name, content_type=content_type)
-        return jsonify({'id':  stored_file.name})
+        profile_name = Profile.query.filter_by(userid=profileid).one().name
+        flash('"%s" uploaded successfully.' % filename)
+        return redirect(url_for('profile', profile_name=profile_name))
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
 
@@ -65,13 +68,18 @@ def get_thumbnail(img_name):
 @login_required
 @authorize
 def delete_file(img_name):
-    form = forms.DeleteForm()
-    if form.validate_on_submit():
-        stored_file = StoredFile.query.filter_by(name=img_name).first()
-        if stored_file:
+    stored_file = StoredFile.query.filter_by(name=img_name).first()
+    profile_name = Profile.query.filter_by(userid=g.user.userid).one().name
+    if stored_file:
+        form = forms.DeleteForm()
+        if form.validate_on_submit():
             delete_on_s3(stored_file)
             db.session.delete(stored_file)
             db.session.commit()
-            return jsonify({'success': 'File deleted'})
-        return jsonify({'error': 'No file found'})
-    return render_template('delete.html', form=form, filename=img_name)
+            flash("%s is deleted" % stored_file.title)
+        else:
+            return render_template('delete.html', form=form, filename=img_name)
+    else:
+        flash("No file found", category="error") # put in appropriate message
+    return redirect(url_for('profile', profile_name=profile_name))
+

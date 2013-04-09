@@ -6,6 +6,9 @@
 
 {% block content %}
 
+<span style="float:right;">
+    <a href="{{url_for('upload_file')}}">Upload images</a>
+</span>
 <div class="gallery">
 {% for img in files %}
 <div class="image">
