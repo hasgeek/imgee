@@ -34,9 +34,11 @@ div.labels
 {
     float: left;
     text-decoration: none;
+    margin-right: 40px;
 }
 div.heading
 {
    font-weight: bold;
-   font-size:16px;
+   font-size: 16px;
+   margin-bottom: 2px 0px 2px 0px;
 }
