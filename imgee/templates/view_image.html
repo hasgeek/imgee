@@ -7,12 +7,12 @@
 {% block content %}
     <div class="heading">{{img.title}}</div>
     {% if labels %}
-        Labels: 
+        Labels:
+        {% for l in labels %}
+            {{label}}, &nbsp;
+        {% endfor %}
     {% endif %}
-    {% for l in labels %}
-        {{label}}, &nbsp;
-    {% endfor %}
-    <a href="url_for('add_label_to(img_name=img.name, label_name=))">
+    <a href="url_for('add_label_to(img_name=img.name, profile_name=profile_name))">Add Label</a>
     <br/>
     <img src="{{url_for('get_image', img_name=img.name)}}" />
 
