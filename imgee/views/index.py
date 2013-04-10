@@ -7,7 +7,7 @@ from flask import (render_template, request, g, jsonify, url_for,
 from urlparse import urljoin
 
 from imgee import app, forms
-from imgee.models import StoredFile, db, Profile
+from imgee.models import StoredFile, db, Profile, Label
 from imgee.views.login import lastuser, authorize, login_required
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type
 
@@ -41,17 +41,18 @@ def upload_file():
 @authorize
 def show_profile(profile_name):
     files = StoredFile.query.filter(Profile.name == profile_name).all()
-    data = {'files': [{'title': x.title,
-                        'name': x.name,
-                        'url': '%s/%s' % (app.config['MEDIA_DOMAIN'], x.name),
-                        'thumbnail': 'thumbnail/%s' % x.name}
-                for x in files]}
-    return render_template('profile.html', files=data['files'])
+    labels = Label.query.filter(Profile.name == profile_name).all()
+    return render_template('profile.html', files=files, labels=labels, profile_name=profile_name)
+
+@app.route('/view/<img_name>')
+def view_image(img_name):
+    img = StoredFile.query.filter_by(name=img_name).first_or_404()
+    labels = [label.name for label in img.labels]
+    return render_template('view_image.html', img=img, labels=labels)
 
 @app.route('/file/<img_name>')
 def get_image(img_name):
-    img = StoredFile.query.filter_by(name=img_name).first()
-    if not img: abort(404)
+    img = StoredFile.query.filter_by(name=img_name).first_or_404()
     size = request.args.get('size', '')
     img_name = get_resized_image(img, size)
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
@@ -72,7 +73,7 @@ def delete_file(img_name):
     profile_name = Profile.query.filter_by(userid=g.user.userid).one().name
     if stored_file:
         form = forms.DeleteImageForm()
-        if form.validate_on_submit():
+        if form.is_submitted():
             delete_on_s3(stored_file)
             db.session.delete(stored_file)
             db.session.commit()
