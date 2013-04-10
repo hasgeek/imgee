@@ -12,8 +12,9 @@ def valid_image(form, field):
         raise ValidationError("Sorry, we don't support '%s' images. \
                 Please upload images in one of these formats: %s" % (extn, repr(allowed_extns)[1:-1]))
 
-class UploadForm(Form):
+class UploadImageForm(Form):
     uploaded_file = FileField("Uploaded File", validators=[Required(), valid_image])
 
-class DeleteForm(Form):
+class DeleteImageForm(Form):
     pass
+
