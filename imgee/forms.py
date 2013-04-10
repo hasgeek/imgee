@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os.path
-from flask import g
 from flask.ext.wtf import (Form, FileField, Required, ValidationError,
             TextField, HiddenField, Length)
 from imgee.models import Label
@@ -26,7 +25,7 @@ def label_doesnt_exist(form, field):
     label_name = field.data
     exists = Label.query.filter_by(profile_id=profile_id, name=label_name).first()
     if exists:
-        raise ValidationError('Label %s already exists. Please try another name' % field.data)
+        raise ValidationError('Label "%s" already exists. Please try another name.' % field.data)
 
 class CreateLabelForm(Form):
     label = TextField('Label', validators=[Required(), Length(max=50), label_doesnt_exist])
