@@ -38,11 +38,11 @@ def create_label():
 @login_required
 @authorize
 def delete_label(profile_name, label_name):
-    if profile_name != g.user.name: 
+    if profile_name != g.user.username:
         abort(403)
     profile, label = get_profile_label(profile_name, label_name)
-    utils.delete_label(label, profile)
-    flash('The label %s was deleted.' % label)
+    utils.delete_label(label)
+    flash('The label "%s" was deleted.' % label_name)
     return redirect(url_for('show_profile', profile_name=profile_name))
 
 @app.route('/<profile_name>/add/<img_name>', methods=('GET', 'POST'))
