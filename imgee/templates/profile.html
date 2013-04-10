@@ -6,17 +6,34 @@
 
 {% block content %}
 
+<div class="labels">
+    <b>Labels:</b> <br/>
+    {% for label in labels %}
+        <a href="{{url_for('show_label', profile_name=profile_name, label_name=label.name)}}">{{label.name}}</a>
+        <br/>
+    {% endfor %}
+</div>
+
 <span style="float:right;">
-    <a href="{{url_for('upload_file')}}">Upload images</a>
+    <a href="{{url_for('upload_file')}}">Upload images</a> &nbsp; | &nbsp;
+    <a href="{{url_for('create_label')}}">New label</a>
 </span>
-<div class="gallery">
-{% for img in files %}
-<div class="image">
-    <span class="delete"><a href="{{url_for('delete_file', img_name=img.name)}}">X</a></span>
-    <a href="{{img.url}}"><img src="{{img.thumbnail}}"/></a>
-    <div class="title">{{img.title}}</div>
-</div>
-{% endfor %}
-</div>
+
+{% if files %}
+    <div class="gallery">
+    {% for img in files %}
+        <div class="image">
+            <span class="delete"><a href="{{url_for('delete_file', img_name=img.name)}}">X</a></span>
+            <a href="{{url_for('view_image', img_name=img.name)}}">
+                <img src="{{url_for('get_thumbnail', img_name=img.name)}}"/>
+            </a>
+            <div class="title">{{img.title}}</div>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    There are no images uploaded yet. <a href="{{url_for('upload_file')}}">Upload them.</a>
+{% endif %}
+
 {% endblock %}
 

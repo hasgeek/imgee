@@ -29,3 +29,14 @@ div.gallery div.image span.delete
     float: right;
     padding-right: 2px;
 }
+
+div.labels
+{
+    float: left;
+    text-decoration: none;
+}
+div.heading
+{
+   font-weight: bold;
+   font-size:16px;
+}

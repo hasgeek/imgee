@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block titletags -%}
+  <title>{% block title %}{{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
+
+{% block content %}
+
+<div class="heading">Images with label "{{label}}"</div>
+
+{%if not files %}
+    There are no images with label "{{label}}" yet.
+{% else %}
+    <div class="gallery">
+    {% for img in files %}
+        <div class="image">
+            <span class="delete"><a href="{{url_for('delete_file', img_name=img.name)}}">X</a></span>
+            <a href="{{url_for('view_image', img_name=img.name)}}"><img src="{{url_for('get_thumbnail', img_name=img.name)}}"/></a>
+            <div class="title">{{img.title}}</div>
+        </div>
+    {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock %}
