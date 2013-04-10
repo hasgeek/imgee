@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block titletags -%}
+  <title>{% block title %}{{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
+
+{% block content %}
+    <div class="heading">{{img.title}}</div>
+    {% if labels %}
+        Labels: 
+    {% endif %}
+    {% for l in labels %}
+        {{label}}, &nbsp;
+    {% endfor %}
+    <a href="url_for('add_label_to(img_name=img.name, label_name=))">
+    <br/>
+    <img src="{{url_for('get_image', img_name=img.name)}}" />
+
+{% endblock %}
