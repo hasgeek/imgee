@@ -8,9 +8,8 @@ def save_label(label_name, profile_id):
     db.session.commit()
     return label
 
-def delete_label(label, profile_id):
-    db.delete(label)
-    db.delete()
-
+def delete_label(label):
+    db.session.delete(label)
+    db.session.commit()
 
 
