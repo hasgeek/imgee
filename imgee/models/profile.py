@@ -23,6 +23,7 @@ class Profile(BaseNameMixin, db.Model):
     userid = db.Column(db.Unicode(22), nullable=False, unique=True)
     description = db.Column(db.UnicodeText, default=u'', nullable=False)
     type = db.Column(db.Integer, default=PROFILE_TYPE.UNDEFINED, nullable=False)
+    labels = db.relationship('Label', backref=db.backref('profile'), cascade='all, delete-orphan')
 
     def type_label(self):
         return profile_types.get(self.type, profile_types[0])
