@@ -23,7 +23,7 @@ class Profile(BaseNameMixin, db.Model):
     userid = db.Column(db.Unicode(22), nullable=False, unique=True)
     description = db.Column(db.UnicodeText, default=u'', nullable=False)
     type = db.Column(db.Integer, default=PROFILE_TYPE.UNDEFINED, nullable=False)
-    stored_files = db.relationship('StoredFile', backref=db.backref('owner'), lazy='dynamic', cascade='all, delete-orphan')
+    stored_files = db.relationship('StoredFile', backref=db.backref('profile'), lazy='dynamic', cascade='all, delete-orphan')
     labels = db.relationship('Label', backref=db.backref('profile'), cascade='all, delete-orphan')
 
     def type_label(self):

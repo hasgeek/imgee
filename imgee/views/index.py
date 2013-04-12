@@ -26,7 +26,7 @@ def upload_file():
         filename = secure_filename(request.files['uploaded_file'].filename)
         uniq_name = uuid4().hex
         profile = Profile.query.filter_by(userid=profileid).first()
-        stored_file = StoredFile(name=uniq_name, title=filename, owner=profile)
+        stored_file = StoredFile(name=uniq_name, title=filename, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
         content_type = get_file_type(filename)
