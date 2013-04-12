@@ -40,7 +40,8 @@ def upload_file():
 @login_required
 @authorize
 def show_profile(profile_name):
-    files = StoredFile.query.filter(Profile.name == profile_name).all()
+    p = Profile.query.filter_by(name=profile_name).first_or_404()
+    files = p.stored_files.all()
     labels = Label.query.filter(Profile.name == profile_name).all()
     return render_template('profile.html', files=files, labels=labels, profile_name=profile_name)
 
