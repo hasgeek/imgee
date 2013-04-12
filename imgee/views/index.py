@@ -5,6 +5,7 @@ from uuid import uuid4
 from flask import (render_template, request, g, jsonify, url_for,
                 abort, redirect, flash)
 from urlparse import urljoin
+from sqlalchemy import and_
 
 from imgee import app, forms
 from imgee.models import StoredFile, db, Profile, Label
@@ -25,7 +26,7 @@ def upload_file():
         filename = secure_filename(request.files['uploaded_file'].filename)
         uniq_name = uuid4().hex
         profile = Profile.query.filter_by(userid=profileid).first()
-        stored_file = StoredFile(name=uniq_name, title=filename, profile=profile)
+        stored_file = StoredFile(name=uniq_name, title=filename, owner=profile)
         db.session.add(stored_file)
         db.session.commit()
         content_type = get_file_type(filename)
@@ -60,28 +61,25 @@ def get_image(img_name):
 
 @app.route('/thumbnail/<img_name>')
 def get_thumbnail(img_name):
-    img = StoredFile.query.filter_by(name=img_name).first()
-    if not img: abort(404)
+    img = StoredFile.query.filter_by(name=img_name).first_or_404()
     tn_size = app.config.get('THUMBNAIL_SIZE')
     thumbnail = get_resized_image(img, tn_size, thumbnail=True)
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
-@app.route('/delete/<img_name>', methods=('GET','POST'))
+@app.route('/delete/<img_name>', methods=('POST'))
 @login_required
 @authorize
 def delete_file(img_name):
-    stored_file = StoredFile.query.filter_by(name=img_name).first()
-    profile_name = Profile.query.filter_by(userid=g.user.userid).one().name
-    if stored_file:
-        form = forms.DeleteImageForm()
-        if form.is_submitted():
-            delete_on_s3(stored_file)
-            db.session.delete(stored_file)
-            db.session.commit()
-            flash("%s is deleted" % stored_file.title)
-        else:
-            return render_template('delete.html', form=form, filename=img_name, profile_name=profile_name)
-    else:
-        flash("No file found", category="error") # put in appropriate message
-    return redirect(url_for('show_profile', profile_name=profile_name))
+    q = and_(StoredFile.name==img_name, Profile.userid==g.user.userid)
+    stored_file = StoredFile.query.filter(q).first_or_404()
+    profile_name = g.user.username
 
+    form = forms.DeleteImageForm()
+    if form.is_submitted():
+        delete_on_s3(stored_file)
+        db.session.delete(stored_file)
+        db.session.commit()
+        flash("%s is deleted" % stored_file.title)
+    else:
+        return render_template('delete.html', form=form, filename=img_name, profile_name=profile_name)
+    return redirect(url_for('show_profile', profile_name=profile_name))
