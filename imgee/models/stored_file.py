@@ -21,4 +21,4 @@ class StoredFile(BaseNameMixin, db.Model):
     thumbnails = db.relationship('Thumbnail', backref='stored_file',
                                  cascade='all, delete-orphan')
     labels = db.relationship('Label', secondary='image_labels',
-                backref=db.backref('files', lazy='dynamic'), cascade='all')
+                backref=db.backref('stored_files', lazy='dynamic'), cascade='all')
