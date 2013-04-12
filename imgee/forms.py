@@ -2,7 +2,7 @@
 
 import os.path
 from flask.ext.wtf import (Form, FileField, Required, ValidationError,
-            TextField, HiddenField, Length)
+            TextField, HiddenField, Length, SelectField)
 from imgee.models import Label
 
 allowed_extns = 'jpg jpe jpeg png gif bmp'.split()
@@ -30,3 +30,10 @@ def label_doesnt_exist(form, field):
 class CreateLabelForm(Form):
     label = TextField('Label', validators=[Required(), Length(max=50), label_doesnt_exist])
     profile_id = HiddenField('profile_id')
+
+class AddLabelForm(Form):
+    label = SelectField('Label', validators=[Required()])
+    profile_id = HiddenField('profile_id')
+
+class RemoveLabelForm(Form):
+    pass
