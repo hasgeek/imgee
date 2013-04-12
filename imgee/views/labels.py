@@ -8,10 +8,8 @@ from imgee.models import Label, StoredFile, Profile
 import imgee.utils as utils
 
 def get_profile_label(profile_name, label_name):
-    # improve this
-    profile = Profile.query.filter_by(name=profile_name).first_or_404()
-    label = Label.query.filter_by(name=label_name, profile_id=profile.userid).first_or_404()
-    return profile, label
+    p = Profile.query.filter(Profile.name==profile_name, Label.name==label_name).first_or_404()
+    return p, p.labels[0]
 
 @app.route('/<profile_name>/<label_name>')
 @login_required

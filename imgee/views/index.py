@@ -43,8 +43,7 @@ def upload_file():
 def show_profile(profile_name):
     p = Profile.query.filter_by(name=profile_name).first_or_404()
     files = p.stored_files.all()
-    labels = Label.query.filter(Profile.name == profile_name).all()
-    return render_template('profile.html', files=files, labels=labels, profile_name=profile_name)
+    return render_template('profile.html', files=files, labels=p.labels, profile_name=profile_name)
 
 @app.route('/view/<img_name>')
 def view_image(img_name):
