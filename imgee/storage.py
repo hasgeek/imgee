@@ -105,9 +105,11 @@ def resize_img(src, size, format, thumbnail):
     resized = img.resize(size, Image.ANTIALIAS)
 
     if thumbnail:
-        # and crop the rest
-        right, lower = app.config.get('THUMBNAIL_SIZE')
-        resized = resized.crop((0, 0, right, lower))
+        # and crop the rest, keeping the center.
+        w, h = resized.size
+        tw, th = app.config.get('THUMBNAIL_SIZE')
+        left, top = int((w-tw)/2), int((h-th)/2)
+        resized = resized.crop((left, top, left+tw, top+th))
 
     imgio = StringIO()
     resized.save(imgio, format=format, quality=100)
