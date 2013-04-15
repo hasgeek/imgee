@@ -73,7 +73,7 @@ def get_thumbnail(img_name):
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
-@app.route('/delete/<img_name>', methods=('POST'))
+@app.route('/delete/<img_name>', methods=('GET', 'POST'))
 @login_required
 @authorize
 def delete_file(img_name):
