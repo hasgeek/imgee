@@ -80,20 +80,16 @@ def resize_and_save(img, size, thumbnail=False):
     return scaled_img_name
 
 def get_size((orig_w, orig_h), (w, h)):
-    # w or h being None means square size
+    # fit the image to the box along the smaller side and preserve aspect ratio.
     # w or h being 0 means preserve aspect ratio with that height or width
-    # else return w, h
-    if h == 0:
-        size = (w, orig_h*w/orig_w)
-    elif w == 0:
-        size = (orig_w*h/orig_h, h)
-    elif w == None:
-        size = (h, h)
-    elif h == None:
-        size = (w, w)
+
+    if (h == 0) or (orig_w <= orig_h):
+        size = (w, w*orig_h/orig_w)
     else:
-        size = (w, h)
-    return size
+        size = (h*orig_w/orig_h, h)
+
+    size = map(lambda x: max(x, 1), size)   # let the width or height be atleast 1px.
+    return map(int, size)
 
 def resize_img(src, size, format, thumbnail):
     """
@@ -104,10 +100,6 @@ def resize_img(src, size, format, thumbnail):
         return
     img = Image.open(src)
     img.load()
-    if thumbnail:
-        # fit the image to the box along the smaller side and preserve aspect ratio.
-        (ow, oh), (w, h) = img.size, size
-        size = (0, h) if ow>=oh else (w, 0)
 
     size = get_size(img.size, size)
     resized = img.resize(size, Image.ANTIALIAS)
