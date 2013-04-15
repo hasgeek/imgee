@@ -88,5 +88,5 @@ def delete_file(img_name):
         db.session.commit()
         flash("%s is deleted" % stored_file.title)
     else:
-        return render_template('delete.html', form=form, filename=img_name, profile_name=profile_name)
+        return render_template('delete.html', form=form, file=stored_file, profile_name=profile_name)
     return redirect(url_for('show_profile', profile_name=profile_name))
