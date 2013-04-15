@@ -5,17 +5,14 @@ from flask.ext.wtf import (Form, FileField, Required, ValidationError,
             TextField, HiddenField, Length, SelectField)
 from imgee.models import Label
 
-allowed_extns = 'jpg jpe jpeg png gif bmp'.split()
-
-def valid_image(form, field):
+def valid_file(form, field):
     filename = field.data.filename
-    extn = os.path.splitext(filename)[1].lstrip('.')
-    if not extn.lower() in allowed_extns:
-        raise ValidationError("Sorry, we don't support '%s' images. \
-                Please upload images in one of these formats: %s" % (extn, repr(allowed_extns)[1:-1]))
+    name, extn = os.path.splitext(filename)
+    if not extn:
+        raise ValidationError("Sorry, file format unknown. Please try uploading another file.")
 
 class UploadImageForm(Form):
-    uploaded_file = FileField("Uploaded File", validators=[Required(), valid_image])
+    uploaded_file = FileField("Uploaded File", validators=[Required(), valid_file])
 
 class DeleteImageForm(Form):
     pass

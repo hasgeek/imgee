@@ -12,6 +12,8 @@ from imgee.models import StoredFile, db, Profile, Label
 from imgee.views.login import lastuser, authorize, login_required
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type
 
+image_formats = 'jpg jpe jpeg png gif bmp'.split()
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -54,15 +56,21 @@ def view_image(img_name):
 @app.route('/file/<img_name>')
 def get_image(img_name):
     img = StoredFile.query.filter_by(name=img_name).first_or_404()
-    size = request.args.get('size', '')
-    img_name = get_resized_image(img, size)
+    name, extn = os.path.splitext(img.title)
+    if extn and extn.lstrip('.') in image_formats:
+        size = request.args.get('size', '')
+        img_name = get_resized_image(img, size)
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
 @app.route('/thumbnail/<img_name>')
 def get_thumbnail(img_name):
     img = StoredFile.query.filter_by(name=img_name).first_or_404()
-    tn_size = app.config.get('THUMBNAIL_SIZE')
-    thumbnail = get_resized_image(img, tn_size, thumbnail=True)
+    name, extn = os.path.splitext(img.title)
+    if extn and extn.lstrip('.') in image_formats:
+        tn_size = app.config.get('THUMBNAIL_SIZE')
+        thumbnail = get_resized_image(img, tn_size, thumbnail=True)
+    else:
+        thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
 @app.route('/delete/<img_name>', methods=('POST'))
