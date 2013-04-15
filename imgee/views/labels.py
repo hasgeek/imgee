@@ -16,7 +16,7 @@ def get_profile_label(profile_name, label_name):
 @authorize
 def show_label(profile_name, label_name):
     profile, label = get_profile_label(profile_name, label_name)
-    files = label.files.filter(Profile.userid==profile.userid).all()
+    files = label.stored_files.filter(Profile.userid==profile.userid).all()
     return render_template('show_label.html', label=label.name, files=files)
 
 @app.route('/labels/new', methods=('GET', 'POST'))
