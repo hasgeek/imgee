@@ -47,3 +47,4 @@ AWS_STORAGE_BUCKET_NAME=AWS_BUCKET
 #: Domain name for files
 MEDIA_DOMAIN = 'set domain name here'
 THUMBNAIL_SIZE=(75, 75)   # (w, h) in px
+UNKNOWN_FILE_THUMBNAIL = 'set path to unknown file thumbnail on media_domain'
