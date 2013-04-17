@@ -13,4 +13,16 @@ def delete_label(label):
     db.session.delete(label)
     db.session.commit()
 
+def save_label_to(stored_file, label):
+    if label not in stored_file.labels:
+        stored_file.labels.append(label)
+        db.session.commit()
+        return True
+    return False
 
+def remove_label_from(stored_file, label):
+    if label in stored_file.labels:
+        stored_file.labels.remove(label)
+        db.session.commit()
+        return True
+    return False

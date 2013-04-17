@@ -29,8 +29,8 @@ class CreateLabelForm(Form):
     profile_id = HiddenField('profile_id')
 
 class AddLabelForm(Form):
-    label = SelectField('Label', validators=[Required()])
-    profile_id = HiddenField('profile_id')
+    label = SelectField('Label', validators=[Required()], coerce=int)
+    stored_file_id = HiddenField('stored_file_id')
 
 class RemoveLabelForm(Form):
     pass
