@@ -2,7 +2,7 @@
 
 import os.path
 from flask.ext.wtf import (Form, FileField, Required, ValidationError,
-            TextField, HiddenField, Length, SelectField)
+            TextField, HiddenField, Length, SelectField, SelectMultipleField)
 from imgee.models import Label
 
 def valid_file(form, field):
@@ -29,7 +29,7 @@ class CreateLabelForm(Form):
     profile_id = HiddenField('profile_id')
 
 class AddLabelForm(Form):
-    label = SelectField('Label', validators=[Required()], coerce=int)
+    label = SelectMultipleField('Labels', validators=[Required()], coerce=int)
     stored_file_id = HiddenField('stored_file_id')
 
 class RemoveLabelForm(Form):
