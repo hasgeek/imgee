@@ -7,7 +7,10 @@
     {% if img.labels %}
         Labels:
         {% for label in img.labels %}
-            <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>, &nbsp;
+            <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>
+            {% if not loop.last %}
+                , &nbsp;
+            {% endif %}
         {% endfor %}
     {% endif %}
 
@@ -15,8 +18,8 @@
     <div style="float:right;">
         <span class="delete"><a href="{{url_for('delete_file', img_name=img.name)}}">Delete Image</a></span>
         <br/><br/>
-        Add label:
-        {{ renderform(form, 'Add Label', action=action_url)}}
+        Add labels:
+        {{ renderform(form, 'Add Labels', action=action_url)}}
     </div>
     <br/>
     <br/>
