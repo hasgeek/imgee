@@ -56,10 +56,10 @@ def add_label_to(profile_name, img_name):
     form = forms.AddLabelForm()
     form.label.choices = [(l.id, l.name) for l in profile.labels]
     if form.validate_on_submit():
-        label_id = form.label.data
-        label = [l for l in profile.labels if l.id == label_id][0]
-        if utils.save_label_to(stored_file, label):
-            flash('Added label "%s" to "%s".' % (label.name, stored_file.title))
+        labels = [l for l in profile.labels if l.id in form.label.data]
+        added = utils.save_labels_to(stored_file, labels)
+        if added:
+            flash('Added label(s) %s to "%s".' % (', '.join(l.name for l in added), stored_file.title))
         return redirect(url_for('view_image', img_name=img_name, profile_name=profile_name))
     return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)
 
@@ -72,9 +72,9 @@ def remove_label_from(img_name):
     form = forms.RemoveLabelForm()
 
     if form.validate_on_submit():
-        label_id = form.label.data
-        label = [l for l in profile.labels if l.id == label_id][0]
-        if utils.remove_label_from(stored_file, label):
-            flash('Removed label "%s" from "%s".' % (label.name, stored_file.title))
+        labels = [l for l in profile.labels if l.id == form.label.data]
+        removed = utils.remove_labels_from(stored_file, labels)
+        if removed:
+            flash('Removed label(s) %s from "%s".' % (', '.join(l.name for l in removed), stored_file.title))
         return redirect(url_for('view_image', img_name=img_name, profile_name=profile_name))
     return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)
