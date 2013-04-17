@@ -47,17 +47,21 @@ def show_profile(profile_name):
     files = p.stored_files.all()
     return render_template('profile.html', files=files, labels=p.labels, profile_name=profile_name)
 
-@app.route('/view/<img_name>')
-def view_image(img_name):
-    img = StoredFile.query.filter_by(name=img_name).first_or_404()
-    labels = [label.name for label in img.labels]
-    return render_template('view_image.html', img=img, labels=labels)
+@app.route('/<profile_name>/view/<img_name>')
+@login_required
+@authorize
+def view_image(profile_name, img_name):
+    img = StoredFile.query.filter(StoredFile.name==img_name, Profile.name==profile_name).first_or_404()
+    img_labels = [label.name for label in img.labels]
+    form = forms.AddLabelForm(img_name=img_name)
+    form.label.choices = [(l.id, l.name) for l in img.profile.labels]
+    return render_template('view_image.html', form=form, img=img, labels=img_labels)
 
 @app.route('/file/<img_name>')
 def get_image(img_name):
     img = StoredFile.query.filter_by(name=img_name).first_or_404()
     name, extn = os.path.splitext(img.title)
-    if extn and extn.lstrip('.') in image_formats:
+    if extn and extn.lstrip('.').lower() in image_formats:
         size = request.args.get('size', '')
         img_name = get_resized_image(img, size)
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
@@ -66,7 +70,7 @@ def get_image(img_name):
 def get_thumbnail(img_name):
     img = StoredFile.query.filter_by(name=img_name).first_or_404()
     name, extn = os.path.splitext(img.title)
-    if extn and extn.lstrip('.') in image_formats:
+    if extn and extn.lstrip('.').lower() in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
         thumbnail = get_resized_image(img, tn_size, thumbnail=True)
     else:
