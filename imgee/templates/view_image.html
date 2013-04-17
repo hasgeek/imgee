@@ -1,18 +1,24 @@
 {% extends "layout.html" %}
-{% block titletags -%}
-  <title>{% block title %}{{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
-{%- endblock %}
+{% from 'baseframe/forms.html' import renderform %}
 
 {% block content %}
     <div class="heading">{{img.title}}</div>
-    {% if labels %}
+
+    {% if img.labels %}
         Labels:
-        {% for l in labels %}
-            {{label}}, &nbsp;
+        {% for label in img.labels %}
+            <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>, &nbsp;
         {% endfor %}
     {% endif %}
-    <a href="url_for('add_label_to(img_name=img.name, profile_name=profile_name))">Add Label</a>
+
+    {% set action_url=url_for('add_label_to', img_name=img.name, profile_name=img.profile.name) %}
+    <div style="float:right;">
+        <span class="delete"><a href="{{url_for('delete_file', img_name=img.name)}}">Delete Image</a></span>
+        <br/><br/>
+        Add label:
+        {{ renderform(form, 'Add Label', action=action_url)}}
+    </div>
+    <br/>
     <br/>
     <img src="{{url_for('get_image', img_name=img.name)}}" />
 
