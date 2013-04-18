@@ -37,6 +37,7 @@ UPLOADED_FILES_DEST = 'imgee/static/uploads'
 AWS_ACCESS_KEY = 'Set aws access key here'
 AWS_SECRET_KEY = 'Set aws secret key here'
 AWS_BUCKET = 'set your bucketname here'
+AWS_FOLDER = ''     # set this if you want all files to be uploaded to a particular folder eg., 'test/'
 
 # bear with the non-standard aws key names used in flask-storage
 

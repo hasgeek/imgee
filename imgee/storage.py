@@ -29,9 +29,16 @@ def save(fp, img_name, remote=True, content_type=None):
 def get_file_type(filename):
     return mimetypes.guess_type(filename)[0]
 
-def save_on_s3(fp, filename, content_type=''):
+def get_s3_folder(f=''):
+    f = f or app.config['AWS_FOLDER']
+    if f and not f.endswith('/'):
+        f = f+'/'
+    return f or ''
+
+def save_on_s3(fp, filename, content_type='', folder=''):
     b = get_s3_bucket()
-    k = b.new_key(filename)
+    folder = get_s3_folder(folder)
+    k = b.new_key(folder+filename)
     content_type = content_type or get_file_type(filename)
     headers = {
         'Cache-Control': 'max-age=31536000',    #60*60*24*365
@@ -130,7 +137,7 @@ def delete_on_s3(stored_file):
     """
     Delete all the thumbnails and images associated with a file
     """
-    keys = [thumbnail.name for thumbnail in stored_file.thumbnails]
-    keys.append(stored_file.name)
+    keys = [get_s3_folder()+thumbnail.name for thumbnail in stored_file.thumbnails]
+    keys.append(get_s3_folder()+stored_file.name)
     bucket = get_s3_bucket()
     bucket.delete_keys(keys)
