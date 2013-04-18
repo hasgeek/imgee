@@ -38,13 +38,6 @@ AWS_ACCESS_KEY = 'Set aws access key here'
 AWS_SECRET_KEY = 'Set aws secret key here'
 AWS_BUCKET = 'set your bucketname here'
 AWS_FOLDER = ''     # set this if you want all files to be uploaded to a particular folder eg., 'test/'
-
-# bear with the non-standard aws key names used in flask-storage
-
-AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY
-AWS_SECRET_ACCESS_KEY=AWS_SECRET_KEY
-AWS_STORAGE_BUCKET_NAME=AWS_BUCKET
-
 #: Domain name for files
 MEDIA_DOMAIN = 'set domain name here'
 THUMBNAIL_SIZE=(75, 75)   # (w, h) in px
