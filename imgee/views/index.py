@@ -10,7 +10,7 @@ from sqlalchemy import and_
 from imgee import app, forms
 from imgee.models import StoredFile, db, Profile, Label
 from imgee.views.login import lastuser, authorize, login_required
-from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type
+from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
@@ -64,6 +64,7 @@ def get_image(img_name):
     if extn and extn.lstrip('.').lower() in image_formats:
         size = request.args.get('size', '')
         img_name = get_resized_image(img, size)
+        img_name = get_s3_folder() + img_name
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
 @app.route('/thumbnail/<img_name>')
@@ -73,6 +74,7 @@ def get_thumbnail(img_name):
     if extn and extn.lstrip('.').lower() in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
         thumbnail = get_resized_image(img, tn_size, thumbnail=True)
+        thumbnail = get_s3_folder() + thumbnail
     else:
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
