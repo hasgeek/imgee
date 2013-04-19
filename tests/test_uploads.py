@@ -16,12 +16,12 @@ class UploadTestCase(ImgeeTestCase):
 
     def exists_on_media_domain(self, img_id):
         r = self.client.get('/file/%s' % img_id)
-        assert r.status_code == 301
+        self.assertEquals(r.status_code, 301)
         return requests.get(r.location).ok
 
     def thumbnails_exists_on_media_domain(self, img_id):
         r = self.client.get('/thumbnail/%s' % img_id)
-        assert r.status_code == 301
+        self.assertEquals(r.status_code, 301)
         return requests.get(r.location).ok
 
     def upload(self, path=None):
@@ -34,32 +34,32 @@ class UploadTestCase(ImgeeTestCase):
 
     def test_empty(self):
         r = self.client.get('/%s' % self.test_user_name)
-        assert r.status_code == 200
-        assert 'no images uploaded yet.' in r.data
-        assert 'No Labels yet.' in r.data
+        self.assertEquals(r.status_code, 200)
+        self.assertTrue('no images uploaded yet.' in r.data)
+        self.assertTrue('No Labels yet.' in r.data)
 
     def test_upload(self):
         filename, r = self.upload()
-        assert r.status_code == 200
-        assert filename in r.data
-        assert "uploaded successfully." in r.data
+        self.assertEquals(r.status_code, 200)
+        self.assertTrue(filename in r.data)
+        self.assertTrue("uploaded successfully." in r.data)
 
     def test_view_image(self):
         filename, r = self.upload()
         self.img_id = test_utils.get_img_id(r.data, filename)
         view_url = '/%s/view/%s' % (self.test_user_name, self.img_id)
         r = self.client.get(view_url)
-        assert r.status_code == 200
+        self.assertEquals(r.status_code, 200)
 
     def test_file(self):
         filename, r = self.upload()
         self.img_id = test_utils.get_img_id(r.data, filename)
-        assert self.exists_on_media_domain(self.img_id) == True
+        self.assertTrue(self.exists_on_media_domain(self.img_id))
 
     def test_thumbnail(self):
         filename, r = self.upload()
         self.img_id = test_utils.get_img_id(r.data, filename)
-        assert self.thumbnails_exists_on_media_domain(self.img_id) == True
+        self.assertTrue(self.thumbnails_exists_on_media_domain(self.img_id))
 
     def tearDown(self):
         s = StoredFile.query.filter_by(name=self.img_id).first()
