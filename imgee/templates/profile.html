@@ -3,11 +3,15 @@
 {% block content %}
 
 <div class="labels">
-    <b>Labels:</b> <br/>
-    {% for label in labels %}
-        <a href="{{url_for('show_label', profile_name=profile_name, label_name=label.name)}}">{{label.name}}</a>
-        <br/>
-    {% endfor %}
+    {% if labels %}
+        <b>Labels:</b> <br/>
+        {% for label in labels %}
+            <a href="{{url_for('show_label', profile_name=profile_name, label_name=label.name)}}">{{label.name}}</a>
+            <br/>
+        {% endfor %}
+    {% else %}
+        No Labels yet. <a href="{{url_for('create_label')}}">Create a one.</a>
+    {% endif %}
 </div>
 
 <span style="float:right;">
