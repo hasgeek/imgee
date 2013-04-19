@@ -2,7 +2,7 @@
 
 from functools import wraps
 
-from flask import Response, redirect, flash, g, url_for, request
+from flask import Response, redirect, flash, g, url_for, request, abort
 from flask.ext.lastuser.sqlalchemy import UserManager
 from coaster.views import get_next_url
 
@@ -15,18 +15,22 @@ def login_required(f):
     @wraps(f)
     def decorated_func(*args, **kwargs):
         if g.user is None:
-            return redirect(url_for('login', next=request.url))
+            if app.testing:
+                g.user = app.test_user
+            else:
+                return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return decorated_func
 
 def authorize(f):
     @wraps(f)
     def decorated_func(*args, **kwargs):
+        if app.testing: g.user = app.test_user
         profileid = g.user.userid
         make_profiles()
         if profileid in g.user.user_organizations_owned_ids():
             return f(*args, **kwargs)
-        return jsonify({'error': 'You do not have permission to access this resource'})
+        return abort(403)
     return decorated_func
 
 @app.route('/login')
