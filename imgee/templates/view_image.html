@@ -1,28 +1,39 @@
-{% extends "layout.html" %}
+{% extends "layout1.html" %}
 {% from 'baseframe/forms.html' import renderform %}
 
-{% block content %}
+{% block sidebar %}
+<div class="span8">
+
+    <div class="image-display">
+        <img src="{{url_for('get_image', img_name=img.name)}}" />
+    </div>
     <div class="heading">{{img.title}}</div>
 
     {% if img.labels %}
         Labels:
         {% for label in img.labels %}
-            <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>
-            {% if not loop.last %}
-                , &nbsp;
-            {% endif %}
+            <span class="label">
+                <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>
+            </span>
         {% endfor %}
     {% endif %}
 
     {% set action_url=url_for('add_label_to', img_name=img.name, profile_name=img.profile.name) %}
-    <div style="float:right;">
-        <span class="delete"><a href="{{url_for('delete_file', img_name=img.name)}}">Delete Image</a></span>
-        <br/><br/>
-        Add labels:
-        {{ renderform(form, 'Add Labels', action=action_url)}}
+    
+    <br/>
+    <br/>
+</div>
+{% endblock %}
+
+{% block albumcontent %}
+    <div class="span4">
+        <div class="form-box">
+            <a class="btn btn-danger" href="{{url_for('delete_file', img_name=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete Image</a>
+            <br />
+            <div class="form-header">Add labels:</div>
+            <br />
+            <div>{{ renderform(form, 'Add Labels', action=action_url)}}</div>
+        </div>
     </div>
-    <br/>
-    <br/>
-    <img src="{{url_for('get_image', img_name=img.name)}}" />
 
 {% endblock %}
