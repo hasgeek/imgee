@@ -1,0 +1,217 @@
+@import "compass"
+
+body
+	background-image: image-url('bedge_grunge.png')
+
+.logo
+	margin-top: 25px
+
+.home-logo
+	margin-left: auto
+	margin-right: auto
+	width: 400px
+	margin-top: 80px
+	text-align: center
+	
+	a
+		margin-left: auto
+		margin-right: auto
+	.btn
+		margin-top: 20px
+	h4
+		margin-top: 15px
+
+.album
+	min-height: 550px
+
+.sidebar
+	background-color: #000
+	border-radius: 5px
+	border-right: 2px solid #FFF
+	border-bottom: 2px solid #FFF
+	box-shadow: 1px 1px 1px #000
+	.nav-list
+		li
+			text-shadow: none
+		a
+			text-shadow: none
+	.btn
+		width: 83%
+		margin-bottom: 10px
+	.options
+		text-align: left
+	.photostream-profile
+		padding-bottom: 12px
+		a
+			font-size: 18px
+			&:hover
+				text-decoration: none
+				color: #ccc
+
+
+.albumpage
+	background-color: #ccc
+	background-image: image-url('shl.png')
+	padding-left: 50px
+	padding-right: 30px
+	padding-top: 20px
+	padding-bottom: 20px
+	box-shadow: 2px 2px 2px #999
+	border: 10px solid #F0F0F0
+
+.form-box
+	background-color: #ccc
+	background-image: image-url('shl.png')
+	padding-left: 20px
+	padding-right: 20px
+	padding-top: 20px
+	padding-bottom: 20px
+	box-shadow: 2px 2px 2px #999
+	border: 10px solid #F0F0F0
+	.btn-danger
+		margin-bottom: 30px
+	.form-header
+		text-transform: uppercase
+
+.image
+	width: 150px
+	height: 210px
+	display: block
+	float: left
+	padding-left: 15px
+	padding-right: 15px
+	margin-top: 20px
+	.title, .labels
+		text-align: center
+
+.thumbnail
+	background-color: #FFF
+	width: 80%
+	height: auto
+	margin-right: auto
+	margin-left: auto
+	img
+		width: 140px
+		height: 120px
+
+.delete
+	position: relative
+	right: 0
+	display: none
+	font-size: 18px
+	color: red
+	background-color: #000
+	padding: 0
+	padding-left: 7px
+	padding-right: 7px
+	position: relative
+	left: 15px
+	top: 8px
+	a
+		color: red
+	a:hover
+		text-decoration: none
+
+.label
+	background-color: #FFF
+	border: 1px solid #E7E7E7
+	border-radius: 0
+	padding: 0
+	padding-left: 5px
+	padding-right: 5px
+	margin-right: 2px
+	margin-left: 2px
+	font-size: 10px
+	text-shadow: none
+
+.heading
+	font-size: 20px
+	margin-bottom: 20px
+
+.image-display
+	background-color: #000
+	text-align: center
+	border: 1px solid #C0BCB4
+	padding-bottom: 0px
+	margin-bottom: 30px
+	
+.form-horizontal 
+	.controls
+		margin-left: 0px
+		float: right
+	.control-label
+		text-align: left
+		width: 45px
+	span.help-required
+		float: left
+
+form
+	margin: 0px
+.form-actions
+	margin: -20px
+	margin-top: 20px
+	padding: 0px
+	button
+		float: right
+		margin: 10px
+.delete-box, .create-box, .upload-box
+	margin-left: auto
+	margin-right: auto
+	display: block
+	width: 430px
+	padding-left: 10px
+	padding-right: 10px
+	min-height: 270px
+	border-radius: 5px
+	p
+		font-size: 14px
+		margin-top: 20px
+	.cancel
+		margin-top: 10px
+		margin-left: -150px
+.form-submit
+	position: relative
+	bottom: 0
+
+.create-box, .upload-box
+	background-color: #D9EDF7
+	border: 1px solid #BCE8F1
+.upload-box
+	padding-top: 20px
+	label
+		padding-left: 20px
+	.form-horizontal 
+		.controls
+			margin-top: 3px
+		label
+			width: 100px
+			margin-left: -15px
+		span.help-required
+			float: left
+.form-actions
+	margin: 0
+
+@media screen and (max-width: 767px)
+	.home-logo
+		width: 60%
+	.delete-box, .create-box, .upload-box
+		width: 80%
+	.create-box
+		.form-horizontal
+			.controls
+				margin-top: 20px
+			label
+				width: 50px
+
+	.cancel
+		float: right
+	
+@media (min-width: 768px) and (max-width: 979px)
+	.form-box
+		.form-horizontal
+			.controls
+				margin-top: 10px
+				float: left
+				margin-left: -15px
+
+@media (min-width: 980px) and (max-width: 1200px)
