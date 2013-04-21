@@ -4,7 +4,7 @@ SITE_TITLE = 'Imgee'
 #: Site id (for network bar)
 SITE_ID = ''
 #: Database backend
-SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///imgee.db'
 #: Secret key
 SECRET_KEY = 'make this something random'
 #: Timezone
@@ -42,3 +42,4 @@ AWS_FOLDER = ''     # set this if you want all files to be uploaded to a particu
 MEDIA_DOMAIN = 'set domain name here'
 THUMBNAIL_SIZE=(75, 75)   # (w, h) in px
 UNKNOWN_FILE_THUMBNAIL = 'set path to unknown file thumbnail on media_domain'
+
