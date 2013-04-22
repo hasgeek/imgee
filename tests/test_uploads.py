@@ -13,7 +13,7 @@ class UploadTestCase(ImgeeTestCase):
     def setUp(self):
         super(UploadTestCase, self).setUp()
         self.img_id = None
-        self.test_file = 'imgee/static/images/earth_moon_4test.gif'
+        self.test_file = 'imgee/static/img/imgee.png'
 
     def exists_on_media_domain(self, img_id):
         r = self.client.get('/file/%s' % img_id)
@@ -87,7 +87,7 @@ class UploadTestCase(ImgeeTestCase):
         filename2, r2 = self.upload()
         self.assertEquals(test_utils.get_image_count(r2.data), 2)
 
-        filename3, r3 = self.upload('imgee/static/images/saturn_4test.gif')
+        filename3, r3 = self.upload('imgee/static/img/creampaper.png')
         self.assertEquals(test_utils.get_image_count(r3.data), 3)
 
     def test_thumbnail_size(self):
@@ -109,10 +109,9 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(r.status_code, 301)
         resized_img = test_utils.download_image(r.location)
         resized_w, resized_h = self.get_image_size(resized_img)
-
         self.assertEquals(resized_w, 100)
         # check aspect ratio
-        self.assertAlmostEquals(float(img_w)/resized_w, float(img_h)/resized_h)
+        self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
 
     def test_resize2(self):
         img_name, r = self.upload()
@@ -124,9 +123,12 @@ class UploadTestCase(ImgeeTestCase):
         resized_img = test_utils.download_image(r.location)
         resized_w, resized_h = self.get_image_size(resized_img)
 
-        self.assertEquals(resized_w, 100)
+        self.assertEquals(resized_h, 150)
         # check aspect ratio
-        self.assertAlmostEquals(float(img_w)/resized_w, float(img_h)/resized_h)
+        if resized_w < img_w:
+            self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
+        else:
+            self.assertEquals(int(resized_w/img_w), int(resized_h/img_h))
 
     def test_non_image_file(self):
         file_name, r = self.upload('imgee/static/css/app.css')
@@ -145,7 +147,7 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(r1.status_code, 301)
         self.assertEquals(r2.status_code, 301)
         self.assertEquals(r1.location, r2.location)
-        self.assertTrue(file_id in r.location)
+        self.assertTrue(file_id in r2.location)
 
     def tearDown(self):
         s = StoredFile.query.filter_by(name=self.img_id).first()
