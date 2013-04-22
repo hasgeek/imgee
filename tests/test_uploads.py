@@ -1,10 +1,11 @@
 import unittest
 import os, requests
 from StringIO import StringIO
+from PIL import Image
 
 from imgee import storage
 from imgee.models import db, User, StoredFile, Profile
-from fixtures import get_test_user, ImgeeTestCase
+from fixtures import get_test_user, ImgeeTestCase, app
 
 import test_utils
 
@@ -31,6 +32,9 @@ class UploadTestCase(ImgeeTestCase):
         d = {'uploaded_file': (StringIO(content), filename)}
         response = self.client.post('/new', data=d, follow_redirects=True)
         return filename, response
+
+    def get_image_size(self, img_path=None):
+        return test_utils.get_image_size(img_path or self.test_file)
 
     def test_empty(self):
         r = self.client.get('/%s' % self.test_user_name)
@@ -60,6 +64,88 @@ class UploadTestCase(ImgeeTestCase):
         filename, r = self.upload()
         self.img_id = test_utils.get_img_id(r.data, filename)
         self.assertTrue(self.thumbnails_exists_on_media_domain(self.img_id))
+
+    def test_delete(self):
+        filename, r = self.upload()
+        self.img_id = test_utils.get_img_id(r.data, filename)
+        self.assertEquals(test_utils.get_image_count(r.data), 1)
+
+        r = self.client.post('/delete/%s' % self.img_id)
+        self.assertEquals(test_utils.get_image_count(r.data), 0)
+
+        r = self.client.get('/file/%s' % self.img_id)
+        self.assertEquals(r.status_code, 404)
+
+        r = self.client.get('/thumbnail/%s' % self.img_id)
+        self.assertEquals(r.status_code, 404)
+
+    def test_file_count(self):
+        filename1, r1 = self.upload()
+        self.assertEquals(test_utils.get_image_count(r1.data), 1)
+
+        # if the same file is uploaded twice, imgee should treat them as different
+        filename2, r2 = self.upload()
+        self.assertEquals(test_utils.get_image_count(r2.data), 2)
+
+        filename3, r3 = self.upload('imgee/static/images/saturn_4test.gif')
+        self.assertEquals(test_utils.get_image_count(r3.data), 3)
+
+    def test_thumbnail_size(self):
+        img_name, r = self.upload()
+        # get the thumbnail link
+        self.img_id = test_utils.get_img_id(r.data, img_name)
+        r = self.client.get('/thumbnail/%s' % self.img_id)
+        self.assertEquals(r.status_code, 301)
+        imgio = test_utils.download_image(r.location)
+        img = Image.open(imgio)
+        self.assertEquals(img.size, app.config['THUMBNAIL_SIZE'])
+
+    def test_resize(self):
+        img_name, r = self.upload()
+        img_w, img_h = self.get_image_size()
+
+        self.img_id = test_utils.get_img_id(r.data, img_name)
+        r = self.client.get('/file/%s?size=100x0' % self.img_id)
+        self.assertEquals(r.status_code, 301)
+        resized_img = test_utils.download_image(r.location)
+        resized_w, resized_h = self.get_image_size(resized_img)
+
+        self.assertEquals(resized_w, 100)
+        # check aspect ratio
+        self.assertAlmostEquals(float(img_w)/resized_w, float(img_h)/resized_h)
+
+    def test_resize2(self):
+        img_name, r = self.upload()
+        img_w, img_h = self.get_image_size()
+
+        self.img_id = test_utils.get_img_id(r.data, img_name)
+        r = self.client.get('/file/%s?size=100x150' % self.img_id)
+        self.assertEquals(r.status_code, 301)
+        resized_img = test_utils.download_image(r.location)
+        resized_w, resized_h = self.get_image_size(resized_img)
+
+        self.assertEquals(resized_w, 100)
+        # check aspect ratio
+        self.assertAlmostEquals(float(img_w)/resized_w, float(img_h)/resized_h)
+
+    def test_non_image_file(self):
+        file_name, r = self.upload('imgee/static/css/app.css')
+        self.assertEquals(r.status_code, 200)
+        file_id = test_utils.get_img_id(r.data, file_name)
+        r = self.client.get('/file/%s' % file_id)
+        self.assertEquals(r.status_code, 301)
+        r = requests.get(r.location)
+        self.assertEquals(r.status_code, 200)
+
+    def test_resize_non_image_file(self):
+        file_name, r = self.upload('imgee/static/css/app.css')
+        file_id = test_utils.get_img_id(r.data, file_name)
+        r1 = self.client.get('/file/%s' % file_id)
+        r2 = self.client.get('/file/%s?size=100x200' % file_id)
+        self.assertEquals(r1.status_code, 301)
+        self.assertEquals(r2.status_code, 301)
+        self.assertEquals(r1.location, r2.location)
+        self.assertTrue(file_id in r.location)
 
     def tearDown(self):
         s = StoredFile.query.filter_by(name=self.img_id).first()
