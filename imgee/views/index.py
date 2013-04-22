@@ -64,7 +64,7 @@ def get_image(img_name):
     if extn and extn.lstrip('.').lower() in image_formats:
         size = request.args.get('size', '')
         img_name = get_resized_image(img, size)
-        img_name = get_s3_folder() + img_name
+    img_name = get_s3_folder() + img_name
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
 @app.route('/thumbnail/<img_name>')
