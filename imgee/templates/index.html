@@ -1,7 +1,21 @@
-{% extends "layout.html" %}
+{% extends "layout1.html" %}
 
-{% block content %}
-
-<p>The HasGeek Image Hosting Website.</p>
+{% block headerbox %}
+  <header>
+    {{ networkbar(siteid=config['SITE_ID'], login=true) }}
+      <div class="home-logo">
+        <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/imgee.png') }}"></a>
+        <hr />
+        <div class="header">The HasGeek Image Hosting Website.</div>
+		{% if g.user %}
+			<h4>Welcome {{ g.user.fullname }}!
+			<a href="{{ url_for('show_profile', profile_name=g.user.username) }}">View your images</a></h4>
+		{% else %}
+			<a  href="{{ url_for('login') }}" class="btn btn-large">Login / Sign up</a>
+		{% endif %}
+      </div>
+  </header>
+{% endblock %}
+{% block basecontent %}
 
 {% endblock %}

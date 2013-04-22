@@ -1,44 +1,264 @@
-div.gallery div.image
-  {
-  margin:2px;
-  border:1px solid #b7b7b7;
-  height:auto;
-  width:auto;
-  float:left;
-  text-align:center;
-  }
-div.gallery div.image img
-  {
-  display:inline;
-  margin:3px;
-  border:1px solid #ffffff;
-  }
-div.gallery div.image a:hover img
-  {
-  border:1px solid #0000ff;
-  }
-div.gallery div.image div.title
-  {
-  text-align:center;
-  font-weight:normal;
-  margin:2px;
-  }
-div.gallery div.image span.delete
-{
-    font-weight:bold;
-    float: right;
-    padding-right: 2px;
+body {
+  background-image: url('../img/bedge_grunge.png?1349097746');
 }
 
-div.labels
-{
-    float: left;
-    text-decoration: none;
-    margin-right: 40px;
+.logo {
+  margin-top: 25px;
 }
-div.heading
-{
-   font-weight: bold;
-   font-size: 16px;
-   margin-bottom: 2px 0px 2px 0px;
+
+.home-logo {
+  margin-left: auto;
+  margin-right: auto;
+  width: 400px;
+  margin-top: 80px;
+  text-align: center;
+}
+.home-logo a {
+  margin-left: auto;
+  margin-right: auto;
+}
+.home-logo .btn {
+  margin-top: 20px;
+}
+.home-logo h4 {
+  margin-top: 15px;
+}
+
+.album {
+  min-height: 550px;
+}
+
+.sidebar {
+  background-color: black;
+  border-radius: 5px;
+  border-right: 2px solid white;
+  border-bottom: 2px solid white;
+  box-shadow: 1px 1px 1px black;
+}
+.sidebar .nav-list li {
+  text-shadow: none;
+}
+.sidebar .nav-list a {
+  text-shadow: none;
+}
+.sidebar .btn {
+  width: 83%;
+  margin-bottom: 10px;
+}
+.sidebar .options {
+  text-align: left;
+}
+.sidebar .photostream-profile {
+  padding-bottom: 12px;
+}
+.sidebar .photostream-profile a {
+  font-size: 18px;
+}
+.sidebar .photostream-profile a:hover {
+  text-decoration: none;
+  color: #cccccc;
+}
+
+.albumpage {
+  background-color: #cccccc;
+  background-image: url('../img/shl.png?1350031287');
+  padding-left: 50px;
+  padding-right: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  box-shadow: 2px 2px 2px #999999;
+  border: 10px solid #f0f0f0;
+}
+
+.form-box {
+  background-color: #cccccc;
+  background-image: url('../img/shl.png?1350031287');
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  box-shadow: 2px 2px 2px #999999;
+  border: 10px solid #f0f0f0;
+}
+.form-box .btn-danger {
+  margin-bottom: 30px;
+}
+.form-box .form-header {
+  text-transform: uppercase;
+}
+
+.image {
+  width: 150px;
+  height: 210px;
+  display: block;
+  float: left;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-top: 20px;
+}
+.image .title, .image .labels {
+  text-align: center;
+}
+
+.thumbnail {
+  background-color: white;
+  width: 80%;
+  height: auto;
+  margin-right: auto;
+  margin-left: auto;
+}
+.thumbnail img {
+  width: 140px;
+  height: 120px;
+}
+
+.delete {
+  position: relative;
+  right: 0;
+  display: none;
+  font-size: 18px;
+  color: red;
+  background-color: black;
+  padding: 0;
+  padding-left: 7px;
+  padding-right: 7px;
+  position: relative;
+  left: 15px;
+  top: 8px;
+}
+.delete a {
+  color: red;
+}
+.delete a:hover {
+  text-decoration: none;
+}
+
+.label {
+  background-color: white;
+  border: 1px solid #e7e7e7;
+  border-radius: 0;
+  padding: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-right: 2px;
+  margin-left: 2px;
+  font-size: 10px;
+  text-shadow: none;
+}
+
+.heading {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.image-display {
+  background-color: black;
+  text-align: center;
+  border: 1px solid #c0bcb4;
+  padding-bottom: 0px;
+  margin-bottom: 30px;
+}
+
+.form-horizontal .controls {
+  margin-left: 0px;
+  float: right;
+}
+.form-horizontal .control-label {
+  text-align: left;
+  width: 45px;
+}
+.form-horizontal span.help-required {
+  float: left;
+}
+
+form {
+  margin: 0px;
+}
+
+.form-actions {
+  margin: -20px;
+  margin-top: 20px;
+  padding: 0px;
+}
+.form-actions button {
+  float: right;
+  margin: 10px;
+}
+
+.delete-box, .create-box, .upload-box {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 430px;
+  padding-left: 10px;
+  padding-right: 10px;
+  min-height: 270px;
+  border-radius: 5px;
+}
+.delete-box p, .create-box p, .upload-box p {
+  font-size: 14px;
+  margin-top: 20px;
+}
+.delete-box .cancel, .create-box .cancel, .upload-box .cancel {
+  margin-top: 10px;
+  margin-left: -150px;
+}
+
+.form-submit {
+  position: relative;
+  bottom: 0;
+}
+
+.create-box, .upload-box {
+  background-color: #d9edf7;
+  border: 1px solid #bce8f1;
+}
+
+.upload-box {
+  padding-top: 20px;
+}
+.upload-box label {
+  padding-left: 20px;
+}
+.upload-box .form-horizontal .controls {
+  margin-top: 3px;
+}
+.upload-box .form-horizontal label {
+  width: 100px;
+  margin-left: -15px;
+}
+.upload-box .form-horizontal span.help-required {
+  float: left;
+}
+
+.form-actions {
+  margin: 0;
+}
+
+@media screen and (max-width: 767px) {
+  .home-logo {
+    width: 60%;
+  }
+
+  .delete-box, .create-box, .upload-box {
+    width: 80%;
+  }
+
+  .create-box .form-horizontal .controls {
+    margin-top: 20px;
+  }
+  .create-box .form-horizontal label {
+    width: 50px;
+  }
+
+  .cancel {
+    float: right;
+  }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .form-box .form-horizontal .controls {
+    margin-top: 10px;
+    float: left;
+    margin-left: -15px;
+  }
 }
