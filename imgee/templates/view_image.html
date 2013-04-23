@@ -1,13 +1,18 @@
 {% extends "layout1.html" %}
 {% from 'baseframe/forms.html' import renderform %}
 
+{% block footerscripts %}
+<script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
+{% endblock %}
+
 {% block sidebar %}
 <div class="span8">
 
     <div class="image-display">
         <img src="{{url_for('get_image', img_name=img.name)}}" />
     </div>
-    <div class="heading">{{img.title}}</div>
+    <div class="heading editable_text" id="{{img.name}}">{{img.title}}</div>
 
     {% if img.labels %}
         Labels:
