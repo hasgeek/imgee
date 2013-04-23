@@ -39,6 +39,17 @@ def upload_file():
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
 
+@app.route('/edit_title', methods=['POST'])
+@authorize
+@login_required
+def edit_title():
+    form = request.form
+    img_name = request.form.get('img_name')
+    f = StoredFile.query.filter(Profile.userid==g.user.userid, StoredFile.name==img_name).first_or_404()
+    f.title = request.form.get('img_title')
+    db.session.commit()
+    return f.title
+
 @app.route('/<profile_name>')
 @login_required
 @authorize
