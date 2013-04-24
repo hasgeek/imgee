@@ -34,3 +34,7 @@ class AddLabelForm(Form):
 
 class RemoveLabelForm(Form):
     pass
+
+class EditTitleForm(Form):
+    file_name = HiddenField('file_name')
+    file_title = TextField('title', validators=[Required(), Length(max=250)])
