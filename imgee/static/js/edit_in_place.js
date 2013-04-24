@@ -1,10 +1,14 @@
-$(".editable_text").editable("/edit_title", {
+$(".editable_text").editable('/edit_title', {
       indicator : 'Saving...',
       submitdata: { _method: "POST" },
-      select : true,
       submit : 'OK',
       cancel : 'Cancel',
       tooltip   : 'Click to edit',
-      id: 'img_name',
-      name: 'img_title'
+      id: 'file_name',
+      name: 'file_title',
+      onerror: function (settings, title_div, error){
+          alert(error['responseText']);
+          $('.editable_text').resetForm();
+      }
 });
+

@@ -43,12 +43,15 @@ def upload_file():
 @authorize
 @login_required
 def edit_title():
-    form = request.form
-    img_name = request.form.get('img_name')
-    f = StoredFile.query.filter(Profile.userid==g.user.userid, StoredFile.name==img_name).first_or_404()
-    f.title = request.form.get('img_title')
-    db.session.commit()
-    return f.title
+    form = forms.EditTitleForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        file_name = request.form.get('file_name')
+        f = StoredFile.query.filter(Profile.userid==g.user.userid, StoredFile.name==file_name).first_or_404()
+        f.title = request.form.get('file_title')
+        db.session.commit()
+        return f.title
+    else:
+        return form.file_title.errors[0], 400
 
 @app.route('/<profile_name>')
 @login_required
