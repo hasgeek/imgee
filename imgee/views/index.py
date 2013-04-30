@@ -19,8 +19,8 @@ def index():
     return render_template('index.html')
 
 @app.route('/new', methods=('GET', 'POST'))
-@authorize
 @login_required
+@authorize
 def upload_file():
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
@@ -39,9 +39,20 @@ def upload_file():
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
 
-@app.route('/edit_title', methods=['POST'])
-@authorize
+
+@app.route('/gallery')
 @login_required
+@authorize
+def pop_up_gallery():
+    g.user = g.user or Profile.query.filter_by(name='asldevi').first()
+    p = Profile.query.filter_by(userid=g.user.userid).first_or_404()
+    files = p.stored_files.all()
+    form = forms.UploadImageForm()
+    return render_template('pop_up_gallery.html', files=files, profile_name=p.name, form=form, next=request.referrer)
+
+@app.route('/edit_title', methods=['POST'])
+@login_required
+@authorize
 def edit_title():
     form = forms.EditTitleForm(csrf_enabled=False)
     if form.validate_on_submit():
