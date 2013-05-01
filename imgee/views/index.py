@@ -9,7 +9,7 @@ from sqlalchemy import and_
 
 from imgee import app, forms
 from imgee.models import StoredFile, db, Profile, Label
-from imgee.views.login import lastuser, authorize, login_required
+from imgee.views.login import auth
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
@@ -39,20 +39,16 @@ def upload_file():
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
 
-
 @app.route('/gallery')
-@login_required
-@authorize
+@auth
 def pop_up_gallery():
-    g.user = g.user or Profile.query.filter_by(name='asldevi').first()
     p = Profile.query.filter_by(userid=g.user.userid).first_or_404()
     files = p.stored_files.all()
     form = forms.UploadImageForm()
     return render_template('pop_up_gallery.html', files=files, profile_name=p.name, form=form, next=request.referrer)
 
 @app.route('/edit_title', methods=['POST'])
-@login_required
-@authorize
+@auth
 def edit_title():
     form = forms.EditTitleForm(csrf_enabled=False)
     if form.validate_on_submit():
@@ -65,16 +61,15 @@ def edit_title():
         return form.file_title.errors[0], 400
 
 @app.route('/<profile_name>')
-@login_required
-@authorize
+@auth
 def show_profile(profile_name):
+    if g.user.username != profile_name: abort(403)
     p = Profile.query.filter_by(name=profile_name).first_or_404()
     files = p.stored_files.all()
     return render_template('profile.html', files=files, labels=p.labels, profile_name=profile_name)
 
 @app.route('/<profile_name>/view/<img_name>')
-@login_required
-@authorize
+@auth
 def view_image(profile_name, img_name):
     img = StoredFile.query.filter(StoredFile.name==img_name, Profile.name==profile_name).first_or_404()
     img_labels = [label.name for label in img.labels]
@@ -93,8 +88,9 @@ def get_image(img_name):
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
 @app.route('/thumbnail/<img_name>')
+@auth
 def get_thumbnail(img_name):
-    img = StoredFile.query.filter_by(name=img_name).first_or_404()
+    img = StoredFile.query.filter(StoredFile.name==img_name, Profile.userid==g.user.userid).first_or_404()
     name, extn = os.path.splitext(img.title)
     if extn and extn.lstrip('.').lower() in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
@@ -105,11 +101,9 @@ def get_thumbnail(img_name):
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
 @app.route('/delete/<img_name>', methods=('GET', 'POST'))
-@login_required
-@authorize
+@auth
 def delete_file(img_name):
-    q = and_(StoredFile.name==img_name, Profile.userid==g.user.userid)
-    stored_file = StoredFile.query.filter(q).first_or_404()
+    stored_file = StoredFile.query.filter(StoredFile.name==img_name, Profile.userid==g.user.userid).first_or_404()
     profile_name = g.user.username
 
     form = forms.DeleteImageForm()

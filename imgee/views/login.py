@@ -11,24 +11,15 @@ from imgee.models import db, User, Profile, PROFILE_TYPE
 
 lastuser.init_usermanager(UserManager(db, User))
 
-def login_required(f):
-    @wraps(f)
-    def decorated_func(*args, **kwargs):
-        if g.user is None:
-            if app.testing:
-                g.user = app.test_user
-            else:
-                return redirect(url_for('login', next=request.url))
-        return f(*args, **kwargs)
-    return decorated_func
-
-def authorize(f):
+def auth(f):
+    # authenticate and authorize
     @wraps(f)
     def decorated_func(*args, **kwargs):
         if app.testing: g.user = app.test_user
-        profileid = g.user.userid
+        if g.user is None:
+            return redirect(url_for('login', next=request.url))
         make_profiles()
-        if profileid in g.user.user_organizations_owned_ids():
+        if g.user.userid in g.user.user_organizations_owned_ids():
             return f(*args, **kwargs)
         return abort(403)
     return decorated_func
@@ -38,13 +29,11 @@ def authorize(f):
 def login():
     return {'scope': 'id email organizations'}
 
-
 @app.route('/logout')
 @lastuser.logout_handler
 def logout():
     flash(u"You are now logged out", category='info')
     return get_next_url()
-
 
 def make_profiles():
     # Make profiles for the user's organizations
