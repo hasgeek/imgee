@@ -72,7 +72,7 @@ def show_profile(profile_name):
 def view_image(img_name):
     img = StoredFile.query.filter(StoredFile.name==img_name, Profile.userid==g.user.userid).first_or_404()
     img_labels = [label.name for label in img.labels]
-    form = forms.AddLabelForm(img_name=img_name)
+    form = forms.AddLabelForm(img_name=img_name, label=[l.id for l in img.labels])
     form.label.choices = [(l.id, l.name) for l in img.profile.labels]
     return render_template('view_image.html', form=form, img=img, labels=img_labels)
 

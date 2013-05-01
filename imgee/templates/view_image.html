@@ -30,14 +30,14 @@
 {% endblock %}
 
 {% block albumcontent %}
-{% set action_url=url_for('add_label_to', img_name=img.name, profile_name=img.profile.name) %}
+{% set action_url=url_for('manage_labels', img_name=img.name, profile_name=img.profile.name) %}
     <div class="span4">
         <div class="form-box">
             <a class="btn btn-danger" href="{{url_for('delete_file', img_name=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete Image</a>
             <br />
-            <div class="form-header">Add labels:</div>
+            <div class="form-header">Manage labels:</div>
             <br />
-            <div>{{ renderform(form, 'Add Labels', action=action_url)}}</div>
+            <div>{{ renderform(form, 'Manage Labels', action=action_url)}}</div>
         </div>
     </div>
 

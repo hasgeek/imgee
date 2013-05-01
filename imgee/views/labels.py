@@ -41,9 +41,9 @@ def delete_label(profile_name, label_name):
     flash('The label "%s" was deleted.' % label_name)
     return redirect(url_for('show_profile', profile_name=profile_name))
 
-@app.route('/<profile_name>/add_label/<img_name>', methods=['POST'])
+@app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
 @auth
-def add_label_to(profile_name, img_name):
+def manage_labels(profile_name, img_name):
     if profile_name != g.user.username:
         abort(403)
     profile = Profile.query.filter(Profile.name==profile_name, StoredFile.name==img_name).first_or_404()
@@ -53,25 +53,9 @@ def add_label_to(profile_name, img_name):
     form.label.choices = [(l.id, l.name) for l in profile.labels]
     if form.validate_on_submit():
         labels = [l for l in profile.labels if l.id in form.label.data]
-        added = utils.save_labels_to(stored_file, labels)
-        if added:
-            flash('Added label(s) %s to "%s".' % (', '.join(l.name for l in added), stored_file.title))
-        return redirect(url_for('view_image', img_name=img_name))
-    return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)
-
-@app.route('/<profile_name>/del_label/<img_name>', methods=['POST'])
-@auth
-def remove_label_from(img_name):
-    if profile_name != g.user.username:
-        abort(403)
-    profile = Profile.query.filter(Profile.name==profile_name, StoredFile.name==img_name).first_or_404()
-    stored_file = [s for s in profile.stored_files if s.name == img_name][0]
-    form = forms.RemoveLabelForm()
-
-    if form.validate_on_submit():
-        labels = [l for l in profile.labels if l.id == form.label.data]
-        removed = utils.remove_labels_from(stored_file, labels)
-        if removed:
-            flash('Removed label(s) %s from "%s".' % (', '.join(l.name for l in removed), stored_file.title))
+        s, saved = utils.save_labels_to(stored_file, labels)
+        if saved:
+            status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
+            flash('%s label(s) %s %s "%s".' % (status[s][0], ', '.join(l.name for l in saved), status[s][1], stored_file.title))
         return redirect(url_for('view_image', img_name=img_name))
     return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)
