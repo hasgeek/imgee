@@ -3,7 +3,7 @@
 from flask import (render_template, request, g, url_for,
                     abort, redirect, flash)
 from imgee import app, forms
-from imgee.views.login import authorize, login_required
+from imgee.views.login import auth
 from imgee.models import Label, StoredFile, Profile
 import imgee.utils as utils
 
@@ -13,16 +13,14 @@ def get_profile_label(profile_name, label_name):
     return profile, label
 
 @app.route('/<profile_name>/<label_name>')
-@login_required
-@authorize
+@auth
 def show_label(profile_name, label_name):
     profile, label = get_profile_label(profile_name, label_name)
     files = label.stored_files.filter(Profile.userid==profile.userid).all()
     return render_template('show_label.html', label=label.name, files=files)
 
 @app.route('/labels/new', methods=('GET', 'POST'))
-@login_required
-@authorize
+@auth
 def create_label():
     profile_id = g.user.userid
     form = forms.CreateLabelForm(profile_id=profile_id)
@@ -34,8 +32,7 @@ def create_label():
     return render_template('create_label.html', form=form)
 
 @app.route('/<profile_name>/<label_name>/delete', methods=['POST'])
-@login_required
-@authorize
+@auth
 def delete_label(profile_name, label_name):
     if profile_name != g.user.username:
         abort(403)
@@ -45,8 +42,7 @@ def delete_label(profile_name, label_name):
     return redirect(url_for('show_profile', profile_name=profile_name))
 
 @app.route('/<profile_name>/add_label/<img_name>', methods=['POST'])
-@login_required
-@authorize
+@auth
 def add_label_to(profile_name, img_name):
     if profile_name != g.user.username:
         abort(403)
@@ -64,6 +60,7 @@ def add_label_to(profile_name, img_name):
     return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)
 
 @app.route('/<profile_name>/del_label/<img_name>', methods=['POST'])
+@auth
 def remove_label_from(img_name):
     if profile_name != g.user.username:
         abort(403)

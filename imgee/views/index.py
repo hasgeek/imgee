@@ -19,8 +19,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/new', methods=('GET', 'POST'))
-@login_required
-@authorize
+@auth
 def upload_file():
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
