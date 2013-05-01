@@ -56,6 +56,7 @@ def manage_labels(profile_name, img_name):
         s, saved = utils.save_labels_to(stored_file, labels)
         if saved:
             status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
-            flash('%s label(s) %s %s "%s".' % (status[s][0], ', '.join(l.name for l in saved), status[s][1], stored_file.title))
+            plural = 's' if len(saved) > 1 else ''
+            flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.name for l in saved), status[s][1], stored_file.title))
         return redirect(url_for('view_image', img_name=img_name))
     return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)

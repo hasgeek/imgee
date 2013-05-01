@@ -7,7 +7,9 @@ $(".editable_text").editable('/edit_title', {
       id: 'file_name',
       name: 'file_title',
       onerror: function (settings, title_div, error){
-          alert(error['responseText']);
+          if (error['responseText']){
+              alert(error['responseText']);
+          }
           $('.editable_text').resetForm();
       }
 });
