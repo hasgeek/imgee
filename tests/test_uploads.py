@@ -51,7 +51,7 @@ class UploadTestCase(ImgeeTestCase):
     def test_view_image(self):
         filename, r = self.upload()
         self.img_id = test_utils.get_img_id(r.data, filename)
-        view_url = '/%s/view/%s' % (self.test_user_name, self.img_id)
+        view_url = '/view/%s' % (self.img_id)
         r = self.client.get(view_url)
         self.assertEquals(r.status_code, 200)
 

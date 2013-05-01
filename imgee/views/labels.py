@@ -60,7 +60,7 @@ def add_label_to(profile_name, img_name):
         added = utils.save_labels_to(stored_file, labels)
         if added:
             flash('Added label(s) %s to "%s".' % (', '.join(l.name for l in added), stored_file.title))
-        return redirect(url_for('view_image', img_name=img_name, profile_name=profile_name))
+        return redirect(url_for('view_image', img_name=img_name))
     return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)
 
 @app.route('/<profile_name>/del_label/<img_name>', methods=['POST'])
@@ -76,5 +76,5 @@ def remove_label_from(img_name):
         removed = utils.remove_labels_from(stored_file, labels)
         if removed:
             flash('Removed label(s) %s from "%s".' % (', '.join(l.name for l in removed), stored_file.title))
-        return redirect(url_for('view_image', img_name=img_name, profile_name=profile_name))
+        return redirect(url_for('view_image', img_name=img_name))
     return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)

@@ -41,7 +41,7 @@
                 {% for img in files %}
                     <div class="image">
                         <div class="thumbnail">
-                            <a href="{{url_for('view_image', img_name=img.name, profile_name=profile_name,)}}" title="view image">
+                            <a href="{{url_for('view_image', img_name=img.name)}}" title="view image">
                                 <img src="{{url_for('get_thumbnail', img_name=img.name)}}"/>
                             </a>
                         </div>
