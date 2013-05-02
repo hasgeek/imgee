@@ -42,7 +42,7 @@ def upload_file():
 @auth
 def pop_up_gallery():
     p = Profile.query.filter_by(userid=g.user.userid).first_or_404()
-    files = p.stored_files.all()
+    files = p.stored_files.order_by('created_at desc').all()
     form = forms.UploadImageForm()
     return render_template('pop_up_gallery.html', files=files, profile_name=p.name, form=form, next=request.referrer)
 
@@ -64,8 +64,10 @@ def edit_title():
 def show_profile(profile_name):
     if g.user.username != profile_name: abort(403)
     p = Profile.query.filter_by(name=profile_name).first_or_404()
-    files = p.stored_files.all()
-    return render_template('profile.html', files=files, labels=p.labels, profile_name=profile_name)
+    files = p.stored_files.order_by('created_at desc').all()
+    labels = p.labels
+    labels.sort(key=lambda x: x.name)
+    return render_template('profile.html', files=files, labels=labels, profile_name=profile_name)
 
 @app.route('/view/<img_name>')
 @auth
