@@ -1,7 +1,5 @@
 @import "compass"
 
-body
-	background-image: image-url('bedge_grunge.png')
 
 .logo
 	margin-top: 25px
@@ -21,15 +19,8 @@ body
 	h4
 		margin-top: 15px
 
-.album
-	min-height: 550px
 
 .sidebar
-	background-color: #000
-	border-radius: 5px
-	border-right: 2px solid #FFF
-	border-bottom: 2px solid #FFF
-	box-shadow: 1px 1px 1px #000
 	.nav-list
 		li
 			text-shadow: none
@@ -46,28 +37,18 @@ body
 			font-size: 18px
 			&:hover
 				text-decoration: none
-				color: #ccc
-
+.padding
+	padding-bottom: 15px
 
 .albumpage
-	background-color: #ccc
-	background-image: image-url('shl.png')
-	padding-left: 50px
-	padding-right: 30px
-	padding-top: 20px
-	padding-bottom: 20px
-	box-shadow: 2px 2px 2px #999
-	border: 10px solid #F0F0F0
+	padding-left: 62px
+	padding-top: 25px
 
 .form-box
-	background-color: #ccc
-	background-image: image-url('shl.png')
 	padding-left: 20px
 	padding-right: 20px
 	padding-top: 20px
 	padding-bottom: 20px
-	box-shadow: 2px 2px 2px #999
-	border: 10px solid #F0F0F0
 	.btn-danger
 		margin-bottom: 30px
 	.form-header
@@ -81,6 +62,11 @@ body
 	padding-left: 15px
 	padding-right: 15px
 	margin-top: 20px
+	.title
+		width: 160px
+		white-space: nowrap
+		overflow: hidden
+		text-overflow: ellipsis
 	.title, .labels
 		text-align: center
 
@@ -161,7 +147,7 @@ form
 	width: 430px
 	padding-left: 10px
 	padding-right: 10px
-	min-height: 270px
+	padding-bottom: 10px
 	border-radius: 5px
 	p
 		font-size: 14px
@@ -205,6 +191,9 @@ form
 
 	.cancel
 		float: right
+	.albumpage
+		padding-left: 30px
+		padding-top: 20px
 	
 @media (min-width: 768px) and (max-width: 979px)
 	.form-box
@@ -213,5 +202,33 @@ form
 				margin-top: 10px
 				float: left
 				margin-left: -15px
+	.albumpage
+		padding-left: 48px
+		padding-top: 20px
 
 @media (min-width: 980px) and (max-width: 1200px)
+	.albumpage
+		padding-left: 48px
+		padding-top: 20px
+
+@media screen and (max-width: 500px)
+	.image
+		width: 80%
+		height: auto
+		float: none
+		margin-right: auto
+		margin-left: auto
+		.title
+			width: 100%
+			white-space: nowrap
+			overflow: hidden
+			text-overflow: ellipsis
+
+	.thumbnail
+		width: 60%
+		img
+			width: 100%
+			height: auto
+	.albumpage
+		padding-left: 10px
+		padding-top: 20px

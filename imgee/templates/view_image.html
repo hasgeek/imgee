@@ -32,7 +32,7 @@
 {% block albumcontent %}
 {% set action_url=url_for('manage_labels', img_name=img.name, profile_name=img.profile.name) %}
     <div class="span4">
-        <div class="form-box">
+        <div class="form-box well">
             <a class="btn btn-danger" href="{{url_for('delete_file', img_name=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete Image</a>
             <br />
             <div class="form-header">Manage labels:</div>
