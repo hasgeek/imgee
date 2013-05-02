@@ -18,6 +18,15 @@ image_formats = 'jpg jpe jpeg png gif bmp'.split()
 def index():
     return render_template('index.html')
 
+def _redirect_url_frm_upload(profile_name):
+    # if the referrer is from 'pop_up_gallery' redirect back to referrer.
+    referrer = request.referrer or ''
+    if url_for('pop_up_gallery') in referrer:
+        url = request.referrer
+    else:
+        url = url_for('show_profile', profile_name=profile_name)
+    return url
+
 @app.route('/new', methods=('GET', 'POST'))
 @auth
 def upload_file():
@@ -34,7 +43,7 @@ def upload_file():
         save(request.files['uploaded_file'], stored_file.name, content_type=content_type)
         profile_name = Profile.query.filter_by(userid=profileid).one().name
         flash('"%s" uploaded successfully.' % filename)
-        return redirect(url_for('show_profile', profile_name=profile_name))
+        return redirect(_redirect_url_frm_upload(profile_name))
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
 
