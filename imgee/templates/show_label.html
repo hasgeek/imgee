@@ -1,10 +1,10 @@
-{% extends "layout1.html" %}
+{% extends "layout.html" %}
 {% block sidebar %}
 <div class="span2">
     <div class="sidebar well">
       <div class="photostream-profile">
         <div class="profile-name">
-          <a href="{{ url_for('show_profile', profile_name=g.user.username) }}">My Album</a>
+          <a href="{{ url_for('show_profile', profile_name=g.user.username) }}">All images</a>
         </div>
       </div>
 
@@ -12,6 +12,17 @@
         <a class="btn btn-primary" href="{{url_for('upload_file')}}">Upload images</a>
         <a class="btn btn-primary" href="{{url_for('create_label')}}">New label</a>
       </div>
+
+      <ul class="labels nav nav-list">
+        <li class="nav-header">Labels</li>        
+            {% if labels %}
+                {% for label in labels %}
+                    <li><a href="{{url_for('show_label', profile_name=profile_name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
+                {% endfor %}
+            {% else %}
+                <li>No Labels yet. <a href="{{url_for('create_label')}}"><i class="icon-plus"></i>&nbsp;Create new label</a></li>
+            {% endif %}
+      </ul>
     </div>
 </div>
 {% endblock %}  
@@ -20,9 +31,10 @@
     <div class="span10">
         <div class="heading">Images with label "{{label}}"
         </div>
-        <div class="albumpage">
+        <div class="albumpage well">
             {%if not files %}
                 There are no images with label "{{label}}" yet.
+                <div class="padding"></div>
             {% else %}
                 <div class="gallery row">
                     {% for img in files %}

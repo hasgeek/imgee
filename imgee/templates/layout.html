@@ -106,19 +106,6 @@
   {% endfor %}
 {%- endmacro %}
 
-{% block headerbox %}
-  <header>
-    {{ networkbar(siteid=config['SITE_ID'], login=true) }}
-      <div class="row">
-        <div class="container">
-          <div class="span2 logo">           
-            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/imgee.png') }}"></a>
-          </div>      
-        </div>
-      </div>
-  </header>
-{% endblock %}
-
 {% block basecontent %}
   <div class="container">
     <div class="row album">
