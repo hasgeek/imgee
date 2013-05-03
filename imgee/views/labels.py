@@ -15,9 +15,13 @@ def get_profile_label(profile_name, label_name):
 @app.route('/<profile_name>/<label_name>')
 @auth
 def show_label(profile_name, label_name):
+    p = Profile.query.filter_by(name=profile_name).first_or_404()
+    files = p.stored_files.order_by('created_at desc').all()
+    labels = p.labels
+    labels.sort(key=lambda x: x.name)
     profile, label = get_profile_label(profile_name, label_name)
     files = label.stored_files.filter(Profile.userid==profile.userid).all()
-    return render_template('show_label.html', label=label.name, files=files)
+    return render_template('show_label.html', label=label.name, files=files, profile_name=g.user.username, labels=labels)
 
 @app.route('/labels/new', methods=('GET', 'POST'))
 @auth
