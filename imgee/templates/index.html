@@ -1,10 +1,10 @@
-{% extends "layout1.html" %}
+{% extends "layout.html" %}
 
 {% block headerbox %}
   <header>
     {{ networkbar(siteid=config['SITE_ID'], login=true) }}
       <div class="home-logo">
-        <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/imgee.png') }}"></a>
+        <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo@2x.png') }}"></a>
         <hr />
         <div class="header">The HasGeek Image Hosting Website.</div>
 		{% if g.user %}
