@@ -1,7 +1,24 @@
+/* ======== General ========= */
 .logo {
   margin-top: 25px;
 }
 
+#logo {
+  text-indent: -119988px;
+  overflow: hidden;
+  text-align: left;
+  background-image: url('../img/logo.png?1367585222');
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  width: 150px;
+  height: 75px;
+}
+
+.padding {
+  padding-bottom: 15px;
+}
+
+/* ======== index page ========= */
 .home-logo {
   margin-left: auto;
   margin-right: auto;
@@ -20,6 +37,7 @@
   margin-top: 15px;
 }
 
+/* ======== profile, pop_up_gallery, show_label pages ========= */
 .sidebar .nav-list li {
   text-shadow: none;
 }
@@ -43,20 +61,98 @@
   text-decoration: none;
 }
 
-.padding {
-  padding-bottom: 15px;
-}
-
 .albumpage {
-  padding-left: 62px;
+  padding-left: 60px;
   padding-top: 25px;
+  background: none repeat scroll 0 0 white;
+  border: 1px solid #ececec;
+  border-radius: 4px 4px 4px 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1) inset;
+  display: block;
 }
 
+.image {
+  width: 150px;
+  height: 200px;
+  display: block;
+  float: left;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-top: 20px;
+}
+.image .title {
+  width: 130px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: bold;
+}
+.image .title, .image .labels {
+  text-align: center;
+}
+
+.editable_text:hover {
+  background-color: #cccccc;
+}
+.editable_text form {
+  height: 200px;
+  z-index: 999;
+}
+.editable_text form input {
+  background-color: #cccccc;
+  border: 0;
+  box-shadow: none;
+  width: 120px;
+  height: 150px;
+}
+
+.thumbnail {
+  background-color: white;
+  width: 88%;
+  border-radius: 0;
+  height: auto;
+  margin-right: auto;
+  margin-left: auto;
+}
+.thumbnail img {
+  width: 130px;
+  height: 130px;
+}
+
+.label {
+  background-color: white;
+  border: 1px solid #e7e7e7;
+  border-radius: 0;
+  padding: 0;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-right: 2px;
+  margin-left: 2px;
+  font-size: 10px;
+  text-shadow: none;
+}
+
+/* ======== view_image page ========= */
+.heading {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.image-display {
+  background-color: black;
+  text-align: center;
+  border: 1px solid #c0bcb4;
+  padding-bottom: 0px;
+  margin-bottom: 30px;
+}
+
+/* ======== forms (in view_image, gellery, form, delete, create_label pages)========= */
 .form-box {
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 10px;
 }
 .form-box .btn-danger {
   margin-bottom: 30px;
@@ -65,35 +161,54 @@
   text-transform: uppercase;
 }
 
-.image {
-  width: 150px;
-  height: 210px;
-  display: block;
+.form-horizontal .controls {
+  margin-left: 0px;
+  float: right;
+}
+.form-horizontal .control-label {
+  text-align: left;
+  width: 45px;
+}
+.form-horizontal span.help-required {
   float: left;
-  padding-left: 15px;
-  padding-right: 15px;
-  margin-top: 20px;
-}
-.image .title {
-  width: 160px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.image .title, .image .labels {
-  text-align: center;
 }
 
-.thumbnail {
-  background-color: white;
-  width: 80%;
-  height: auto;
-  margin-right: auto;
-  margin-left: auto;
+form {
+  margin: 0px;
 }
-.thumbnail img {
-  width: 140px;
-  height: 120px;
+
+.well hr {
+  margin: 8px 0 20px 0;
+}
+
+.form-actions {
+  margin: -20px;
+  margin-top: 20px;
+  padding: 0px;
+  background: transparent;
+}
+.form-actions button {
+  float: right;
+  margin: 10px;
+}
+
+.form-submit {
+  position: relative;
+  bottom: 0;
+}
+
+.form-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #f0a40c;
+}
+
+input[type="file"] {
+  background-color: white;
+}
+
+.form-actions {
+  margin: 0;
 }
 
 .delete {
@@ -117,58 +232,6 @@
   text-decoration: none;
 }
 
-.label {
-  background-color: white;
-  border: 1px solid #e7e7e7;
-  border-radius: 0;
-  padding: 0;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-right: 2px;
-  margin-left: 2px;
-  font-size: 10px;
-  text-shadow: none;
-}
-
-.heading {
-  font-size: 20px;
-  margin-bottom: 20px;
-}
-
-.image-display {
-  background-color: black;
-  text-align: center;
-  border: 1px solid #c0bcb4;
-  padding-bottom: 0px;
-  margin-bottom: 30px;
-}
-
-.form-horizontal .controls {
-  margin-left: 0px;
-  float: right;
-}
-.form-horizontal .control-label {
-  text-align: left;
-  width: 45px;
-}
-.form-horizontal span.help-required {
-  float: left;
-}
-
-form {
-  margin: 0px;
-}
-
-.form-actions {
-  margin: -20px;
-  margin-top: 20px;
-  padding: 0px;
-}
-.form-actions button {
-  float: right;
-  margin: 10px;
-}
-
 .delete-box, .create-box, .upload-box {
   margin-left: auto;
   margin-right: auto;
@@ -179,28 +242,23 @@ form {
   padding-bottom: 10px;
   border-radius: 5px;
 }
-.delete-box p, .create-box p, .upload-box p {
-  font-size: 14px;
-  margin-top: 20px;
-}
 .delete-box .cancel, .create-box .cancel, .upload-box .cancel {
   margin-top: 10px;
   margin-left: -150px;
 }
 
-.form-submit {
-  position: relative;
-  bottom: 0;
+.delete-box hr {
+  margin: 8px 0 10px 0;
+  border-top-color: #eed3d7;
+}
+.delete-box p {
+  font-size: 13px;
+  color: #333333;
+}
+.delete-box .form-title, .delete-box #warning {
+  color: #b94a48;
 }
 
-.create-box, .upload-box {
-  background-color: #d9edf7;
-  border: 1px solid #bce8f1;
-}
-
-.upload-box {
-  padding-top: 20px;
-}
 .upload-box label {
   padding-left: 20px;
 }
@@ -215,24 +273,9 @@ form {
   float: left;
 }
 
-.form-actions {
-  margin: 0;
-}
-
-#logo {
-  text-indent: -119988px;
-  overflow: hidden;
-  text-align: left;
-  background-image: url('../img/logo.png?1367562555');
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  width: 150px;
-  height: 75px;
-}
-
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
   #logo {
-    background-image: url('../img/logo@2x.png?1367562545');
+    background-image: url('../img/logo@2x.png?1367585222');
     -webkit-background-size: 150px 75px;
   }
 }
@@ -264,12 +307,17 @@ form {
   .sidebar .btn {
     width: auto;
   }
+
+  .form-box.well {
+    margin-top: 20px;
+  }
 }
 @media (min-width: 768px) and (max-width: 979px) {
-  .form-box .form-horizontal .controls {
-    margin-top: 10px;
+  .well .form-horizontal .controls {
     float: left;
-    margin-left: -15px;
+  }
+  .well .form-horizontal .controls btn {
+    float: left;
   }
 
   .albumpage {

@@ -37,7 +37,8 @@
 <div class="span10">
     <div class="albumpage well">
         {% if files %}
-            <div class="gallery row">
+            <div class="gallery">
+                <div class="row">
                 {% for img in files %}
                     <div class="image">
                         <div class="thumbnail">
@@ -49,12 +50,13 @@
                         <div class="labels">
                             {% for label in img.labels %}
                                 <span class="label">
-                                    <a href="{{url_for('show_label',profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>
+                                    <a href="{{url_for('show_label',profile_name=img.profile.name, label_name=label.name)}}"><i class="icon-tag"></i>&nbsp;{{label.name}}</a>
                                 </span>
                             {% endfor %}
                         </div>
                     </div>
                 {% endfor %}
+                </div>
             </div>
         {% else %}
             There are no images uploaded yet. <a href="{{url_for('upload_file')}}">Upload them.</a>
