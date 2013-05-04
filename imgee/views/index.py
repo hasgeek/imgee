@@ -2,21 +2,22 @@
 import os.path
 from werkzeug import secure_filename
 from uuid import uuid4
-from flask import (render_template, request, g, jsonify, url_for,
+from flask import (render_template, request, g, url_for,
                 abort, redirect, flash)
 from urlparse import urljoin
-from sqlalchemy import and_
 
 from imgee import app, forms
-from imgee.models import StoredFile, db, Profile, Label
+from imgee.models import StoredFile, db, Profile
 from imgee.views.login import auth
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 def _redirect_url_frm_upload(profile_name):
     # if the referrer is from 'pop_up_gallery' redirect back to referrer.
@@ -26,6 +27,7 @@ def _redirect_url_frm_upload(profile_name):
     else:
         url = url_for('show_profile', profile_name=profile_name)
     return url
+
 
 @app.route('/new', methods=('GET', 'POST'))
 @auth
@@ -47,6 +49,7 @@ def upload_file():
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form)
 
+
 @app.route('/gallery')
 @auth
 def pop_up_gallery():
@@ -55,37 +58,42 @@ def pop_up_gallery():
     form = forms.UploadImageForm()
     return render_template('pop_up_gallery.html', files=files, profile_name=p.name, form=form, next=request.referrer)
 
+
 @app.route('/edit_title', methods=['POST'])
 @auth
 def edit_title():
     form = forms.EditTitleForm(csrf_enabled=False)
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
-        f = StoredFile.query.filter(Profile.userid==g.user.userid, StoredFile.name==file_name).first_or_404()
+        f = StoredFile.query.filter(Profile.userid == g.user.userid, StoredFile.name == file_name).first_or_404()
         f.title = request.form.get('file_title')
         db.session.commit()
         return f.title
     else:
         return form.file_title.errors[0], 400
 
+
 @app.route('/<profile_name>')
 @auth
 def show_profile(profile_name):
-    if g.user.username != profile_name: abort(403)
+    if g.user.username != profile_name:
+        abort(403)
     p = Profile.query.filter_by(name=profile_name).first_or_404()
     files = p.stored_files.order_by('created_at desc').all()
     labels = p.labels
     labels.sort(key=lambda x: x.name)
     return render_template('profile.html', files=files, labels=labels, profile_name=profile_name)
 
+
 @app.route('/view/<img_name>')
 @auth
 def view_image(img_name):
-    img = StoredFile.query.filter(StoredFile.name==img_name, Profile.userid==g.user.userid).first_or_404()
+    img = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
     img_labels = [label.name for label in img.labels]
     form = forms.AddLabelForm(img_name=img_name, label=[l.id for l in img.labels])
     form.label.choices = [(l.id, l.name) for l in img.profile.labels]
     return render_template('view_image.html', form=form, img=img, labels=img_labels)
+
 
 @app.route('/file/<img_name>')
 def get_image(img_name):
@@ -97,10 +105,11 @@ def get_image(img_name):
     img_name = get_s3_folder() + img_name
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
+
 @app.route('/thumbnail/<img_name>')
 @auth
 def get_thumbnail(img_name):
-    img = StoredFile.query.filter(StoredFile.name==img_name, Profile.userid==g.user.userid).first_or_404()
+    img = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
     name, extn = os.path.splitext(img.title)
     if extn and extn.lstrip('.').lower() in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
@@ -110,10 +119,11 @@ def get_thumbnail(img_name):
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
+
 @app.route('/delete/<img_name>', methods=('GET', 'POST'))
 @auth
 def delete_file(img_name):
-    stored_file = StoredFile.query.filter(StoredFile.name==img_name, Profile.userid==g.user.userid).first_or_404()
+    stored_file = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
     profile_name = g.user.username
 
     form = forms.DeleteImageForm()

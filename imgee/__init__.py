@@ -26,6 +26,7 @@ css = Bundle(baseframe_css, 'css/app.css')
 import imgee.models
 import imgee.views
 
+
 # Configure the app
 def init_for(env):
     coaster.app.init_app(app, env)

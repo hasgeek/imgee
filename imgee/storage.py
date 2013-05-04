@@ -12,13 +12,15 @@ from boto.s3.key import Key
 from imgee import app
 from imgee.models import db, Thumbnail
 
+
 def get_s3_bucket():
     conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
     return bucket
 
+
 def save(fp, img_name, remote=True, content_type=None):
-    local_path =  os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
+    local_path = os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
     with open(local_path, 'w') as img:
         img.write(fp.read())
 
@@ -26,8 +28,10 @@ def save(fp, img_name, remote=True, content_type=None):
         fp.seek(0)
         save_on_s3(fp, img_name, content_type=content_type)
 
+
 def get_file_type(filename):
     return mimetypes.guess_type(filename)[0]
+
 
 def get_s3_folder(f=''):
     f = f or app.config['AWS_FOLDER']
@@ -35,19 +39,22 @@ def get_s3_folder(f=''):
         f = f+'/'
     return f or ''
 
+
 def save_on_s3(fp, filename, content_type='', folder=''):
     b = get_s3_bucket()
     folder = get_s3_folder(folder)
     k = b.new_key(folder+filename)
     content_type = content_type or get_file_type(filename)
     headers = {
-        'Cache-Control': 'max-age=31536000',    #60*60*24*365
+        'Cache-Control': 'max-age=31536000',  # 60*60*24*365
         'Content-Type': content_type,
     }
     k.set_contents_from_file(fp, policy='public-read', headers=headers)
 
+
 def path_for(img_name):
     return os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
+
 
 def get_resized_image(img, size, thumbnail=False):
     img_name = img.name
@@ -63,8 +70,9 @@ def get_resized_image(img, size, thumbnail=False):
             img_name = resize_and_save(img, size_t, thumbnail=thumbnail)
     return img_name
 
+
 def get_image_locally(img_name):
-    local_path =  path_for(img_name)
+    local_path = path_for(img_name)
     if not os.path.exists(local_path):
         bucket = get_s3_bucket()
         k = Key(bucket)
@@ -72,10 +80,11 @@ def get_image_locally(img_name):
         k.get_contents_to_filename(local_path)
     return local_path
 
+
 def resize_and_save(img, size, thumbnail=False):
-    src_path =  get_image_locally(img.name)
+    src_path = get_image_locally(img.name)
     scaled_img_name = uuid4().hex
-    content_type = get_file_type(img.title) # eg: image/jpeg
+    content_type = get_file_type(img.title)  # eg: image/jpeg
     format = content_type.split('/')[1] if content_type else None
     scaled = resize_img(src_path, size, format, thumbnail=thumbnail)
     save_on_s3(scaled, scaled_img_name, content_type)
@@ -85,6 +94,7 @@ def resize_and_save(img, size, thumbnail=False):
     db.session.add(scaled)
     db.session.commit()
     return scaled_img_name
+
 
 def get_size((orig_w, orig_h), (w, h)):
     # fit the image to the box along the smaller side and preserve aspect ratio.
@@ -97,6 +107,7 @@ def get_size((orig_w, orig_h), (w, h)):
 
     size = map(lambda x: max(x, 1), size)   # let the width or height be atleast 1px.
     return map(int, size)
+
 
 def resize_img(src, size, format, thumbnail):
     """
@@ -123,15 +134,17 @@ def resize_img(src, size, format, thumbnail):
     imgio.seek(0)
     return imgio
 
+
 def split_size(size):
     """ return (w, h) if size is 'wxh'
     """
-    r= r'^(\d+)(x(\d+))?$'
+    r = r'^(\d+)(x(\d+))?$'
     matched = re.match(r, size)
     if matched:
         w, h = matched.group(1, 2)
-        h = int(h.lstrip('x')) if h != None else None
+        h = int(h.lstrip('x')) if h is not None else None
         return int(w), h
+
 
 def delete_on_s3(stored_file):
     """
