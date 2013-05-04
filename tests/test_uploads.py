@@ -1,13 +1,15 @@
 import unittest
-import os, requests
+import os
+import requests
 from StringIO import StringIO
 from PIL import Image
 
 from imgee import storage
-from imgee.models import db, User, StoredFile, Profile
-from fixtures import get_test_user, ImgeeTestCase, app
+from imgee.models import StoredFile
+from fixtures import ImgeeTestCase, app
 
 import test_utils
+
 
 class UploadTestCase(ImgeeTestCase):
     def setUp(self):
@@ -151,7 +153,8 @@ class UploadTestCase(ImgeeTestCase):
 
     def tearDown(self):
         s = StoredFile.query.filter_by(name=self.img_id).first()
-        if s: storage.delete_on_s3(s)
+        if s:
+            storage.delete_on_s3(s)
         super(UploadTestCase, self).tearDown()
 
 if __name__ == '__main__':
