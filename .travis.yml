@@ -19,5 +19,6 @@ before_script:
 script: 
   - nosetests --with-coverage
 install: 
+  - sudo apt-get -qq install zlib1g-dev libjpeg62-dev libfreetype6-dev liblcms1-dev libwebp-dev
   - pip install -r requirements.txt
   - pip install nose coverage BeautifulSoup4
