@@ -6,7 +6,6 @@ from PIL import Image
 from imgee import storage
 from imgee.models import db, User, StoredFile, Profile
 from fixtures import get_test_user, ImgeeTestCase, app
-
 import test_utils
 
 class UploadTestCase(ImgeeTestCase):
@@ -14,6 +13,9 @@ class UploadTestCase(ImgeeTestCase):
         super(UploadTestCase, self).setUp()
         self.img_id = None
         self.test_file = 'imgee/static/img/imgee.png'
+
+    def upload(self, path=None):
+        return test_utils.upload(self.client, path or self.test_file)
 
     def exists_on_media_domain(self, img_id):
         r = self.client.get('/file/%s' % img_id)
@@ -24,14 +26,6 @@ class UploadTestCase(ImgeeTestCase):
         r = self.client.get('/thumbnail/%s' % img_id)
         self.assertEquals(r.status_code, 301)
         return requests.get(r.location).ok
-
-    def upload(self, path=None):
-        path = path or self.test_file
-        content = open(path).read()
-        filename = os.path.basename(path)
-        d = {'uploaded_file': (StringIO(content), filename)}
-        response = self.client.post('/new', data=d, follow_redirects=True)
-        return filename, response
 
     def get_image_size(self, img_path=None):
         return test_utils.get_image_size(img_path or self.test_file)
