@@ -27,13 +27,17 @@
 </div>
 {% endblock %}  
 
+
 {% block albumcontent %}
     <div class="span10">
-        <div class="heading">Images with label "{{label}}"
+        <div class="heading">Images with label "{{label.name}}"
         </div>
+        <a class="btn btn-danger" style="float:right;" href="{{url_for('delete_label', profile_name=g.user.username ,label_name=label.name)}}">
+            <i class="icon-trash"></i>&nbsp;Delete Label</a>
+        <br />
         <div class="albumpage well">
             {%if not files %}
-                There are no images with label "{{label}}" yet.
+                There are no images with label "{{label.name}}" yet.
                 <div class="padding"></div>
             {% else %}
                 <div class="gallery row">
