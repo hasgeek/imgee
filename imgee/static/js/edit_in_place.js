@@ -1,4 +1,4 @@
-$(".editable_text").editable('/edit_title', {
+$(".editable_title").editable('/edit_title', {
       indicator : 'Saving...',
       submitdata: { _method: "POST" },
       submit : 'OK',
@@ -13,4 +13,3 @@ $(".editable_text").editable('/edit_title', {
           $('.editable_text').resetForm();
       }
 });
-

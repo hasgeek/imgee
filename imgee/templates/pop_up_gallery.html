@@ -34,7 +34,7 @@ $('div.thumbnail').click(function (){
                         <div class="thumbnail" id="{{img.name}}">
                             <img src="{{url_for('get_thumbnail', img_name=img.name)}}"/>
                         </div>
-                        <div class="title editable_text" id="{{img.name}}">{{img.title}}</div>
+                        <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
                     </div>
                 {% endfor %}
             </div>
