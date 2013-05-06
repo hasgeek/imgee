@@ -102,7 +102,7 @@ def get_image(img_name):
     if extn and extn.lstrip('.').lower() in image_formats:
         size = request.args.get('size', '')
         img_name = get_resized_image(img, size)
-    img_name = get_s3_folder() + img_name
+    img_name = get_s3_folder() + img_name + extn
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
 
@@ -114,7 +114,7 @@ def get_thumbnail(img_name):
     if extn and extn.lstrip('.').lower() in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
         thumbnail = get_resized_image(img, tn_size, thumbnail=True)
-        thumbnail = get_s3_folder() + thumbnail
+        thumbnail = get_s3_folder() + thumbnail + extn
     else:
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
