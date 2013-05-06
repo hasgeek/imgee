@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% block title %}{{ profile.title }}{% endblock %}
 
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
