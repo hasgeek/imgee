@@ -1,7 +1,15 @@
 from bs4 import BeautifulSoup
 from StringIO import StringIO
 import requests
+import os
 from PIL import Image
+
+def upload(test_client, path):
+    content = open(path).read()
+    filename = os.path.basename(path)
+    d = {'uploaded_file': (StringIO(content), filename)}
+    response = test_client.post('/new', data=d, follow_redirects=True)
+    return filename, response
 
 def get_img_id(r, img_title):
     """
