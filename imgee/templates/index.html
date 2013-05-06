@@ -1,21 +1,25 @@
 {% extends "layout.html" %}
-
+{% block titletags %}
+  <title>{% block title %}{{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
+{% endblock %}
 {% block headerbox %}
   <header>
     {{ networkbar(siteid=config['SITE_ID'], login=true) }}
-      <div class="home-logo">
+    <div class="home-logo">
+      <p>
         <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo@2x.png') }}"></a>
-        <hr />
-        <div class="header">The HasGeek Image Hosting Website.</div>
-		{% if g.user %}
-			<h4>Welcome {{ g.user.fullname }}!
-			<a href="{{ url_for('show_profile', profile_name=g.user.username) }}">View your images</a></h4>
-		{% else %}
-			<a  href="{{ url_for('login') }}" class="btn btn-large">Login / Sign up</a>
-		{% endif %}
-      </div>
+      </p>
+      <p>
+        {% if g.user %}
+          Welcome <strong>{{ g.user.fullname }}!</strong>
+          <a href="{{ url_for('show_profile', profile_name=g.user.username) }}">View your images</a></h4>
+        {% else %}
+          <a  href="{{ url_for('login') }}" class="btn btn-large">Login / Sign up</a>
+        {% endif %}
+      </p>
+    </div>
   </header>
 {% endblock %}
 {% block basecontent %}
-
 {% endblock %}
