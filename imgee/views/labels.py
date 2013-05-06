@@ -21,7 +21,7 @@ def show_label(profile_name, label_name):
     labels.sort(key=lambda x: x.name)
     profile, label = get_profile_label(profile_name, label_name)
     files = label.stored_files.filter(Profile.userid==profile.userid).all()
-    return render_template('show_label.html', label=label.name, files=files, profile_name=g.user.username, labels=labels)
+    return render_template('show_label.html', label=label, files=files, profile_name=g.user.username, labels=labels)
 
 @app.route('/labels/new', methods=('GET', 'POST'))
 @auth
@@ -35,15 +35,18 @@ def create_label():
         return redirect(url_for('show_profile', profile_name=g.user.username))
     return render_template('create_label.html', form=form)
 
-@app.route('/<profile_name>/<label_name>/delete', methods=['POST'])
+@app.route('/<profile_name>/<label_name>/delete', methods=['GET', 'POST'])
 @auth
 def delete_label(profile_name, label_name):
     if profile_name != g.user.username:
         abort(403)
+    form = forms.RemoveLabelForm()
     profile, label = get_profile_label(profile_name, label_name)
-    utils.delete_label(label)
-    flash('The label "%s" was deleted.' % label_name)
-    return redirect(url_for('show_profile', profile_name=profile_name))
+    if form.is_submitted():
+        utils.delete_label(label)
+        flash('The label "%s" was deleted.' % label_name)
+        return redirect(url_for('show_profile', profile_name=profile_name))
+    return render_template('delete_label.html', form=form, label=label)
 
 @app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
 @auth
