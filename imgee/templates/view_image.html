@@ -18,7 +18,7 @@
         Labels:
         {% for label in img.labels %}
             <span class="label">
-                <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>
+                <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}"><i class="icon-tag"></i>&nbsp;{{label.name}}</a>
             </span>
         {% endfor %}
     {% endif %}
@@ -32,11 +32,11 @@
 {% block albumcontent %}
 {% set action_url=url_for('manage_labels', img_name=img.name, profile_name=img.profile.name) %}
     <div class="span4">
+        <a class="btn btn-danger" href="{{url_for('delete_file', img_name=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete Image</a>
+        <div class="padding"></div>
         <div class="form-box well">
-            <a class="btn btn-danger" href="{{url_for('delete_file', img_name=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete Image</a>
-            <br />
-            <div class="form-header">Manage labels:</div>
-            <br />
+            
+            <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div><hr />
             <div>{{ renderform(form, 'Manage Labels', action=action_url)}}</div>
         </div>
     </div>

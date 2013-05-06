@@ -106,6 +106,13 @@
   {% endfor %}
 {%- endmacro %}
 
+{% macro renderformcreate(form, formid, submit, message='', action='', cancel_url='', multipart=False) %}
+  <form id="{{ formid }}" method="POST" {%- if action %} action="{{ action }}" {%- endif %}{%- if multipart %} enctype="multipart/form-data" {%- endif %} accept-charset="UTF-8" class="form-horizontal">
+    {{ renderform_inner(form, formid) }}
+    {{ rendersubmit([(None, submit or "Submit", 'btn-primary')], cancel_url=cancel_url) }}
+  </form>
+{% endmacro %}
+
 {% block basecontent %}
   <div class="container">
     <div class="row album">
@@ -117,5 +124,8 @@
       {% endblock %}
     </div>
   </div>
+{% endblock %}
+
+{% block footerscripts %}
 {% endblock %}
 

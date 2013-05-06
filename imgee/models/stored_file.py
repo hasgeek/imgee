@@ -9,10 +9,12 @@ image_labels = db.Table('image_labels',
     db.Column('stored_file_id', db.Integer, db.ForeignKey('stored_file.id')),
 )
 
+
 class Label(BaseMixin, db.Model):
     __tablename__ = 'label'
     name = db.Column(db.String(50), nullable=False, unique=True, index=True)
     profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'), nullable=False)
+
 
 class StoredFile(BaseNameMixin, db.Model):
     __tablename__ = 'stored_file'

@@ -2,6 +2,7 @@
 
 from imgee.models import db, Label, Profile
 
+
 def save_label(label_name, profile_id):
     profile = Profile.query.filter_by(userid=profile_id).one()
     label = Label(name=label_name, profile=profile)
@@ -9,9 +10,11 @@ def save_label(label_name, profile_id):
     db.session.commit()
     return label
 
+
 def delete_label(label):
     db.session.delete(label)
     db.session.commit()
+
 
 def get_label_changes(nlabels, olabels):
     if (nlabels == olabels):
@@ -23,6 +26,7 @@ def get_label_changes(nlabels, olabels):
     else:
         status, diff = '', nlabels
     return status, list(diff)
+
 
 def save_labels_to(stored_file, labels):
     new_labels = set(labels)

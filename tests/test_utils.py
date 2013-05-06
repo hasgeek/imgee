@@ -30,10 +30,12 @@ def get_img_id(r, img_title):
     x = img_div.find('a')['href']
     return x.split('/')[-1]
 
+
 def get_image_count(html):
     soup = BeautifulSoup(html)
     imgs = soup.findAll('div', attrs={'class': 'image'})
     return len(imgs)
+
 
 def download_image(url):
     r = requests.get(url)
@@ -43,6 +45,7 @@ def download_image(url):
         imgio.write(chunk)
     imgio.seek(0)
     return imgio
+
 
 def get_image_size(path):
     img = Image.open(path)

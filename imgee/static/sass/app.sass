@@ -1,9 +1,16 @@
 @import "compass"
 
-
+/* ======== General ========= */
 .logo
   margin-top: 25px
+#logo
+  @include replace-text-with-dimensions('logo.png')
 
+.padding
+  padding-bottom: 15px
+
+
+/* ======== index page ========= */
 .home-logo
   margin-left: auto
   margin-right: auto
@@ -20,6 +27,7 @@
     margin-top: 15px
 
 
+/* ======== profile, pop_up_gallery, show_label pages ========= */
 .sidebar
   .nav-list
     li
@@ -37,48 +45,132 @@
       font-size: 18px
       &:hover
         text-decoration: none
-.padding
-  padding-bottom: 15px
 
 .albumpage
-  padding-left: 62px
+  padding-left: 60px
   padding-top: 25px
-
-.form-box
-  padding-left: 20px
-  padding-right: 20px
-  padding-top: 20px
-  padding-bottom: 20px
-  .btn-danger
-    margin-bottom: 30px
-  .form-header
-    text-transform: uppercase
+  background: none repeat scroll 0 0 #FFFFFF
+  border: 1px solid #ECECEC
+  border-radius: 4px 4px 4px 4px
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1) inset
+  display: block
 
 .image
   width: 150px
-  height: 210px
+  height: 200px
   display: block
   float: left
   padding-left: 15px
   padding-right: 15px
   margin-top: 20px
   .title
-    width: 160px
+    width: 130px
+    margin-left: auto
+    margin-right: auto
+    margin-top: 3px
     white-space: nowrap
     overflow: hidden
     text-overflow: ellipsis
+    font-size: 14px
+    font-weight: bold
   .title, .labels
     text-align: center
+.editable_text
+  &:hover
+    background-color: #ccc
+  form
+    height: 200px
+    z-index: 999
+    input
+      background-color: #ccc
+      border: 0
+      box-shadow: none
+      width: 120px
+      height: 150px
+
 
 .thumbnail
   background-color: #FFF
-  width: 80%
+  width: 88%
+  border-radius: 0
   height: auto
   margin-right: auto
   margin-left: auto
   img
-    width: 140px
-    height: 120px
+    width: 130px
+    height: 130px
+
+.label
+  background-color: #FFF
+  border: 1px solid #E7E7E7
+  border-radius: 0
+  padding: 0
+  padding-left: 5px
+  padding-right: 5px
+  margin-right: 2px
+  margin-left: 2px
+  font-size: 10px
+  text-shadow: none
+
+
+/* ======== view_image page ========= */
+.heading
+  font-size: 20px
+  margin-bottom: 20px
+
+.image-display
+  background-color: #000
+  text-align: center
+  border: 1px solid #C0BCB4
+  padding-bottom: 0px
+  margin-bottom: 30px
+
+/* ======== forms (in view_image, gellery, form, delete, create_label pages)========= */
+.form-box
+  padding: 10px
+  .btn-danger
+    margin-bottom: 30px
+  .form-header
+    text-transform: uppercase
+
+.form-horizontal 
+  .controls
+    margin-left: 0px
+    float: right
+  .control-label
+    text-align: left
+    width: 45px
+  span.help-required
+    float: left
+
+form
+  margin: 0px
+
+.well
+  hr
+    margin: 8px 0 20px 0
+
+.form-actions
+  margin: -20px
+  margin-top: 20px
+  padding: 0px
+  background: transparent
+  button
+    float: right
+    margin: 10px
+
+.form-submit
+  position: relative
+  bottom: 0
+
+.form-title
+  font-size: 15px
+  font-weight: bold
+  color: #F0A40C
+input[type="file"]
+  background-color: #FFF
+.form-actions
+  margin: 0
 
 .delete
   position: relative
@@ -98,48 +190,6 @@
   a:hover
     text-decoration: none
 
-.label
-  background-color: #FFF
-  border: 1px solid #E7E7E7
-  border-radius: 0
-  padding: 0
-  padding-left: 5px
-  padding-right: 5px
-  margin-right: 2px
-  margin-left: 2px
-  font-size: 10px
-  text-shadow: none
-
-.heading
-  font-size: 20px
-  margin-bottom: 20px
-
-.image-display
-  background-color: #000
-  text-align: center
-  border: 1px solid #C0BCB4
-  padding-bottom: 0px
-  margin-bottom: 30px
-  
-.form-horizontal 
-  .controls
-    margin-left: 0px
-    float: right
-  .control-label
-    text-align: left
-    width: 45px
-  span.help-required
-    float: left
-
-form
-  margin: 0px
-.form-actions
-  margin: -20px
-  margin-top: 20px
-  padding: 0px
-  button
-    float: right
-    margin: 10px
 .delete-box, .create-box, .upload-box
   margin-left: auto
   margin-right: auto
@@ -149,21 +199,21 @@ form
   padding-right: 10px
   padding-bottom: 10px
   border-radius: 5px
-  p
-    font-size: 14px
-    margin-top: 20px
   .cancel
     margin-top: 10px
     margin-left: -150px
-.form-submit
-  position: relative
-  bottom: 0
 
-.create-box, .upload-box
-  background-color: #D9EDF7
-  border: 1px solid #BCE8F1
+.delete-box
+  hr
+    margin: 8px 0 10px 0
+    border-top-color: #EED3D7
+  p
+    font-size: 13px
+    color: #333
+  .form-title, #warning
+    color: #B94A48
+
 .upload-box
-  padding-top: 20px
   label
     padding-left: 20px
   .form-horizontal 
@@ -174,11 +224,8 @@ form
       margin-left: -15px
     span.help-required
       float: left
-.form-actions
-  margin: 0
 
-#logo
-  @include replace-text-with-dimensions('logo.png')
+
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5)
   #logo
@@ -205,14 +252,16 @@ form
   .sidebar
     .btn
       width: auto
+  .form-box.well
+    margin-top: 20px
   
 @media (min-width: 768px) and (max-width: 979px)
-  .form-box
+  .well
     .form-horizontal
       .controls
-        margin-top: 10px
         float: left
-        margin-left: -15px
+        btn
+          float: left
   .albumpage
     padding-left: 48px
     padding-top: 20px

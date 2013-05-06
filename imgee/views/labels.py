@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 
 from flask import (render_template, request, g, url_for,
-                    abort, redirect, flash)
+                     abort, redirect, flash)
 from imgee import app, forms
 from imgee.views.login import auth
 from imgee.models import Label, StoredFile, Profile, db
 import imgee.utils as utils
 
+
 def get_profile_label(profile_name, label_name):
     profile = Profile.query.filter(Profile.name==profile_name, Label.name==label_name).first_or_404()
     label = [l for l in profile.labels if l.name == label_name][0]
     return profile, label
+
 
 @app.route('/<profile_name>/<label_name>')
 @auth
@@ -62,12 +64,13 @@ def edit_label():
     else:
         return form.label.errors[0], 400
 
+
 @app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
 @auth
 def manage_labels(profile_name, img_name):
     if profile_name != g.user.username:
         abort(403)
-    profile = Profile.query.filter(Profile.name==profile_name, StoredFile.name==img_name).first_or_404()
+    profile = Profile.query.filter(Profile.name == profile_name, StoredFile.name == img_name).first_or_404()
     stored_file = [s for s in profile.stored_files if s.name == img_name][0]
     image_labels = [l.name for l in stored_file.labels]
     form = forms.AddLabelForm()

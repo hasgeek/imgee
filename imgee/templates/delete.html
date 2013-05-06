@@ -14,7 +14,11 @@
 	{% block albumcontent %}
 	{% endblock %}
 	<div class="delete-box alert alert-error">
-		<p>Are you sure you want to delete "{{file.title}}"?<br /> <strong>Warning: If you delete it, you will loss all the links to this image.</strong></p>
+		<div class="form-title"><i class="icon-trash"></i>&nbsp;&nbsp;Confirm delete</div><hr />
+		<p>Are you sure you want to delete "<strong>{{file.title}}</strong>"?</p>
+		<p id="warning">
+			<i class="icon-warning-sign"></i>&nbsp;<strong>Warning: If you delete it, you will loss all the links wherever this image appears.</strong>
+		</p>
 		<img src='/thumbnail/{{file.name}}' />
 		{% set cancel_url=url_for('show_profile', profile_name=profile_name) %}
 		<div class="form-submit">{{ renderformdelete(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}</div>
