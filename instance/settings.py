@@ -39,7 +39,6 @@ AWS_SECRET_KEY = 'Set aws secret key here'
 AWS_BUCKET = 'set your bucketname here'
 AWS_FOLDER = ''     # set this if you want all files to be uploaded to a particular folder eg., 'test/'
 #: Domain name for files
-MEDIA_DOMAIN = 'set domain name here'
-THUMBNAIL_SIZE=(75, 75)   # (w, h) in px
+MEDIA_DOMAIN = 'https://%s.s3.amazonaws.com' % AWS_BUCKET
+THUMBNAIL_SIZE = (75, 75)   # (w, h) in px
 UNKNOWN_FILE_THUMBNAIL = 'set path to unknown file thumbnail on media_domain'
-

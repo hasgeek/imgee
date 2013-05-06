@@ -14,8 +14,8 @@
 	{% block albumcontent %}
 	{% endblock %}
 
-	<div class="create-box">
-		<p>Create Label</p>
+	<div class="create-box well">
+		<div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Create label</div><hr />		
 		{% set cancel_url=url_for('show_profile', profile_name=profile_name) %}
 		{{ renderformcreate(form, "Create", cancel_url=cancel_url)}}
 	</div>

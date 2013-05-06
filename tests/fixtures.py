@@ -1,9 +1,11 @@
 import unittest
-import random, string
+import random
+import string
 
 from flask import g
 from imgee import init_for, app
 from imgee.models import db, User
+
 
 def get_test_user(name, id=1):
     if not name:
@@ -14,6 +16,7 @@ def get_test_user(name, id=1):
             lastuser_token=u'last-user-token',
             fullname=name.capitalize(), id=id)
     return u
+
 
 class ImgeeTestCase(unittest.TestCase):
     def setUp(self):
@@ -28,9 +31,10 @@ class ImgeeTestCase(unittest.TestCase):
     def tearDown(self):
         db.drop_all()
 
+
 class DummyUser(object):
     def __init__(self, username):
         self.username = username
 
     def __enter__(self):
-        g.user = get_test_user(name=username)
+        g.user = get_test_user(name=self.username)
