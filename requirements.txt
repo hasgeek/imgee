@@ -5,4 +5,4 @@ Flask-SQLAlchemy
 https://github.com/hasgeek/flask-lastuser/zipball/master
 Flask-Admin
 boto
-PIL
+Pillow
