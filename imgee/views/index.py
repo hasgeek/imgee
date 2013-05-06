@@ -80,7 +80,7 @@ def show_profile(profile):
     files = profile.stored_files.order_by('created_at desc').all()
     labels = profile.labels
     labels.sort(key=lambda x: x.name)
-    return render_template('profile.html', files=files, labels=labels, profile_name=profile.name)
+    return render_template('profile.html', profile=profile, files=files, labels=labels, profile_name=profile.name)
 
 
 @app.route('/view/<img_name>')
