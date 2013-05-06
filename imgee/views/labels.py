@@ -21,7 +21,8 @@ def show_label(profile_name, label_name):
     labels.sort(key=lambda x: x.name)
     profile, label = get_profile_label(profile_name, label_name)
     files = label.stored_files.filter(Profile.userid==profile.userid).all()
-    return render_template('show_label.html', label=label, files=files, profile_name=g.user.username, labels=labels)
+    form = forms.EditLabelForm()
+    return render_template('show_label.html', form=form, label=label, files=files, profile_name=g.user.username, labels=labels)
 
 @app.route('/labels/new', methods=('GET', 'POST'))
 @auth
@@ -51,7 +52,7 @@ def delete_label(profile_name, label_name):
 @app.route('/edit_label', methods=['POST'])
 @auth
 def edit_label():
-    form = forms.EditLabelForm(csrf_enabled=False)
+    form = forms.EditLabelForm()
     if form.validate_on_submit():
         label_id = request.form.get('label_id')
         label = Label.query.filter(Profile.userid==g.user.userid, Label.id==label_id).first_or_404()

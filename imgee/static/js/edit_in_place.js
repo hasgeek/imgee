@@ -1,6 +1,6 @@
 $(".editable_title").editable('/edit_title', {
       indicator : 'Saving...',
-      submitdata: { _method: "POST" },
+      submitdata: { _method: "POST", 'csrf_token': $('#csrf_token').attr('value') },
       submit : 'OK',
       cancel : 'Cancel',
       tooltip   : 'Click to edit',
@@ -16,7 +16,7 @@ $(".editable_title").editable('/edit_title', {
 
 $(".editable_label").editable('/edit_label', {
       indicator : 'Saving...',
-      submitdata: { _method: "POST" },
+      submitdata: { _method: "POST", 'csrf_token': $('#csrf_token').attr('value') },
       submit : 'OK',
       cancel : 'Cancel',
       tooltip   : 'Click to edit',

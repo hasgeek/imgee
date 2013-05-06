@@ -1,5 +1,14 @@
 {% extends "layout.html" %}
+
+{% block footerscripts %}
+<script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
+{% endblock %}
+
 {% block sidebar %}
+<div style='display:none;'>
+    {{form.csrf_token()}}
+</div>
 <div class="span2">
     <div class="sidebar well">
       <div class="photostream-profile">
@@ -30,8 +39,7 @@
 
 {% block albumcontent %}
     <div class="span10">
-        <div class="heading">Images with label "{{label.name}}"
-        </div>
+        <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
         <a class="btn btn-danger" style="float:right;" href="{{url_for('delete_label', profile_name=g.user.username ,label_name=label.name)}}">
             <i class="icon-trash"></i>&nbsp;Delete Label</a>
         <br />

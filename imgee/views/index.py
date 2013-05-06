@@ -58,7 +58,7 @@ def pop_up_gallery():
 @app.route('/edit_title', methods=['POST'])
 @auth
 def edit_title():
-    form = forms.EditTitleForm(csrf_enabled=False)
+    form = forms.EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
         f = StoredFile.query.filter(Profile.userid==g.user.userid, StoredFile.name==file_name).first_or_404()
