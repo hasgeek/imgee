@@ -13,3 +13,20 @@ $(".editable_title").editable('/edit_title', {
           $('.editable_text').resetForm();
       }
 });
+
+$(".editable_label").editable('/edit_label', {
+      indicator : 'Saving...',
+      submitdata: { _method: "POST" },
+      submit : 'OK',
+      cancel : 'Cancel',
+      tooltip   : 'Click to edit',
+      id: 'label_id',
+      name: 'label',
+      onerror: function (settings, label_div, error){
+          if (error['responseText']){
+              alert(error['responseText']);
+          }
+          $('.editable_label').resetForm();
+      }
+});
+

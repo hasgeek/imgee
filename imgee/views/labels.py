@@ -4,7 +4,7 @@ from flask import (render_template, request, g, url_for,
                     abort, redirect, flash)
 from imgee import app, forms
 from imgee.views.login import auth
-from imgee.models import Label, StoredFile, Profile
+from imgee.models import Label, StoredFile, Profile, db
 import imgee.utils as utils
 
 def get_profile_label(profile_name, label_name):
@@ -47,6 +47,19 @@ def delete_label(profile_name, label_name):
         flash('The label "%s" was deleted.' % label_name)
         return redirect(url_for('show_profile', profile_name=profile_name))
     return render_template('delete_label.html', form=form, label=label)
+
+@app.route('/edit_label', methods=['POST'])
+@auth
+def edit_label():
+    form = forms.EditLabelForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        label_id = request.form.get('label_id')
+        label = Label.query.filter(Profile.userid==g.user.userid, Label.id==label_id).first_or_404()
+        label.name = request.form.get('label')
+        db.session.commit()
+        return label.name
+    else:
+        return form.label.errors[0], 400
 
 @app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
 @auth
