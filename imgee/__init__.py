@@ -25,6 +25,7 @@ css = Bundle(baseframe_css, 'css/app.css')
 
 import imgee.models
 import imgee.views
+from imgee.models import db
 
 
 # Configure the app
