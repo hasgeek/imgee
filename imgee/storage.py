@@ -20,13 +20,13 @@ def get_s3_bucket():
 
 
 def save(fp, img_name, remote=True, content_type=None):
+    img_name = "%s%s" % (img_name, os.path.splitext(fp.filename)[1])
     local_path = os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
     with open(local_path, 'w') as img:
         img.write(fp.read())
 
     if remote:
         fp.seek(0)
-        img_name = "%s%s" % (img_name, os.path.splitext(fp.filename)[1])
         save_on_s3(fp, img_name, content_type=content_type)
 
 
@@ -83,16 +83,16 @@ def get_image_locally(img_name):
 
 
 def resize_and_save(img, size, thumbnail=False):
-    src_path = get_image_locally(img.name)
-    uniq_name = uuid4().hex
-    scaled_img_name = "%s%s" % (uniq_name, os.path.splitext(img.title)[1])
+    extn = os.path.splitext(img.title)[1]
+    src_path = get_image_locally(img.name+extn)
+    scaled_img_name = uuid4().hex
     content_type = get_file_type(img.title)  # eg: image/jpeg
     format = content_type.split('/')[1] if content_type else None
     scaled = resize_img(src_path, size, format, thumbnail=thumbnail)
-    save_on_s3(scaled, scaled_img_name, content_type)
+    save_on_s3(scaled, scaled_img_name+extn, content_type)
 
     size_s = "%sx%s" % size
-    scaled = Thumbnail(name=uniq_name, size=size_s, stored_file=img)
+    scaled = Thumbnail(name=scaled_img_name, size=size_s, stored_file=img)
     db.session.add(scaled)
     db.session.commit()
     return scaled_img_name
