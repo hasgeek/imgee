@@ -1,11 +1,22 @@
+--- 
+env: 
+  global: 
+  - secure: |-
+      G5Dn+zkbN/BeNoopxtM2idC2Hy1ebJxRxprD7XEAmH6VO26ANgWYLI1dMrdH
+      uQc9F317STawQ/Um6KnqjErOKkC2BUYTOTj8AzoPVFz6NcK/Ca4d9Vfbtf5u
+      B4RrIjSmx1GlAlPFjjoaawjBYVj9QRua06/n6e1/Z8h1t3kn1jw=
+  - secure: |-
+      SQ9lTuSD5jg3NSM8yMfMU58ppAYBgd+6VQP01wUPFrV/JSsbfgnVjMTm/Nbk
+      EGeHYvQUiyAg7zM4KdNJr6txj+jBE8MAeh7EwYNHoh9B7Vx//GxmXFnWyjXV
+      9cJkFroDW1Zfs2SZjLtzMQC8YXE30jmMxg+XHCQewKzRa4u1320=
 language: python
-python:
-  - 2.7
-install:
-  - pip install -r requirements.txt
-  - pip install nose coverage BeautifulSoup4
-script:
-  - nosetests --with-coverage
-notifications:
+notifications: 
   email: false
-  irc: "irc.freenode.net#hasgeek-dev"
+  irc: irc.freenode.net#hasgeek-dev
+python: 
+- 2.7
+script: 
+- nosetests --with-coverage
+install: 
+- pip install -r requirements.txt
+- pip install nose coverage BeautifulSoup4
