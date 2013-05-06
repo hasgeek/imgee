@@ -1,4 +1,3 @@
---- 
 env: 
   global: 
   - secure: |-
@@ -14,9 +13,11 @@ notifications:
   email: false
   irc: irc.freenode.net#hasgeek-dev
 python: 
-- 2.7
+  - 2.7
+before_script:
+  - mkdir imgee/static/test_uploads
 script: 
-- nosetests --with-coverage
+  - nosetests --with-coverage
 install: 
-- pip install -r requirements.txt
-- pip install nose coverage BeautifulSoup4
+  - pip install -r requirements.txt
+  - pip install nose coverage BeautifulSoup4
