@@ -5,8 +5,8 @@ from uuid import uuid4
 from flask import (render_template, request, g, url_for,
                 abort, redirect, flash)
 from urlparse import urljoin
-
-from imgee import app, forms
+from coaster.views import load_model
+from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
 from imgee.views.login import auth
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
@@ -74,15 +74,13 @@ def edit_title():
 
 
 @app.route('/<profile_name>')
-@auth
-def show_profile(profile_name):
-    if g.user.username != profile_name:
-        abort(403)
-    p = Profile.query.filter_by(name=profile_name).first_or_404()
-    files = p.stored_files.order_by('created_at desc').all()
-    labels = p.labels
+@load_model(Profile, {'name': 'profile_name'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+def show_profile(profile):
+    files = profile.stored_files.order_by('created_at desc').all()
+    labels = profile.labels
     labels.sort(key=lambda x: x.name)
-    return render_template('profile.html', files=files, labels=labels, profile_name=profile_name)
+    return render_template('profile.html', files=files, labels=labels, profile_name=profile.name)
 
 
 @app.route('/view/<img_name>')

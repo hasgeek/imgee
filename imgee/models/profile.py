@@ -28,3 +28,13 @@ class Profile(BaseNameMixin, db.Model):
 
     def type_label(self):
         return profile_types.get(self.type, profile_types[0])
+
+    def permissions(self, user, inherited=None):
+        perms = super(Profile, self).permissions(user, inherited)
+        if user is not None and self.userid in user.user_organizations_owned_ids():
+            perms.add('view')
+            perms.add('edit')
+            perms.add('delete')
+            perms.add('new-file')
+            perms.add('new-label')
+        return perms
