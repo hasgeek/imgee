@@ -64,7 +64,8 @@ def edit_title():
     form = forms.EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
-        f = StoredFile.query.filter(Profile.userid==g.user.userid, StoredFile.name==file_name).first_or_404()
+        q = and_(Profile.userid.in_(g.user.organizations_owned_ids(), StoredFile.name==file_name))
+        f = StoredFile.query.filter(q).first_or_404()
         f.title = request.form.get('file_title')
         db.session.commit()
         return f.title
@@ -85,7 +86,8 @@ def show_profile(profile):
 @app.route('/view/<img_name>')
 @lastuser.requires_login
 def view_image(img_name):
-    img = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
+    q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
+    img = StoredFile.query.filter(q).first_or_404()
     img_labels = [label.name for label in img.labels]
     form = forms.AddLabelForm(img_name=img_name, label=[l.id for l in img.labels])
     form.label.choices = [(l.id, l.name) for l in img.profile.labels]
@@ -106,7 +108,8 @@ def get_image(img_name):
 @app.route('/thumbnail/<img_name>')
 @lastuser.requires_login
 def get_thumbnail(img_name):
-    img = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
+    q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
+    img = StoredFile.query.filter(q).first_or_404()
     name, extn = os.path.splitext(img.title)
     if extn and extn.lstrip('.').lower() in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
@@ -120,7 +123,8 @@ def get_thumbnail(img_name):
 @app.route('/delete/<img_name>', methods=('GET', 'POST'))
 @lastuser.requires_login
 def delete_file(img_name):
-    stored_file = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
+    q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
+    stored_file = StoredFile.query.filter().first_or_404()
     profile_name = g.user.username
 
     form = forms.DeleteImageForm()
