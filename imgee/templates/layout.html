@@ -114,16 +114,14 @@
 {% endmacro %}
 
 {% block basecontent %}
-  <div class="container">
+  {% block content %}
     <div class="row album">
-      {% block content %}
-          {% block sidebar %}
-          {% endblock %}
-          {% block albumcontent %}
-          {% endblock %}
+      {% block sidebar %}
+      {% endblock %}
+      {% block albumcontent %}
       {% endblock %}
     </div>
-  </div>
+  {% endblock %}
 {% endblock %}
 
 {% block footerscripts %}
