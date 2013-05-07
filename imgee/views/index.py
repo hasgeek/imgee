@@ -60,7 +60,7 @@ def upload_file(profile):
 def pop_up_gallery(profile):
     files = profile.stored_files.order_by('created_at desc').all()
     form = forms.UploadImageForm()
-    return render_template('pop_up_gallery.html', files=files, profile_name=profile.name, form=form, next=request.referrer)
+    return render_template('pop_up_gallery.html', files=files, profile_name=profile.name, form=form)
 
 
 @app.route('/<profile>/edit_title', methods=['POST'])
