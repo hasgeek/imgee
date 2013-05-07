@@ -73,7 +73,7 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
 <script>
 $(function(){
     $(".imgee_holder").imgee({
-            'imgee_url': 'http://0.0.0.0:4500/gallery',
+            'imgee_url': 'http://0.0.0.0:4500/<profile>/popup',
              debug:true
     });
 });
