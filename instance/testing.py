@@ -12,5 +12,5 @@ AWS_FOLDER = 'test'
 
 MEDIA_DOMAIN = 'https://%s.s3.amazonaws.com' % AWS_BUCKET
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite://'
 CSRF_ENABLED = False
