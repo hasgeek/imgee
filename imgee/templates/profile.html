@@ -3,6 +3,7 @@
 
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
+<script> var profile = {{g.user.username}}; </script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 {% endblock %}
 
@@ -11,12 +12,12 @@
     <div class="sidebar well">
       <div class="photostream-profile">
         <div class="profile-name">
-          <a href="{{ url_for('show_profile', profile_name=g.user.username) }}">All images</a>
+          <a href="{{ url_for('show_profile', profile=g.user.username) }}">All images</a>
         </div>
       </div>
 
       <div class="options">
-        <a class="btn btn-primary" href="{{url_for('upload_file')}}">Upload images</a>
+        <a class="btn btn-primary" href="{{url_for('upload_file',  profile=g.user.username)}}">Upload images</a>
         <a class="btn btn-primary" href="{{url_for('create_label')}}">New label</a>
       </div>
 
@@ -44,7 +45,7 @@
                     <div class="image">
                         <div class="thumbnail">
                             <a href="{{url_for('view_image', img_name=img.name)}}" title="view image">
-                                <img src="{{url_for('get_thumbnail', img_name=img.name)}}"/>
+                                <img src="{{url_for('get_thumbnail', profile=g.user.username, img_name=img.name)}}"/>
                             </a>
                         </div>
                         <div class="title editable_text" id="{{img.name}}">{{img.title}}</div>
@@ -60,7 +61,7 @@
                 </div>
             </div>
         {% else %}
-            There are no images uploaded yet. <a href="{{url_for('upload_file')}}">Upload them.</a>
+            There are no images uploaded yet. <a href="{{url_for('upload_file', profile=g.user.username)}}">Upload them.</a>
         {% endif %}
     </div>
 </div>

@@ -24,14 +24,14 @@ def _redirect_url_frm_upload(profile_name):
     if url_for('pop_up_gallery') in referrer:
         url = request.referrer
     else:
-        url = url_for('show_profile', profile_name=profile_name)
+        url = url_for('show_profile', profile=profile_name)
     return url
 
 
 @app.route('</profile>/new', methods=['GET', 'POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def upload_file():
+def upload_file(profile):
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
@@ -52,17 +52,16 @@ def upload_file():
 @app.route('/<profile>/popup')
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def pop_up_gallery():
-    p = Profile.query.filter_by(userid=g.user.userid).first_or_404()
-    files = p.stored_files.order_by('created_at desc').all()
+def pop_up_gallery(profile):
+    files = profile.stored_files.order_by('created_at desc').all()
     form = forms.UploadImageForm()
-    return render_template('pop_up_gallery.html', files=files, profile_name=p.name, form=form, next=request.referrer)
+    return render_template('pop_up_gallery.html', files=files, profile_name=profile.name, form=form, next=request.referrer)
 
 
 @app.route('/<profile>/edit_title', methods=['POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
-def edit_title():
+def edit_title(profile):
     form = forms.EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
@@ -88,7 +87,7 @@ def show_profile(profile):
 @app.route('/<profile>/view/<img_name>')
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def view_image(img_name):
+def view_image(profile, img_name):
     q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
     img = StoredFile.query.filter(q).first_or_404()
     img_labels = [label.name for label in img.labels]
@@ -111,7 +110,7 @@ def get_image(img_name):
 @app.route('/<profile>/thumbnail/<img_name>')
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def get_thumbnail(img_name):
+def get_thumbnail(profile, img_name):
     q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
     img = StoredFile.query.filter(q).first_or_404()
     name, extn = os.path.splitext(img.title)
@@ -127,7 +126,7 @@ def get_thumbnail(img_name):
 @app.route('/<profile>/delete/<img_name>', methods=('GET', 'POST'))
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
-def delete_file(img_name):
+def delete_file(profile, img_name):
     q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
     stored_file = StoredFile.query.filter().first_or_404()
     profile_name = g.user.username
@@ -140,4 +139,4 @@ def delete_file(img_name):
         flash("%s is deleted" % stored_file.title)
     else:
         return render_template('delete.html', form=form, file=stored_file, profile_name=profile_name)
-    return redirect(url_for('show_profile', profile_name=profile_name))
+    return redirect(url_for('show_profile', profile=profile_name))
