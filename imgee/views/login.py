@@ -12,21 +12,6 @@ from imgee.models import db, User, Profile, PROFILE_TYPE
 lastuser.init_usermanager(UserManager(db, User))
 
 
-def auth(f):
-    # authenticate and authorize
-    @wraps(f)
-    def decorated_func(*args, **kwargs):
-        if app.testing:
-            g.user = app.test_user
-        if g.user is None:
-            return redirect(url_for('login', next=request.url))
-        make_profiles()
-        if g.user.userid in g.user.user_organizations_owned_ids():
-            return f(*args, **kwargs)
-        return abort(403)
-    return decorated_func
-
-
 @app.route('/login')
 @lastuser.login_handler
 def login():
