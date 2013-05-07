@@ -8,7 +8,6 @@ from urlparse import urljoin
 from coaster.views import load_model
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
-from imgee.views.login import auth
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
@@ -29,8 +28,8 @@ def _redirect_url_frm_upload(profile_name):
     return url
 
 
-@app.route('/new', methods=('GET', 'POST'))
-@auth
+@app.route('/new', methods=['GET', 'POST'])
+@lastuser.requires_login
 def upload_file():
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
@@ -51,7 +50,7 @@ def upload_file():
 
 
 @app.route('/gallery')
-@auth
+@lastuser.requires_login
 def pop_up_gallery():
     p = Profile.query.filter_by(userid=g.user.userid).first_or_404()
     files = p.stored_files.order_by('created_at desc').all()
@@ -60,7 +59,7 @@ def pop_up_gallery():
 
 
 @app.route('/edit_title', methods=['POST'])
-@auth
+@lastuser.requires_login
 def edit_title():
     form = forms.EditTitleForm()
     if form.validate_on_submit():
@@ -84,7 +83,7 @@ def show_profile(profile):
 
 
 @app.route('/view/<img_name>')
-@auth
+@lastuser.requires_login
 def view_image(img_name):
     img = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
     img_labels = [label.name for label in img.labels]
@@ -105,7 +104,7 @@ def get_image(img_name):
 
 
 @app.route('/thumbnail/<img_name>')
-@auth
+@lastuser.requires_login
 def get_thumbnail(img_name):
     img = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
     name, extn = os.path.splitext(img.title)
@@ -119,7 +118,7 @@ def get_thumbnail(img_name):
 
 
 @app.route('/delete/<img_name>', methods=('GET', 'POST'))
-@auth
+@lastuser.requires_login
 def delete_file(img_name):
     stored_file = StoredFile.query.filter(StoredFile.name == img_name, Profile.userid == g.user.userid).first_or_404()
     profile_name = g.user.username

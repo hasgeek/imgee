@@ -3,31 +3,30 @@
 from flask import (render_template, request, g, url_for,
                      abort, redirect, flash)
 from imgee import app, forms
-from imgee.views.login import auth
 from imgee.models import Label, StoredFile, Profile, db
 import imgee.utils as utils
 
 
 def get_profile_label(profile_name, label_name):
-    profile = Profile.query.filter(Profile.name==profile_name, Label.name==label_name).first_or_404()
+    profile = Profile.query.filter(Profile.name == profile_name, Label.name == label_name).first_or_404()
     label = [l for l in profile.labels if l.name == label_name][0]
     return profile, label
 
 
 @app.route('/<profile_name>/<label_name>')
-@auth
+@lastuser.requires_login
 def show_label(profile_name, label_name):
     p = Profile.query.filter_by(name=profile_name).first_or_404()
     files = p.stored_files.order_by('created_at desc').all()
     labels = p.labels
     labels.sort(key=lambda x: x.name)
     profile, label = get_profile_label(profile_name, label_name)
-    files = label.stored_files.filter(Profile.userid==profile.userid).all()
+    files = label.stored_files.filter(Profile.userid == profile.userid).all()
     form = forms.EditLabelForm()
     return render_template('show_label.html', form=form, label=label, files=files, profile_name=g.user.username, labels=labels)
 
 @app.route('/labels/new', methods=('GET', 'POST'))
-@auth
+@lastuser.requires_login
 def create_label():
     profile_id = g.user.userid
     form = forms.CreateLabelForm(profile_id=profile_id)
@@ -39,7 +38,7 @@ def create_label():
     return render_template('create_label.html', form=form)
 
 @app.route('/<profile_name>/<label_name>/delete', methods=['GET', 'POST'])
-@auth
+@lastuser.requires_login
 def delete_label(profile_name, label_name):
     if profile_name != g.user.username:
         abort(403)
@@ -52,12 +51,12 @@ def delete_label(profile_name, label_name):
     return render_template('delete_label.html', form=form, label=label)
 
 @app.route('/edit_label', methods=['POST'])
-@auth
+@lastuser.requires_login
 def edit_label():
     form = forms.EditLabelForm()
     if form.validate_on_submit():
         label_id = request.form.get('label_id')
-        label = Label.query.filter(Profile.userid==g.user.userid, Label.id==label_id).first_or_404()
+        label = Label.query.filter(Profile.userid == g.user.userid, Label.id == label_id).first_or_404()
         label.name = request.form.get('label')
         db.session.commit()
         return label.name
@@ -66,7 +65,7 @@ def edit_label():
 
 
 @app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
-@auth
+@lastuser.requires_login
 def manage_labels(profile_name, img_name):
     if profile_name != g.user.username:
         abort(403)
