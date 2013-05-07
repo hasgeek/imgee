@@ -1,4 +1,5 @@
-$(".editable_title").editable('/edit_title', {
+
+$(".editable_title").editable('/'+profile+'/edit_title', {
       indicator : 'Saving...',
       submitdata: { _method: "POST", 'csrf_token': $('#csrf_token').attr('value') },
       submit : 'OK',
@@ -14,7 +15,7 @@ $(".editable_title").editable('/edit_title', {
       }
 });
 
-$(".editable_label").editable('/edit_label', {
+$(".editable_label").editable('/'+profile+'/edit_label', {
       indicator : 'Saving...',
       submitdata: { _method: "POST", 'csrf_token': $('#csrf_token').attr('value') },
       submit : 'OK',

@@ -21,4 +21,4 @@ class User(UserBase, db.Model):
 
     @property
     def profile_url(self):
-        return url_for('show_profile', profile_name=self.username or self.userid)
+        return url_for('show_profile', profile=self.username or self.userid)
