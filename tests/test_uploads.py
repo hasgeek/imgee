@@ -17,7 +17,7 @@ class UploadTestCase(ImgeeTestCase):
         self.test_file = 'imgee/static/img/imgee.png'
 
     def upload(self, path=None):
-        return test_utils.upload(self.client, path or self.test_file)
+        return test_utils.upload(self.client, path or self.test_file, '/%s/new' % self.test_user_name)
 
     def exists_on_media_domain(self, img_id):
         r = self.client.get('/file/%s' % img_id)
@@ -25,7 +25,7 @@ class UploadTestCase(ImgeeTestCase):
         return requests.get(r.location).ok
 
     def thumbnails_exists_on_media_domain(self, img_id):
-        r = self.client.get('/thumbnail/%s' % img_id)
+        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, img_id))
         self.assertEquals(r.status_code, 301)
         return requests.get(r.location).ok
 
@@ -47,7 +47,7 @@ class UploadTestCase(ImgeeTestCase):
     def test_view_image(self):
         filename, r = self.upload()
         self.img_id = test_utils.get_img_id(r.data, filename)
-        view_url = '/view/%s' % (self.img_id)
+        view_url = '/%s/view/%s' % (self.test_user_name, self.img_id)
         r = self.client.get(view_url)
         self.assertEquals(r.status_code, 200)
 
@@ -66,13 +66,13 @@ class UploadTestCase(ImgeeTestCase):
         self.img_id = test_utils.get_img_id(r.data, filename)
         self.assertEquals(test_utils.get_image_count(r.data), 1)
 
-        r = self.client.post('/delete/%s' % self.img_id)
+        r = self.client.post('/%s/delete/%s' % (self.test_user_name, self.img_id))
         self.assertEquals(test_utils.get_image_count(r.data), 0)
 
         r = self.client.get('/file/%s' % self.img_id)
         self.assertEquals(r.status_code, 404)
 
-        r = self.client.get('/thumbnail/%s' % self.img_id)
+        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 404)
 
     def test_file_count(self):
@@ -90,7 +90,7 @@ class UploadTestCase(ImgeeTestCase):
         img_name, r = self.upload()
         # get the thumbnail link
         self.img_id = test_utils.get_img_id(r.data, img_name)
-        r = self.client.get('/thumbnail/%s' % self.img_id)
+        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 301)
         imgio = test_utils.download_image(r.location)
         img = Image.open(imgio)

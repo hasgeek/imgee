@@ -4,11 +4,11 @@ import requests
 import os
 from PIL import Image
 
-def upload(test_client, path):
-    content = open(path).read()
-    filename = os.path.basename(path)
+def upload(test_client, filepath, upload_url):
+    content = open(filepath).read()
+    filename = os.path.basename(filepath)
     d = {'uploaded_file': (StringIO(content), filename)}
-    response = test_client.post('/new', data=d, follow_redirects=True)
+    response = test_client.post(upload_url, data=d, follow_redirects=True)
     return filename, response
 
 def get_img_id(r, img_title):
