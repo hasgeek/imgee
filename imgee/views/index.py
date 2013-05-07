@@ -28,15 +28,15 @@ def _redirect_url_frm_upload(profile_name):
     return url
 
 
-@app.route('/new', methods=['GET', 'POST'])
-@lastuser.requires_login
+@app.route('</profile>/new', methods=['GET', 'POST'])
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file():
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         filename = secure_filename(request.files['uploaded_file'].filename)
         uniq_name = uuid4().hex
-        profile = Profile.query.filter_by(userid=profileid).first()
         stored_file = StoredFile(name=uniq_name, title=filename, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
@@ -49,8 +49,9 @@ def upload_file():
     return render_template('form.html', form=upload_form)
 
 
-@app.route('/gallery')
-@lastuser.requires_login
+@app.route('/<profile>/popup')
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def pop_up_gallery():
     p = Profile.query.filter_by(userid=g.user.userid).first_or_404()
     files = p.stored_files.order_by('created_at desc').all()
@@ -58,8 +59,9 @@ def pop_up_gallery():
     return render_template('pop_up_gallery.html', files=files, profile_name=p.name, form=form, next=request.referrer)
 
 
-@app.route('/edit_title', methods=['POST'])
-@lastuser.requires_login
+@app.route('/<profile>/edit_title', methods=['POST'])
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def edit_title():
     form = forms.EditTitleForm()
     if form.validate_on_submit():
@@ -73,8 +75,8 @@ def edit_title():
         return form.file_title.errors[0], 400
 
 
-@app.route('/<profile_name>')
-@load_model(Profile, {'name': 'profile_name'}, 'profile',
+@app.route('/<profile>')
+@load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def show_profile(profile):
     files = profile.stored_files.order_by('created_at desc').all()
@@ -83,8 +85,9 @@ def show_profile(profile):
     return render_template('profile.html', profile=profile, files=files, labels=labels, profile_name=profile.name)
 
 
-@app.route('/view/<img_name>')
-@lastuser.requires_login
+@app.route('/<profile>/view/<img_name>')
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def view_image(img_name):
     q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
     img = StoredFile.query.filter(q).first_or_404()
@@ -105,8 +108,9 @@ def get_image(img_name):
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
 
-@app.route('/thumbnail/<img_name>')
-@lastuser.requires_login
+@app.route('/<profile>/thumbnail/<img_name>')
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def get_thumbnail(img_name):
     q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
     img = StoredFile.query.filter(q).first_or_404()
@@ -120,8 +124,9 @@ def get_thumbnail(img_name):
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
 
-@app.route('/delete/<img_name>', methods=('GET', 'POST'))
-@lastuser.requires_login
+@app.route('/<profile>/delete/<img_name>', methods=('GET', 'POST'))
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
 def delete_file(img_name):
     q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
     stored_file = StoredFile.query.filter().first_or_404()
