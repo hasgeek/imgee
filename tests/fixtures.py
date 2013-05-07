@@ -5,7 +5,7 @@ import string
 from flask import g
 from imgee import init_for, app
 from imgee.models import db, User
-
+from imgee.views.login import make_profiles
 
 def get_test_user(name, id=1):
     if not name:
@@ -31,6 +31,7 @@ class ImgeeTestCase(unittest.TestCase):
         self.client = app.test_client()
         with self.client.session_transaction() as session:
             session['lastuser_userid'] = test_user.userid
+            make_profiles(test_user)
 
     def tearDown(self):
         db.drop_all()
