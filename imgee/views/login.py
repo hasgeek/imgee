@@ -25,22 +25,23 @@ def logout():
     return get_next_url()
 
 
-def make_profiles():
+def make_profiles(user=None):
     # Make profiles for the user's organizations
-    username = g.user.username or g.user.userid
-    profile = Profile.query.filter_by(userid=g.user.userid).first()
+    user = user or g.user
+    username = user.username or user.userid
+    profile = Profile.query.filter_by(userid=user.userid).first()
     if profile is None:
-        profile = Profile(userid=g.user.userid,
-            name=g.user.username or g.user.userid,
-            title=g.user.fullname,
+        profile = Profile(userid=user.userid,
+            name=user.username or user.userid,
+            title=user.fullname,
             type=PROFILE_TYPE.PERSON)
         db.session.add(profile)
     else:
         if profile.name != username:
             profile.name = username
-        if profile.title != g.user.fullname:
-            profile.title = g.user.fullname
-    for org in g.user.organizations_owned():
+        if profile.title != user.fullname:
+            profile.title = user.fullname
+    for org in user.organizations_owned():
         profile = Profile.query.filter_by(userid=org['userid']).first()
         if profile is None:
             profile = Profile(userid=org['userid'],
