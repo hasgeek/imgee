@@ -5,6 +5,8 @@ from uuid import uuid4
 from flask import (render_template, request, g, url_for,
                 abort, redirect, flash)
 from urlparse import urljoin
+from sqlalchemy import and_
+
 from coaster.views import load_model
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
@@ -17,18 +19,21 @@ image_formats = 'jpg jpe jpeg png gif bmp'.split()
 def index():
     return render_template('index.html')
 
+def _get_owned_ids(user=None):
+    user = user or g.user
+    return [user.userid] + user.organizations_owned_ids()
 
 def _redirect_url_frm_upload(profile_name):
     # if the referrer is from 'pop_up_gallery' redirect back to referrer.
     referrer = request.referrer or ''
-    if url_for('pop_up_gallery') in referrer:
+    if url_for('pop_up_gallery', profile=g.user.username) in referrer:
         url = request.referrer
     else:
         url = url_for('show_profile', profile=profile_name)
     return url
 
 
-@app.route('</profile>/new', methods=['GET', 'POST'])
+@app.route('/<profile>/new', methods=['GET', 'POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file(profile):
@@ -65,7 +70,7 @@ def edit_title(profile):
     form = forms.EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
-        q = and_(Profile.userid.in_(g.user.organizations_owned_ids(), StoredFile.name==file_name))
+        q = and_(Profile.userid.in_(_get_owned_ids(), StoredFile.name==file_name))
         f = StoredFile.query.filter(q).first_or_404()
         f.title = request.form.get('file_title')
         db.session.commit()
@@ -85,10 +90,9 @@ def show_profile(profile):
 
 
 @app.route('/<profile>/view/<img_name>')
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+@lastuser.requires_login
 def view_image(profile, img_name):
-    q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
+    q = and_(StoredFile.name == img_name, Profile.userid.in_(_get_owned_ids()))
     img = StoredFile.query.filter(q).first_or_404()
     img_labels = [label.name for label in img.labels]
     form = forms.AddLabelForm(img_name=img_name, label=[l.id for l in img.labels])
@@ -108,10 +112,9 @@ def get_image(img_name):
 
 
 @app.route('/<profile>/thumbnail/<img_name>')
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+@lastuser.requires_login
 def get_thumbnail(profile, img_name):
-    q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
+    q = and_(StoredFile.name == img_name, Profile.userid.in_(_get_owned_ids()))
     img = StoredFile.query.filter(q).first_or_404()
     name, extn = os.path.splitext(img.title)
     if extn and extn.lstrip('.').lower() in image_formats:
@@ -124,12 +127,12 @@ def get_thumbnail(profile, img_name):
 
 
 @app.route('/<profile>/delete/<img_name>', methods=('GET', 'POST'))
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
+@lastuser.requires_login
 def delete_file(profile, img_name):
-    q = and_(StoredFile.name == img_name, Profile.userid.in_(g.user.organizations_owned_ids()))
-    stored_file = StoredFile.query.filter().first_or_404()
-    profile_name = g.user.username
+    if profile != g.user.username:
+        abort(403)
+    q = and_(StoredFile.name == img_name, Profile.userid.in_(_get_owned_ids()))
+    stored_file = StoredFile.query.filter(q).first_or_404()
 
     form = forms.DeleteImageForm()
     if form.is_submitted():
@@ -138,5 +141,5 @@ def delete_file(profile, img_name):
         db.session.commit()
         flash("%s is deleted" % stored_file.title)
     else:
-        return render_template('delete.html', form=form, file=stored_file, profile_name=profile_name)
-    return redirect(url_for('show_profile', profile=profile_name))
+        return render_template('delete.html', form=form, file=stored_file, profile_name=profile)
+    return redirect(url_for('show_profile', profile=profile))
