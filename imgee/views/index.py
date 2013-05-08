@@ -87,7 +87,8 @@ def edit_title(profile):
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def show_profile(profile):
     files = profile.stored_files.order_by('created_at desc').all()
-    return render_template('profile.html', profile=profile, files=files)
+    form = forms.EditTitleForm()
+    return render_template('profile.html', profile=profile, files=files, form=form)
 
 
 @app.route('/<profile>/view/<img_name>')
