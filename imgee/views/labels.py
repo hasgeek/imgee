@@ -2,26 +2,23 @@
 
 from flask import (render_template, request, g, url_for,
                      abort, redirect, flash)
+from coaster.views import load_model, load_models
+
 from imgee import app, forms, lastuser
 from imgee.models import Label, StoredFile, Profile, db
 import imgee.utils as utils
 
 
-def get_profile_label(profile_name, label_name):
-    profile = Profile.query.filter(Profile.name == profile_name, Label.name == label_name).first_or_404()
-    label = [l for l in profile.labels if l.name == label_name][0]
-    return profile, label
-
-
 @app.route('/<profile_name>/<label_name>')
-@lastuser.requires_login
-def show_label(profile_name, label_name):
-    p = Profile.query.filter_by(name=profile_name).first_or_404()
-    files = p.stored_files.order_by('created_at desc').all()
-    labels = p.labels
+@load_models(
+    (Profile, {'name': 'profile_name'}, 'profile'),
+    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+def show_label(profile, label):
+    files = profile.imgs.order_by('created_at desc').all()
+    labels = profile.labels
     labels.sort(key=lambda x: x.name)
-    profile, label = get_profile_label(profile_name, label_name)
-    files = label.stored_files.filter(Profile.userid == profile.userid).all()
+    files = label.imgs.filter(Profile.userid == profile.userid).all()
     form = forms.EditLabelForm()
     return render_template('show_label.html', form=form, label=label, files=files, profile_name=g.user.username, labels=labels)
 
@@ -38,21 +35,21 @@ def create_label():
     return render_template('create_label.html', form=form)
 
 @app.route('/<profile_name>/<label_name>/delete', methods=['GET', 'POST'])
-@lastuser.requires_login
-def delete_label(profile_name, label_name):
-    if profile_name != g.user.username:
-        abort(403)
+@load_models(
+    (Profile, {'name': 'profile_name'}, 'profile'),
+    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
+def delete_label(profile, label):
     form = forms.RemoveLabelForm()
-    profile, label = get_profile_label(profile_name, label_name)
     if form.is_submitted():
         utils.delete_label(label)
         flash('The label "%s" was deleted.' % label_name)
-        return redirect(url_for('show_profile', profile=profile_name))
+        return redirect(url_for('show_profile', profile=profile.name))
     return render_template('delete_label.html', form=form, label=label)
 
-@app.route('/edit_label', methods=['POST'])
+@app.route('/<profile_name>/edit_label', methods=['POST'])
 @lastuser.requires_login
-def edit_label():
+def edit_label(profile_name):
     form = forms.EditLabelForm()
     if form.validate_on_submit():
         label_id = request.form.get('label_id')
@@ -65,21 +62,19 @@ def edit_label():
 
 
 @app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
-@lastuser.requires_login
-def manage_labels(profile_name, img_name):
-    if profile_name != g.user.username:
-        abort(403)
-    profile = Profile.query.filter(Profile.name == profile_name, StoredFile.name == img_name).first_or_404()
-    stored_file = [s for s in profile.stored_files if s.name == img_name][0]
-    image_labels = [l.name for l in stored_file.labels]
+@load_models(
+    (Profile, {'name': 'profile_name'}, 'profile'),
+    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+def manage_labels(profile, img):
     form = forms.AddLabelForm()
     form.label.choices = [(l.id, l.name) for l in profile.labels]
     if form.validate_on_submit():
         labels = [l for l in profile.labels if l.id in form.label.data]
-        s, saved = utils.save_labels_to(stored_file, labels)
+        s, saved = utils.save_labels_to(img, labels)
         if saved:
             status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
             plural = 's' if len(saved) > 1 else ''
-            flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.name for l in saved), status[s][1], stored_file.title))
-        return redirect(url_for('view_image', profile=g.user.username, img_name=img_name))
-    return render_template('view_image.html', form=form, img=stored_file, labels=image_labels)
+            flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.name for l in saved), status[s][1], img.title))
+        return redirect(url_for('view_image', profile=g.user.username, img_name=img.name))
+    return render_template('view_image.html', form=form, img=img)

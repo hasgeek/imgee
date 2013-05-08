@@ -7,7 +7,7 @@ from flask import (render_template, request, g, url_for,
 from urlparse import urljoin
 from sqlalchemy import and_
 
-from coaster.views import load_model
+from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
@@ -93,12 +93,13 @@ def show_profile(profile):
 
 
 @app.route('/<profile>/view/<img_name>')
-@lastuser.requires_login
-def view_image(profile, img_name):
-    q = and_(StoredFile.name == img_name, Profile.userid.in_(_get_owned_ids()))
-    img = StoredFile.query.filter(q).first_or_404()
+@load_models(
+    (Profile, {'name': 'profile'}, 'profile'),
+    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+def view_image(profile, img):
     img_labels = [label.name for label in img.labels]
-    form = forms.AddLabelForm(img_name=img_name, label=[l.id for l in img.labels])
+    form = forms.AddLabelForm(img_name=img.name, label=[l.id for l in img.labels])
     form.label.choices = [(l.id, l.name) for l in img.profile.labels]
     return render_template('view_image.html', form=form, img=img, labels=img_labels)
 
@@ -115,10 +116,11 @@ def get_image(img_name):
 
 
 @app.route('/<profile>/thumbnail/<img_name>')
-@lastuser.requires_login
-def get_thumbnail(profile, img_name):
-    q = and_(StoredFile.name == img_name, Profile.userid.in_(_get_owned_ids()))
-    img = StoredFile.query.filter(q).first_or_404()
+@load_models(
+    (Profile, {'name': 'profile'}, 'profile'),
+    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+def get_thumbnail(profile, img):
     name, extn = os.path.splitext(img.title)
     if extn and extn.lstrip('.').lower() in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
@@ -130,19 +132,17 @@ def get_thumbnail(profile, img_name):
 
 
 @app.route('/<profile>/delete/<img_name>', methods=('GET', 'POST'))
-@lastuser.requires_login
-def delete_file(profile, img_name):
-    if profile != g.user.username:
-        abort(403)
-    q = and_(StoredFile.name == img_name, Profile.userid.in_(_get_owned_ids()))
-    stored_file = StoredFile.query.filter(q).first_or_404()
-
+@load_models(
+    (Profile, {'name': 'profile'}, 'profile'),
+    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
+def delete_file(profile, img):
     form = forms.DeleteImageForm()
     if form.is_submitted():
-        delete_on_s3(stored_file)
-        db.session.delete(stored_file)
+        delete_on_s3(img)
+        db.session.delete(img)
         db.session.commit()
-        flash("%s is deleted" % stored_file.title)
+        flash("%s is deleted" % img.title)
     else:
-        return render_template('delete.html', form=form, file=stored_file, profile_name=profile)
+        return render_template('delete.html', form=form, file=img, profile_name=profile)
     return redirect(url_for('show_profile', profile=profile))
