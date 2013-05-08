@@ -23,6 +23,10 @@ $(".editable_label").editable('/'+profile+'/edit_label', {
       tooltip   : 'Click to edit',
       id: 'label_id',
       name: 'label',
+      callback: function(newlabel){
+          var oldlabel = this.revert;
+          History.replaceState({}, document.title, window.location.href.replace(oldlabel, newlabel));
+      },
       onerror: function (settings, label_div, error){
           if (error['responseText']){
               alert(error['responseText']);
