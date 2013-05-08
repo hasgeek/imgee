@@ -19,7 +19,7 @@ def show_label(profile, label):
     form = forms.EditLabelForm()
     return render_template('show_label.html', form=form, label=label, files=files, profile=profile)
 
-@app.route('/labels/new', methods=('GET', 'POST'))
+@app.route('/labels/new', methods=['GET', 'POST'])
 @lastuser.requires_login
 def create_label():
     profile_id = g.user.userid

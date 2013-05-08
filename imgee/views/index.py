@@ -129,7 +129,7 @@ def get_thumbnail(profile, img):
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
 
-@app.route('/<profile>/delete/<img_name>', methods=('GET', 'POST'))
+@app.route('/<profile>/delete/<img_name>', methods=['GET', 'POST'])
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
