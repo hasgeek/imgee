@@ -144,7 +144,7 @@ def split_size(size):
     matched = re.match(r, size)
     if matched:
         w, h = matched.group(1, 2)
-        h = int(h.lstrip('x')) if h is not None else None
+        h = int(h.lstrip('x')) if h is not None else 0
         return int(w), h
 
 
