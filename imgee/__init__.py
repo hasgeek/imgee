@@ -2,6 +2,8 @@
 
 # The imports in this file are order-sensitive
 
+import os
+
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flask.ext.lastuser import LastUser
@@ -27,6 +29,9 @@ import imgee.models
 import imgee.views
 from imgee.models import db
 
+def mkdir_p(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
 
 # Configure the app
 def init_for(env):
@@ -34,3 +39,4 @@ def init_for(env):
     assets.register('js_all', js)
     assets.register('css_all', css)
     lastuser.init_app(app)
+    mkdir_p(app.config['UPLOADED_FILES_DEST'])
