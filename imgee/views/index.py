@@ -73,7 +73,7 @@ def edit_title(profile):
     form = forms.EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
-        q = and_(Profile.userid.in_(_get_owned_ids(), StoredFile.name==file_name))
+        q = and_(Profile.userid.in_(_get_owned_ids()), StoredFile.name==file_name)
         f = StoredFile.query.filter(q).first_or_404()
         f.title = request.form.get('file_title')
         db.session.commit()
