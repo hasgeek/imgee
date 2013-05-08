@@ -15,9 +15,7 @@ import imgee.utils as utils
     (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def show_label(profile, label):
-    labels = profile.labels
-    labels.sort(key=lambda x: x.name)
-    files = label.stored_files.filter(Profile.userid == profile.userid).order_by('created_at desc').all()
+    files = label.stored_files.filter(Profile.userid == profile.userid).order_by('stored_file.created_at desc').all()
     form = forms.EditLabelForm()
     return render_template('show_label.html', form=form, label=label, files=files, profile=profile)
 
@@ -42,7 +40,7 @@ def delete_label(profile, label):
     form = forms.RemoveLabelForm()
     if form.is_submitted():
         utils.delete_label(label)
-        flash('The label "%s" was deleted.' % label_name)
+        flash('The label "%s" was deleted.' % label.name)
         return redirect(url_for('show_profile', profile=profile.name))
     return render_template('delete_label.html', form=form, label=label)
 
@@ -66,10 +64,11 @@ def edit_label(profile_name):
     (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def manage_labels(profile, img):
-    form = forms.AddLabelForm()
+    form = forms.AddLabelForm(stored_file_id=img.id)
     form.label.choices = [(l.id, l.name) for l in profile.labels]
     if form.validate_on_submit():
-        labels = [l for l in profile.labels if l.id in form.label.data]
+        form_labels = form.label.data or []
+        labels = [l for l in profile.labels if l.id in form_labels]
         s, saved = utils.save_labels_to(img, labels)
         if saved:
             status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}

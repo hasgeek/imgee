@@ -35,7 +35,7 @@ class CreateLabelForm(Form):
 
 
 class AddLabelForm(Form):
-    label = SelectMultipleField('Labels', validators=[Required()], coerce=int)
+    label = SelectMultipleField('Labels', coerce=int)
     stored_file_id = HiddenField('stored_file_id')
 
 

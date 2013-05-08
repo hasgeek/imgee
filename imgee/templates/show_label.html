@@ -25,7 +25,7 @@
 
       <ul class="labels nav nav-list">
         <li class="nav-header">Labels</li>        
-            {% if labels %}
+            {% if profile.labels %}
                 {% for label in profile.labels %}
                     <li><a href="{{url_for('show_label', profile_name=profile.name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
                 {% endfor %}
