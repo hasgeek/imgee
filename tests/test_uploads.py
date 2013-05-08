@@ -129,14 +129,12 @@ class UploadTestCase(ImgeeTestCase):
     def test_non_image_file(self):
         file_name, r = self.upload('imgee/static/css/app.css')
         self.assertEquals(r.status_code, 200)
-        file_id = test_utils.get_img_id(r.data, file_name)
-        r = self.client.get('/file/%s' % file_id)
-        self.assertEquals(r.status_code, 301)
-        r = requests.get(r.location)
-        self.assertEquals(r.status_code, 200)
+        self.assertTrue('Sorry, unknown image format' in r.data)
 
-    def test_resize_non_image_file(self):
-        file_name, r = self.upload('imgee/static/css/app.css')
+
+    def test_resize3_file(self):
+        # non resizable images
+        file_name, r = self.upload('imgee/static/img/imgee.svg')
         file_id = test_utils.get_img_id(r.data, file_name)
         r1 = self.client.get('/file/%s' % file_id)
         r2 = self.client.get('/file/%s?size=100x200' % file_id)
