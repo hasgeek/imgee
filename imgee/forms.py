@@ -2,7 +2,7 @@
 
 import os.path
 from flask.ext.wtf import (Form, FileField, Required, ValidationError,
-    TextField, HiddenField, Length, SelectMultipleField)
+    TextField, HiddenField, Length, SelectMultipleField, SelectField)
 from imgee.models import Label
 
 
@@ -50,3 +50,7 @@ class EditTitleForm(Form):
 
 class EditLabelForm(Form):
     label = TextField('label', validators=[Required(), Length(max=250)])
+
+
+class ChangeProfileForm(Form):
+    profiles = SelectField('Profiles')
