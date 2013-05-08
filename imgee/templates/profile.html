@@ -3,11 +3,15 @@
 
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
-<script> var profile = '{{g.user.username}};' </script>
+<script> var profile = '{{g.user.username}}'; </script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 {% endblock %}
 
 {% block sidebar %}
+<div style='display:none;'>
+    {{form.csrf_token()}}
+</div>
+
 <div class="span2">
     <div class="sidebar well">
       <div class="photostream-profile">
@@ -48,7 +52,7 @@
                                 <img src="{{url_for('get_thumbnail', profile=g.user.username, img_name=img.name)}}"/>
                             </a>
                         </div>
-                        <div class="title editable_text" id="{{img.name}}">{{img.title}}</div>
+                        <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
                         <div class="labels">
                             {% for label in img.labels %}
                                 <span class="label">
