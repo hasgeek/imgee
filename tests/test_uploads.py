@@ -109,6 +109,7 @@ class UploadTestCase(ImgeeTestCase):
         # check aspect ratio
         self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
 
+
     def test_resize2(self):
         img_name, r = self.upload()
         img_w, img_h = self.get_image_size()
@@ -142,6 +143,21 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(r2.status_code, 301)
         self.assertEquals(r1.location, r2.location)
         self.assertTrue(file_id in r2.location)
+
+
+    def test_resize_single_dimension(self):
+        img_name, r = self.upload()
+        img_w, img_h = self.get_image_size()
+
+        self.img_id = test_utils.get_img_id(r.data, img_name)
+        r = self.client.get('/file/%s?size=100' % self.img_id)
+        self.assertEquals(r.status_code, 301)
+        resized_img = test_utils.download_image(r.location)
+        resized_w, resized_h = self.get_image_size(resized_img)
+        self.assertEquals(resized_w, 100)
+        # check aspect ratio
+        self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
+
 
     def tearDown(self):
         s = StoredFile.query.filter_by(name=self.img_id).first()
