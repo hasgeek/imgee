@@ -5,9 +5,20 @@
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
 <script> var profile = '{{g.user.username}}';</script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
+<script>
+    $('input#img_width').width(30);
+    $('input#img_height').width(30);
+    $('input#img_link').width(420);
+    var file_url = "{{url_for('get_image', img_name=img.name)}}";
+    $('input[id^="img_"]').change(function (){
+        var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
+        $('a#img_link').attr('href', url_with_size);
+    });
+</script>
 {% endblock %}
 
 {% block sidebar %}
+{% set img_url= url_for('get_image', img_name=img.name) %}
 <div class="span8">
 
     <div class="image-display">
@@ -23,9 +34,10 @@
             </span>
         {% endfor %}
     {% endif %}
-
-    
     <br/>
+    Link to <a href='{{img_url}}'>original image</a> | At a different size:
+    <input id='img_width' placeholder="w" />X<input id='img_height' placeholder="h" />
+    <a href='{{img_url}}' id='img_link'> here</a>.
     <br/>
 </div>
 {% endblock %}
