@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from flask import (render_template, request, g, url_for,
-                     abort, redirect, flash)
-from coaster.views import load_model, load_models
+    redirect, flash)
+from coaster.views import load_models
 
 from imgee import app, forms, lastuser
 from imgee.models import Label, StoredFile, Profile, db
@@ -19,6 +19,7 @@ def show_label(profile, label):
     form = forms.EditLabelForm()
     return render_template('show_label.html', form=form, label=label, files=files, profile=profile)
 
+
 @app.route('/labels/new', methods=['GET', 'POST'])
 @lastuser.requires_login
 def create_label():
@@ -30,6 +31,7 @@ def create_label():
         flash('The label "%s" was created.' % label)
         return redirect(url_for('show_profile', profile=g.user.username))
     return render_template('create_label.html', form=form)
+
 
 @app.route('/<profile_name>/<label_name>/delete', methods=['GET', 'POST'])
 @load_models(
@@ -43,6 +45,7 @@ def delete_label(profile, label):
         flash('The label "%s" was deleted.' % label.name)
         return redirect(url_for('show_profile', profile=profile.name))
     return render_template('delete_label.html', form=form, label=label)
+
 
 @app.route('/<profile_name>/edit_label', methods=['POST'])
 @lastuser.requires_login

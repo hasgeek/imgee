@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from functools import wraps
-
-from flask import Response, redirect, flash, g, url_for, request, abort
+from flask import Response, redirect, flash, g
 from flask.ext.lastuser.sqlalchemy import UserManager
 from coaster.views import get_next_url
 
