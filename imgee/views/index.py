@@ -3,7 +3,7 @@ import os.path
 from werkzeug import secure_filename
 from uuid import uuid4
 from flask import (render_template, request, g, url_for,
-    abort, redirect, flash)
+    redirect, flash)
 from urlparse import urljoin
 from sqlalchemy import and_
 
@@ -22,16 +22,17 @@ def index():
 
 def _get_owned_ids(user=None):
     user = user or g.user
-    return [user.userid] + user.organizations_owned_ids()
+    if user is not None:
+        return user.user_organizations_owned_ids()
 
 
 def _redirect_url_frm_upload(profile_name):
     # if the referrer is from 'pop_up_gallery' redirect back to referrer.
     referrer = request.referrer or ''
-    if url_for('pop_up_gallery', profile=g.user.username) in referrer:
+    if url_for('pop_up_gallery', profile=g.user.profile_name) in referrer:
         url = request.referrer
     else:
-        url = url_for('show_profile', profile=profile_name)
+        url = url_for('profile_view', profile=profile_name)
     return url
 
 
@@ -87,7 +88,7 @@ def edit_title(profile):
 @app.route('/<profile>')
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def show_profile(profile):
+def profile_view(profile):
     files = profile.stored_files.order_by('created_at desc').all()
     form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, form=form)
@@ -146,4 +147,4 @@ def delete_file(profile, img):
         flash("%s is deleted" % img.title)
     else:
         return render_template('delete.html', form=form, file=img, profile=profile)
-    return redirect(url_for('show_profile', profile=profile.name))
+    return redirect(url_for('profile_view', profile=profile.name))
