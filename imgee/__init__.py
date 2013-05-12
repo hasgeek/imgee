@@ -29,9 +29,11 @@ import imgee.models
 import imgee.views
 from imgee.models import db
 
+
 def mkdir_p(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
+
 
 # Configure the app
 def init_for(env):

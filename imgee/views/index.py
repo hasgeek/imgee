@@ -3,7 +3,7 @@ import os.path
 from werkzeug import secure_filename
 from uuid import uuid4
 from flask import (render_template, request, g, url_for,
-                abort, redirect, flash)
+    abort, redirect, flash)
 from urlparse import urljoin
 from sqlalchemy import and_
 
@@ -19,9 +19,11 @@ image_formats = 'jpg jpe jpeg png gif bmp'.split()
 def index():
     return render_template('index.html')
 
+
 def _get_owned_ids(user=None):
     user = user or g.user
     return [user.userid] + user.organizations_owned_ids()
+
 
 def _redirect_url_frm_upload(profile_name):
     # if the referrer is from 'pop_up_gallery' redirect back to referrer.
@@ -73,7 +75,7 @@ def edit_title(profile):
     form = forms.EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
-        q = and_(Profile.userid.in_(_get_owned_ids()), StoredFile.name==file_name)
+        q = and_(Profile.userid.in_(_get_owned_ids()), StoredFile.name == file_name)
         f = StoredFile.query.filter(q).first_or_404()
         f.title = request.form.get('file_title')
         db.session.commit()

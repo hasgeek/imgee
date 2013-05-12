@@ -8,6 +8,7 @@ from imgee.models import Label
 
 allowed_formats = 'jpg jpe jpeg png gif bmp tiff psd tif eps svg ai ps'.split()
 
+
 def valid_file(form, field):
     filename = field.data.filename
     name, extn = os.path.splitext(filename)
