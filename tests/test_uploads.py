@@ -1,12 +1,10 @@
 import unittest
-import os
 import requests
-from StringIO import StringIO
 from PIL import Image
 
 from imgee import storage
-from imgee.models import db, User, StoredFile, Profile
-from fixtures import get_test_user, ImgeeTestCase, app
+from imgee.models import StoredFile
+from fixtures import ImgeeTestCase, app
 import test_utils
 
 
@@ -109,7 +107,6 @@ class UploadTestCase(ImgeeTestCase):
         # check aspect ratio
         self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
 
-
     def test_resize2(self):
         img_name, r = self.upload()
         img_w, img_h = self.get_image_size()
@@ -132,7 +129,6 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(r.status_code, 200)
         self.assertTrue('Sorry, unknown image format' in r.data)
 
-
     def test_resize3_file(self):
         # non resizable images
         file_name, r = self.upload('imgee/static/img/imgee.svg')
@@ -143,7 +139,6 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(r2.status_code, 301)
         self.assertEquals(r1.location, r2.location)
         self.assertTrue(file_id in r2.location)
-
 
     def test_resize_single_dimension(self):
         img_name, r = self.upload()
@@ -158,12 +153,12 @@ class UploadTestCase(ImgeeTestCase):
         # check aspect ratio
         self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
 
-
     def tearDown(self):
         s = StoredFile.query.filter_by(name=self.img_id).first()
         if s:
             storage.delete_on_s3(s)
         super(UploadTestCase, self).tearDown()
+
 
 if __name__ == '__main__':
     unittest.main()

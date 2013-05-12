@@ -3,7 +3,7 @@
 
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
-<script> var profile = '{{g.user.username}}';</script>
+<script> var profile = '{{g.user.profile_name}}';</script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script>
     $('input#img_width').width(30);
@@ -45,7 +45,7 @@
 {% block albumcontent %}
 {% set action_url=url_for('manage_labels', img_name=img.name, profile_name=img.profile.name) %}
     <div class="span4">
-        <a class="btn btn-danger" href="{{url_for('delete_file', profile=g.user.username, img_name=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete Image</a>
+        <a class="btn btn-danger" href="{{url_for('delete_file', profile=g.user.profile_name, img_name=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete Image</a>
         <div class="padding"></div>
         <div class="form-box well">
             

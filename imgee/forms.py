@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os.path
+from coaster import make_name
 from flask.ext.wtf import (Form, FileField, Required, ValidationError,
     TextField, HiddenField, Length, SelectMultipleField, SelectField)
 from imgee.models import Label
@@ -26,14 +27,14 @@ class DeleteImageForm(Form):
 
 def label_doesnt_exist(form, field):
     profile_id = form.profile_id.data
-    label_name = field.data
+    label_name = make_name(field.data)
     exists = Label.query.filter_by(profile_id=profile_id, name=label_name).first()
     if exists:
         raise ValidationError('Label "%s" already exists. Please try another name.' % field.data)
 
 
 class CreateLabelForm(Form):
-    label = TextField('Label', validators=[Required(), Length(max=50), label_doesnt_exist])
+    label = TextField('Label', validators=[Required(), Length(max=250), label_doesnt_exist])
     profile_id = HiddenField('profile_id')
 
 

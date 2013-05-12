@@ -5,7 +5,7 @@ from flask.ext.lastuser.sqlalchemy import UserManager
 from coaster.views import get_next_url
 
 from imgee import app, lastuser
-from imgee.models import db, User, Profile, PROFILE_TYPE
+from imgee.models import db, User, Profile
 
 lastuser.init_usermanager(UserManager(db, User))
 
@@ -23,42 +23,11 @@ def logout():
     return get_next_url()
 
 
-def make_profiles(user=None):
-    # Make profiles for the user's organizations
-    user = user or g.user
-    username = user.username or user.userid
-    profile = Profile.query.filter_by(userid=user.userid).first()
-    if profile is None:
-        profile = Profile(userid=user.userid,
-            name=user.username or user.userid,
-            title=user.fullname,
-            type=PROFILE_TYPE.PERSON)
-        db.session.add(profile)
-    else:
-        if profile.name != username:
-            profile.name = username
-        if profile.title != user.fullname:
-            profile.title = user.fullname
-    for org in user.organizations_owned():
-        profile = Profile.query.filter_by(userid=org['userid']).first()
-        if profile is None:
-            profile = Profile(userid=org['userid'],
-                name=org['name'],
-                title=org['title'],
-                type=PROFILE_TYPE.ORGANIZATION)
-            db.session.add(profile)
-        else:
-            if profile.name != org['name']:
-                profile.name = org['name']
-            if profile.title != org['title']:
-                profile.title = org['title']
-    db.session.commit()
-
-
 @app.route('/login/redirect')
 @lastuser.auth_handler
 def lastuserauth():
-    make_profiles()
+    Profile.update_from_user(g.user, db.session)
+    db.session.commit()
     return redirect(get_next_url())
 
 
