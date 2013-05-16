@@ -6,7 +6,6 @@ from coaster.views import load_models
 
 from imgee import app, forms, lastuser
 from imgee.models import Label, StoredFile, Profile, db
-import imgee.utils as utils
 
 
 @app.route('/<profile_name>/<label_name>')
@@ -27,9 +26,9 @@ def create_label():
     form = forms.CreateLabelForm(profile_id=profile_id)
     if form.validate_on_submit():
         label = form.label.data
-        utils.save_label(label, profile_id)
+        utils_save_label(label, profile_id)
         flash('The label "%s" was created.' % label)
-        return redirect(url_for('show_profile', profile=g.user.username))
+        return redirect(g.user.profile_url)
     return render_template('create_label.html', form=form)
 
 
@@ -41,9 +40,9 @@ def create_label():
 def delete_label(profile, label):
     form = forms.RemoveLabelForm()
     if form.is_submitted():
-        utils.delete_label(label)
+        utils_delete_label(label)
         flash('The label "%s" was deleted.' % label.name)
-        return redirect(url_for('show_profile', profile=profile.name))
+        return redirect(url_for('profile_view', profile=profile.name))
     return render_template('delete_label.html', form=form, label=label)
 
 
@@ -68,14 +67,49 @@ def edit_label(profile_name):
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def manage_labels(profile, img):
     form = forms.AddLabelForm(stored_file_id=img.id)
-    form.label.choices = [(l.id, l.name) for l in profile.labels]
+    form.label.choices = [(l.id, l.title) for l in profile.labels]
     if form.validate_on_submit():
         form_labels = form.label.data or []
         labels = [l for l in profile.labels if l.id in form_labels]
-        s, saved = utils.save_labels_to(img, labels)
+        s, saved = utils_save_labels_to(img, labels)
         if saved:
             status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
             plural = 's' if len(saved) > 1 else ''
-            flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.name for l in saved), status[s][1], img.title))
-        return redirect(url_for('view_image', profile=g.user.username, img_name=img.name))
+            flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.title for l in saved), status[s][1], img.title))
+        return redirect(url_for('view_image', profile=g.user.profile_name, img_name=img.name))
     return render_template('view_image.html', form=form, img=img)
+
+
+def utils_save_label(label_name, profile_id):
+    profile = Profile.query.filter_by(userid=profile_id).one()
+    label = Label(title=label_name, profile=profile)
+    label.make_name()
+    db.session.add(label)
+    db.session.commit()
+    return label
+
+
+def utils_delete_label(label):
+    db.session.delete(label)
+    db.session.commit()
+
+
+def utils_get_label_changes(nlabels, olabels):
+    if (nlabels == olabels):
+        status, diff = '0', []
+    elif (nlabels > olabels):
+        status, diff = '+', nlabels-olabels
+    elif (olabels > nlabels):
+        status, diff = '-', olabels-nlabels
+    else:
+        status, diff = '', nlabels
+    return status, list(diff)
+
+
+def utils_save_labels_to(stored_file, labels):
+    new_labels = set(labels)
+    old_labels = set(stored_file.labels)
+    if new_labels != old_labels:
+        stored_file.labels = labels
+        db.session.commit()
+    return utils_get_label_changes(new_labels, old_labels)

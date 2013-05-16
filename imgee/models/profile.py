@@ -1,33 +1,15 @@
 from coaster.sqlalchemy import BaseNameMixin
+from flask.ext.lastuser.sqlalchemy import ProfileMixin
 from imgee.models import db
 
 
-class PROFILE_TYPE:
-    UNDEFINED = 0
-    PERSON = 1
-    ORGANIZATION = 2
-    EVENTSERIES = 3
-
-
-profile_types = {
-    0: u"Undefined",
-    1: u"Person",
-    2: u"Organization",
-    3: u"Event Series",
-    }
-
-
-class Profile(BaseNameMixin, db.Model):
+class Profile(BaseNameMixin, ProfileMixin, db.Model):
     __tablename__ = 'profile'
 
     userid = db.Column(db.Unicode(22), nullable=False, unique=True)
-    description = db.Column(db.UnicodeText, default=u'', nullable=False)
-    type = db.Column(db.Integer, default=PROFILE_TYPE.UNDEFINED, nullable=False)
-    stored_files = db.relationship('StoredFile', backref=db.backref('profile'), lazy='dynamic', cascade='all, delete-orphan')
-    labels = db.relationship('Label', backref=db.backref('profile'), cascade='all, delete-orphan')
-
-    def type_label(self):
-        return profile_types.get(self.type, profile_types[0])
+    stored_files = db.relationship('StoredFile',
+        backref=db.backref('profile'), lazy='dynamic',
+        cascade='all, delete-orphan')
 
     def permissions(self, user, inherited=None):
         perms = super(Profile, self).permissions(user, inherited)

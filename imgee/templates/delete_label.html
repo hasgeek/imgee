@@ -15,7 +15,7 @@
 	{% endblock %}
 	<div class="delete-box alert alert-error">
 		<p>Are you sure you want to delete the label "{{label.name}}"?<br /> <strong>Info: Even if you delete it, the files associated with it will NOT be deleted.</strong></p>
-		{% set cancel_url=url_for('show_label', profile_name=g.user.username, label_name=label.name) %}
+		{% set cancel_url=url_for('show_label', profile_name=g.user.profile_name, label_name=label.name) %}
 		<div class="form-submit">{{ renderformdelete(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}</div>
 	</div>
 {% endblock %}

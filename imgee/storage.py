@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import os.path
-from uuid import uuid4
 import re
-from PIL import Image
 import mimetypes
 from StringIO import StringIO
+from PIL import Image
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
@@ -11,6 +12,7 @@ from boto.s3.key import Key
 
 from imgee import app
 from imgee.models import db, Thumbnail
+from imgee.utils import newid
 
 
 def get_s3_bucket():
@@ -37,7 +39,7 @@ def get_file_type(filename):
 def get_s3_folder(f=''):
     f = f or app.config['AWS_FOLDER']
     if f and not f.endswith('/'):
-        f = f+'/'
+        f = f + '/'
     return f or ''
 
 
@@ -85,7 +87,7 @@ def get_image_locally(img_name):
 def resize_and_save(img, size, thumbnail=False):
     extn = os.path.splitext(img.title)[1]
     src_path = get_image_locally(img.name+extn)
-    scaled_img_name = uuid4().hex
+    scaled_img_name = newid()
     content_type = get_file_type(img.title)  # eg: image/jpeg
     format = content_type.split('/')[1] if content_type else None
     scaled = resize_img(src_path, size, format, thumbnail=thumbnail)

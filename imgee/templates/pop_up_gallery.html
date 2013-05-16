@@ -4,7 +4,7 @@
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.ba-postmessage.min.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
-<script> var profile = '{{g.user.username}}';</script>
+<script> var profile = '{{g.user.profile_name}}';</script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script>
 function parseQuery(s){
@@ -52,7 +52,7 @@ $('select#profiles').change(function(){
                 {% for img in files %}
                     <div class="image">
                         <div class="thumbnail" id="{{img.name}}">
-                            <img src="{{url_for('get_thumbnail', profile=g.user.username, img_name=img.name)}}"/>
+                            <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
                         </div>
                         <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
                     </div>
@@ -78,7 +78,7 @@ $('select#profiles').change(function(){
     <br/>
     <div class="form-box well">
         <div class="form-title"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Upload Images</div><hr />
-        {% set action_url= url_for('upload_file', profile=g.user.username) %}
+        {% set action_url= url_for('upload_file', profile=g.user.profile_name) %}
         {{ renderform(uploadform, "upload", multipart=True, action=action_url) }}
     </div>
 </div>

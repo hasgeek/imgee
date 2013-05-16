@@ -1,26 +1,42 @@
 # -*- coding: utf-8 -*-
 
-from coaster.sqlalchemy import BaseNameMixin, BaseMixin
+from coaster.sqlalchemy import BaseNameMixin, BaseScopedNameMixin
 from imgee.models import db
+from imgee.utils import newid
 
 
 image_labels = db.Table('image_labels',
-    db.Column('label_id', db.Integer, db.ForeignKey('label.id')),
-    db.Column('stored_file_id', db.Integer, db.ForeignKey('stored_file.id')),
+    db.Column('label_id', db.Integer, db.ForeignKey('label.id'), nullable=False),
+    db.Column('stored_file_id', db.Integer, db.ForeignKey('stored_file.id'), nullable=False),
 )
 
 
-class Label(BaseMixin, db.Model):
+class Label(BaseScopedNameMixin, db.Model):
+    """
+    Labels are used to categorize images for easy discovery.
+    An image may have zero or more labels.
+    """
     __tablename__ = 'label'
-    name = db.Column(db.String(50), nullable=False, unique=True, index=True)
-    profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'), nullable=False)
+    profile_id = db.Column(None, db.ForeignKey('profile.id'), nullable=False)
+    profile = db.relationship('Profile', backref=db.backref('labels', cascade='all, delete-orphan'))
+    parent = db.synonym('profile')
 
 
 class StoredFile(BaseNameMixin, db.Model):
+    """
+    Stored files are the original files uploaded by the user.
+    Permanent copies are stored on Amazon S3 and a temporary cached
+    copy is stored locally for thumbnail generation. Files are always
+    served from S3.
+    """
     __tablename__ = 'stored_file'
-
-    profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'), nullable=False)
+    profile_id = db.Column(None, db.ForeignKey('profile.id'), nullable=False)
     thumbnails = db.relationship('Thumbnail', backref='stored_file',
                                  cascade='all, delete-orphan')
     labels = db.relationship('Label', secondary='image_labels',
                 backref=db.backref('stored_files', lazy='dynamic'))
+
+    def __init__(self, **kwargs):
+        super(StoredFile, self).__init__(**kwargs)
+        if not self.name:
+            self.name = newid()
