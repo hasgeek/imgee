@@ -102,7 +102,7 @@ def view_image(profile, img):
     img_labels = [label.name for label in img.labels]
     form = forms.AddLabelForm(img_name=img.name, label=[l.id for l in img.labels])
     form.label.choices = [(l.id, l.name) for l in img.profile.labels]
-    return render_template('view_image.html', form=form, img=img, labels=img_labels)
+    return render_template('view_image.html', profile=profile, form=form, img=img, labels=img_labels)
 
 
 @app.route('/file/<img_name>')
