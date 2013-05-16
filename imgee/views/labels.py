@@ -27,7 +27,7 @@ def create_label(profile):
     form = forms.CreateLabelForm(profile_id=profile_id)
     if form.validate_on_submit():
         label = form.label.data
-        utils_save_label(label, profile_id)
+        utils_save_label(label, profile)
         flash('The label "%s" was created.' % label)
         return redirect(g.user.profile_url)
     return render_template('create_label.html', form=form)
@@ -58,11 +58,11 @@ def edit_label(profile, label):
         label_id = request.form.get('label_id')
         if label.id != int(label_id):
             abort(404)
-        label.name = request.form.get('label')
+        label.name = request.form.get('label_name')
         db.session.commit()
         return label.name
     else:
-        return form.label.errors[0], 400
+        return form.label_name.errors[0], 400
 
 
 @app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
@@ -85,8 +85,7 @@ def manage_labels(profile, img):
     return render_template('view_image.html', form=form, img=img)
 
 
-def utils_save_label(label_name, profile_id):
-    profile = Profile.query.filter_by(userid=profile_id).one()
+def utils_save_label(label_name, profile):
     label = Label(title=label_name, profile=profile)
     label.make_name()
     db.session.add(label)
