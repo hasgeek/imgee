@@ -14,7 +14,7 @@ from imgee.models import Label, StoredFile, Profile, db
     (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def show_label(profile, label):
-    files = label.stored_files.filter(Profile.userid == profile.userid).order_by('stored_file.created_at desc').all()
+    files = label.stored_files.order_by('stored_file.created_at desc').all()
     form = forms.EditLabelForm()
     return render_template('show_label.html', form=form, label=label, files=files, profile=profile)
 
