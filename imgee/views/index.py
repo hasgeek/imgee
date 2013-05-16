@@ -11,6 +11,7 @@ from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
+from imgee.utils import newid
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
@@ -44,8 +45,7 @@ def upload_file(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         filename = secure_filename(request.files['uploaded_file'].filename)
-        uniq_name = uuid4().hex
-        stored_file = StoredFile(name=uniq_name, title=filename, profile=profile)
+        stored_file = StoredFile(name=newid(), title=filename, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
         content_type = get_file_type(filename)
