@@ -68,7 +68,7 @@ $('select#profiles').change(function(){
 {% block albumcontent %}
 <div class="span4">
     <div class="form-box well">
-        <div class="form-title"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Go to Profile</div><hr />
+        <div class="form-title"><i class="icon-user"></i>&nbsp;&nbsp;Go to Profile</div><hr />
         <form action="{{url_for('pop_up_gallery', profile='PROFILE')}}" id="change_profile" method="GET">
         {{ renderfield(cp_form.profiles)}}
         <input type="hidden" id="from" name="from"></input>

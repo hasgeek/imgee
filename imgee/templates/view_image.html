@@ -18,8 +18,41 @@
 {% endblock %}
 
 {% block sidebar %}
+<div style='display:none;'>
+    {{form.csrf_token()}}
+</div>
+
+<div class="span2">
+    <div class="sidebar well">
+      <div class="photostream-profile">
+        <div class="profile-name">
+          <a href="{{ url_for('show_profile', profile=g.user.username) }}">All images</a>
+        </div>
+      </div>
+
+      <div class="options">
+        <a class="btn btn-primary" href="{{url_for('upload_file',  profile=g.user.username)}}">Upload images</a>
+        <a class="btn btn-primary" href="{{url_for('create_label')}}">New label</a>
+      </div>
+
+      <ul class="labels nav nav-list">
+        <li class="nav-header">Labels</li>        
+            {% if profile.labels %}
+                {% for label in profile.labels |sort(attribute='name')%}
+                    <li><a href="{{url_for('show_label', profile_name=profile_name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
+                {% endfor %}
+            {% else %}
+                <li>No Labels yet. <a href="{{url_for('create_label')}}">&nbsp;Create new label</a></li>
+            {% endif %}
+      </ul>
+    </div>
+</div>
+{% endblock %} 
+
+
+{% block albumcontent %}
 {% set img_url= url_for('get_image', img_name=img.name) %}
-<div class="span8">
+<div class="span6">
 
     <div class="image-display">
         <img src="{{url_for('get_image', img_name=img.name)}}" />
@@ -40,9 +73,6 @@
     <a href='{{img_url}}' id='img_link'> here</a>.
     <br/>
 </div>
-{% endblock %}
-
-{% block albumcontent %}
 {% set action_url=url_for('manage_labels', img_name=img.name, profile_name=img.profile.name) %}
     <div class="span4">
         <a class="btn btn-danger" href="{{url_for('delete_file', profile=g.user.username, img_name=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete Image</a>
