@@ -21,7 +21,7 @@
 
       <div class="options">
         <a class="btn btn-primary" href="{{url_for('upload_file', profile=g.user.profile_name)}}">Upload images</a>
-        <a class="btn btn-primary" href="{{url_for('create_label')}}">New label</a>
+        <a class="btn btn-primary" href="{{url_for('create_label, profile=g.user.profile_name')}}">New label</a>
       </div>
 
       <ul class="labels nav nav-list">
@@ -31,7 +31,7 @@
                     <li><a href="{{url_for('show_label', profile_name=profile.name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
                 {% endfor %}
             {% else %}
-                <li>No Labels yet. <a href="{{url_for('create_label')}}"><i class="icon-plus"></i>&nbsp;Create new label</a></li>
+                <li>No Labels yet. <a href="{{url_for('create_label', profile=g.user.profile_name)}}"><i class="icon-plus"></i>&nbsp;Create new label</a></li>
             {% endif %}
       </ul>
     </div>
