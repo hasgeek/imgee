@@ -19,8 +19,9 @@ def show_label(profile, label):
     return render_template('show_label.html', form=form, label=label, files=files, profile=profile)
 
 
-@app.route('/labels/new', methods=['GET', 'POST'])
-@lastuser.requires_login
+@app.route('/<profile>/newlabel', methods=['GET', 'POST'])
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def create_label():
     profile_id = g.user.userid
     form = forms.CreateLabelForm(profile_id=profile_id)
