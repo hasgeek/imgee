@@ -29,7 +29,7 @@
         <li class="nav-header">Labels</li>
             {% if profile.labels %}
                 {% for label in profile.labels |sort(attribute='name')%}
-                    <li><a href="{{url_for('show_label', profile_name=profile_name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
+                    <li><a href="{{url_for('show_label', profile_name=g.user.profile_name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
                 {% endfor %}
             {% else %}
                 <li>No Labels yet. <a href="{{url_for('create_label', profile=g.user.profile_name )}}">&nbsp;Create new label</a></li>
