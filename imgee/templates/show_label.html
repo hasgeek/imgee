@@ -33,6 +33,7 @@
             {% else %}
                 <li>No Labels yet. <a href="{{url_for('create_label', profile=g.user.profile_name)}}"><i class="icon-plus"></i>&nbsp;Create new label</a></li>
             {% endif %}
+            <a href="{{url_for('unlabelled_images', profile=g.user.profile_name)}}">Archive</a>
       </ul>
     </div>
 </div>
