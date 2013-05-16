@@ -4,12 +4,14 @@ import requests
 import os
 from PIL import Image
 
+
 def upload(test_client, filepath, upload_url):
     content = open(filepath).read()
     filename = os.path.basename(filepath)
     d = {'uploaded_file': (StringIO(content), filename)}
     response = test_client.post(upload_url, data=d, follow_redirects=True)
     return filename, response
+
 
 def get_img_id(r, img_title):
     """
@@ -50,6 +52,7 @@ def download_image(url):
 def get_image_size(path):
     img = Image.open(path)
     return img.size
+
 
 if __name__ == '__main__':
     import doctest

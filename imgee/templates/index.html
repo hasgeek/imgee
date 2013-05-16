@@ -13,7 +13,7 @@
       <p>
         {% if g.user %}
           Welcome <strong>{{ g.user.fullname }}!</strong>
-          <a href="{{ url_for('show_profile', profile=g.user.username) }}">View your images</a></h4>
+          <a href="{{ g.user.profile_url }}">View your images</a></h4>
         {% else %}
           <a  href="{{ url_for('login') }}" class="btn btn-large">Login / Sign up</a>
         {% endif %}

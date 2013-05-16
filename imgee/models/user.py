@@ -19,6 +19,6 @@ class User(UserBase, db.Model):
         return [self.profile] + Profile.query.filter(
             Profile.userid.in_(self.organizations_owned_ids())).order_by('title').all()
 
-    @property
+    @cached_property
     def profile_url(self):
-        return url_for('show_profile', profile=self.username or self.userid)
+        return url_for('profile_view', profile=self.profile_name)
