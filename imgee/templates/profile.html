@@ -34,7 +34,7 @@
             {% else %}
                 <li>No Labels yet. <a href="{{url_for('create_label', profile=g.user.profile_name )}}">&nbsp;Create new label</a></li>
             {% endif %}
-            <a href="{{url_for('unlabelled_images', profile=g.user.profile_name)}}">Unlabelled</a>
+            <a href="{{url_for('unlabelled_images', profile=g.user.profile_name)}}">Archive</a>
       </ul>
     </div>
 </div>
@@ -42,6 +42,9 @@
 
 {% block albumcontent %}
 <div class="span10">
+    <div class="heading">Archived Images</div>
+    <span class="note">Images without any labels are displayed here.<span>
+    <br />
     <div class="albumpage well">
         {% if files %}
             <div class="gallery">
