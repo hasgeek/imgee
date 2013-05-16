@@ -39,7 +39,7 @@ def _redirect_url_frm_upload(profile_name):
 
 @app.route('/<profile>/new', methods=['GET', 'POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file(profile):
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
