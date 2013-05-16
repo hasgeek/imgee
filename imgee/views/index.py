@@ -5,7 +5,7 @@ from uuid import uuid4
 from flask import (render_template, request, g, url_for,
     redirect, flash)
 from urlparse import urljoin
-from sqlalchemy import and_
+from sqlalchemy import and_, not_
 
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
@@ -92,6 +92,15 @@ def profile_view(profile):
     files = profile.stored_files.order_by('created_at desc').all()
     form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, form=form)
+
+@app.route('/<profile>/archive')
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+def unlabelled_images(profile):
+    """Get all unlabelled images owned by profile"""
+    files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by('created_at desc').all()
+    form = forms.EditTitleForm()
+    return render_template('profile.html', profile=profile, files=files, form=form, unlabelled=True)
 
 
 @app.route('/<profile>/view/<img_name>')

@@ -26,7 +26,7 @@
       </div>
 
       <ul class="labels nav nav-list">
-        <li class="nav-header">Labels</li>        
+        <li class="nav-header">Labels</li>
             {% if profile.labels %}
                 {% for label in profile.labels |sort(attribute='name')%}
                     <li><a href="{{url_for('show_label', profile_name=profile_name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
@@ -34,6 +34,7 @@
             {% else %}
                 <li>No Labels yet. <a href="{{url_for('create_label', profile=g.user.profile_name )}}">&nbsp;Create new label</a></li>
             {% endif %}
+            <a href="{{url_for('unlabelled_images', profile=g.user.profile_name)}}">Unlabelled</a>
       </ul>
     </div>
 </div>
@@ -65,7 +66,11 @@
                 </div>
             </div>
         {% else %}
+            {% if unlabelled %}
+            Hurray! Not a single image is without a label.
+            {% else %}
             There are no images uploaded yet. <a href="{{url_for('upload_file', profile=g.user.profile_name)}}">Upload them.</a>
+            {% endif %}
         {% endif %}
     </div>
 </div>
