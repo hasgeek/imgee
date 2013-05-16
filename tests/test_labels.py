@@ -18,7 +18,7 @@ class LabelTestCase(ImgeeTestCase):
 
     def create_label(self, label=None):
         label = label or self.test_labels[0]
-        response = self.client.post('/labels/new', data={'label': label}, follow_redirects=True)
+        response = self.client.post('/%s/newlabel' % self.test_user_name, data={'label': label}, follow_redirects=True)
         return response
 
     def test_empty(self):

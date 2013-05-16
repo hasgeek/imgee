@@ -2,7 +2,7 @@
 
 from flask import (render_template, request, g, url_for,
     redirect, flash)
-from coaster.views import load_models
+from coaster.views import load_models, load_model
 
 from imgee import app, forms, lastuser
 from imgee.models import Label, StoredFile, Profile, db
@@ -21,8 +21,8 @@ def show_label(profile, label):
 
 @app.route('/<profile>/newlabel', methods=['GET', 'POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def create_label():
+    permission=['new-label', 'siteadmin'], addlperms=lastuser.permissions)
+def create_label(profile):
     profile_id = g.user.userid
     form = forms.CreateLabelForm(profile_id=profile_id)
     if form.validate_on_submit():
@@ -47,13 +47,17 @@ def delete_label(profile, label):
     return render_template('delete_label.html', form=form, label=label)
 
 
-@app.route('/<profile_name>/edit_label', methods=['POST'])
-@lastuser.requires_login
-def edit_label(profile_name):
+@app.route('/<profile_name>/<label_name>/edit', methods=['POST'])
+@load_models(
+    (Profile, {'name': 'profile_name'}, 'profile'),
+    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+def edit_label(profile, label):
     form = forms.EditLabelForm()
     if form.validate_on_submit():
         label_id = request.form.get('label_id')
-        label = Label.query.filter(Profile.userid == g.user.userid, Label.id == label_id).first_or_404()
+        if label.id != int(label_id):
+            abort(404)
         label.name = request.form.get('label')
         db.session.commit()
         return label.name
