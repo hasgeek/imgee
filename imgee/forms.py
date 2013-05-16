@@ -53,7 +53,7 @@ class EditTitleForm(Form):
 
 
 class EditLabelForm(Form):
-    label = TextField('label', validators=[Required(), Length(max=250)])
+    label_name = TextField('label', validators=[Required(), Length(max=250)])
 
 
 class ChangeProfileForm(Form):

@@ -24,7 +24,7 @@ $(".editable_label").each(function (){
           cancel : 'Cancel',
           tooltip   : 'Click to edit',
           id: 'label_id',
-          name: 'label',
+          name: 'label_name',
           callback: function(newlabel){
               var oldlabel = this.revert;
               History.replaceState({}, document.title, window.location.href.replace(oldlabel, newlabel));
