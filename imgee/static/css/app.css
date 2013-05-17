@@ -37,7 +37,78 @@
   margin-top: 15px;
 }
 
+.view-image .heading {
+  margin-bottom: 20px;
+}
+.view-image .editable_title form {
+  padding-bottom: 40px;
+}
+.view-image .editable_title form button {
+  margin-top: 3px;
+}
+
+.resize input, .resize textarea {
+  width: 100px;
+  display: inline-block;
+  margin-right: 5px;
+}
+.resize label {
+  float: left;
+  margin-top: 8px;
+  width: 50px;
+}
+.resize #img_link {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
 /* ======== profile, pop_up_gallery, show_label pages ========= */
+.topbar-btn {
+  color: #0087cf;
+  background-color: whitesmoke;
+  padding: 2px;
+  padding-left: 8px;
+  padding-right: 8px;
+  float: right;
+  margin-bottom: 8px;
+  border-radius: 3px;
+}
+.topbar-btn:hover {
+  text-decoration: none;
+  color: #eb5b1f;
+  border-color: #eb5b1f;
+}
+
+.photostream-profile {
+  background-color: whitesmoke;
+}
+.photostream-profile .profile-image {
+  height: 40px;
+  width: 40px;
+  background-color: #cccccc;
+  display: block;
+  float: right;
+  margin: 10px;
+  background-image: url('../img/user.png?1368782718');
+  background-size: 40px 40px;
+}
+.photostream-profile .profile-name {
+  margin-left: 20px;
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 4px;
+}
+.photostream-profile .profile-name a {
+  font-size: 18px;
+}
+.photostream-profile .profile-name a:hover {
+  text-decoration: none;
+}
+
+.topbar-options {
+  margin-top: 8px;
+}
+
 .sidebar .nav-list li {
   text-shadow: none;
 }
@@ -51,63 +122,98 @@
 .sidebar .options {
   text-align: left;
 }
-.sidebar .photostream-profile {
-  padding-bottom: 12px;
-}
-.sidebar .photostream-profile a {
-  font-size: 18px;
-}
-.sidebar .photostream-profile a:hover {
-  text-decoration: none;
-}
 
 .albumpage {
-  padding-left: 60px;
-  padding-top: 25px;
-  background: none repeat scroll 0 0 white;
-  border: 1px solid #ececec;
-  border-radius: 4px 4px 4px 4px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1) inset;
-  display: block;
+  border: 0px solid #ececec;
+  padding-top: 20px;
 }
 
-.image {
-  width: 150px;
-  height: 200px;
+li.image .image-thumb > a > img {
+  box-shadow: 1px 1px 2px #cccccc;
+}
+
+/** list-grid switcher 88/ */
+/*list view */
+ul.list {
+  list-style: none;
+}
+ul.list li {
+  display: block;
+  clear: both;
+  border-bottom: 1px solid #e5e5e5;
+  margin-top: 5px;
+  float: left;
+  width: 100%;
+}
+ul.list li:first-child {
+  border-top: 1px solid #e5e5e5;
+  padding-top: 5px;
+}
+ul.list li section.left {
   display: block;
   float: left;
-  padding-left: 15px;
-  padding-right: 15px;
-  margin-top: 20px;
+  width: 90px;
+  position: relative;
 }
-.image .title {
-  width: 130px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
-  font-weight: bold;
+ul.list li section.left img {
+  width: 70px;
+  height: 70px;
 }
-.image .title, .image .labels {
-  text-align: center;
+ul.list li section.right {
+  display: block;
+  float: left;
+  text-align: left;
+  position: relative;
 }
 
-.editable_text:hover {
-  background-color: #cccccc;
+/*grid view */
+ul.grid {
+  list-style: none;
 }
-.editable_text form {
-  height: 200px;
+ul.grid li {
+  position: relative;
+  float: left;
+  margin-right: 5px;
+  border-bottom: 0px;
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+ul.grid li section.left {
+  position: relative;
+}
+ul.grid li section.right {
+  display: none;
+}
+
+.title {
+  font-size: 20px;
+  text-align: left;
+  margin-bottom: 10px;
+  margin-top: 0px;
+}
+
+.editable_title {
+  padding: 5px;
+  padding-bottom: 8px;
+}
+.editable_title:hover {
+  background-color: #e5e5e5;
+}
+.editable_title form {
+  height: 20px;
   z-index: 999;
+  padding-bottom: 5px;
 }
-.editable_text form input {
-  background-color: #cccccc;
+.editable_title form input {
+  background-color: #fff7e8;
   border: 0;
   box-shadow: none;
   width: 120px;
   height: 150px;
+}
+.editable_title form button {
+  margin-top: -10px;
+  margin-left: 5px;
 }
 
 .thumbnail {
@@ -123,17 +229,52 @@
   height: 130px;
 }
 
+.label-category .image {
+  width: 180px;
+  margin-right: 5px;
+  height: 160px;
+  font-size: 13px;
+  float: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.label-category .image img {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100px;
+}
+
 .label {
-  background-color: white;
-  border: 1px solid #e7e7e7;
+  position: relative;
+  background-color: #0087cf;
   border-radius: 0;
-  padding: 0;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-right: 2px;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  padding-left: 7px;
+  padding-right: 12px;
+  margin-right: 5px;
   margin-left: 2px;
-  font-size: 10px;
+  font-size: 11px;
   text-shadow: none;
+}
+.label a {
+  color: white;
+}
+
+.label:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-width: 0 10px 10px 0;
+  border-style: solid;
+  border-color: white white #68bbe7 #68bbe7;
+  background: #68bbe7;
+  -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), -1px 1px 1px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), -1px 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3), -1px 1px 1px rgba(0, 0, 0, 0.2);
+  display: block;
+  width: 0;
 }
 
 /* ======== view_image page ========= */
@@ -186,6 +327,10 @@ form {
   margin-top: 20px;
   padding: 0px;
   background: transparent;
+}
+.form-actions a.btn {
+  margin-top: 10px;
+  margin-left: -150px;
 }
 .form-actions button {
   float: right;

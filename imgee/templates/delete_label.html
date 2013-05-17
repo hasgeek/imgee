@@ -1,12 +1,6 @@
 {% extends "layout.html" %}
 {% from 'baseframe/forms.html' import renderform %}
 
-{% macro renderformdelete(form, formid, submit, message='', action='', cancel_url='', multipart=False) %}
-<form id="{{ formid }}" method="POST" {%- if action %} action="{{ action }}" {%- endif %}{%- if multipart %} enctype="multipart/form-data" {%- endif %} accept-charset="UTF-8" class="form-horizontal">
-  {{ renderform_inner(form, formid) }}
-  {{ rendersubmit([(None, submit or "Submit", 'btn-danger')], cancel_url=cancel_url) }}
-</form>
-{% endmacro %}
 
 {% block basecontent %}
 	{% block sidebar %}
@@ -14,9 +8,11 @@
 	{% block albumcontent %}
 	{% endblock %}
 	<div class="delete-box alert alert-error">
-		<p>Are you sure you want to delete the label "{{label.name}}"?<br /> <strong>Info: Even if you delete it, the files associated with it will NOT be deleted.</strong></p>
+		<div class="form-title"><i class="icon-trash"></i>&nbsp;&nbsp;Confirm delete</div><hr />
+		<p>Are you sure you want to delete the label "{{label.name}}"?<br /></p>
+		<p><i class="icon-info-sign"></i>&nbsp;<strong>Info: Even if you delete it, the files associated with the label will NOT be deleted.</strong></p>
 		{% set cancel_url=url_for('show_label', profile_name=g.user.profile_name, label_name=label.name) %}
-		<div class="form-submit">{{ renderformdelete(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}</div>
+		<div class="form-submit">{{ renderform(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}</div>
 	</div>
 {% endblock %}
 
