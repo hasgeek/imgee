@@ -1,13 +1,6 @@
 {% extends "layout.html" %}
 {% from 'baseframe/forms.html' import renderform %}
 
-{% macro renderformcreate(form, formid, submit, message='', action='', cancel_url='', multipart=False) %}
-<form id="{{ formid }}" method="POST" {%- if action %} action="{{ action }}" {%- endif %}{%- if multipart %} enctype="multipart/form-data" {%- endif %} accept-charset="UTF-8" class="form-horizontal">
-  {{ renderform_inner(form, formid) }}
-  {{ rendersubmit([(None, submit or "Submit", 'btn-primary')], cancel_url=cancel_url) }}
-</form>
-{% endmacro %}
-
 {% block basecontent %}
 	{% block sidebar %}
 	{% endblock %}
@@ -17,6 +10,6 @@
 	<div class="create-box well">
 		<div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Create label</div><hr />		
 		{% set cancel_url=url_for('profile_view', profile=profile_name) %}
-		{{ renderformcreate(form, "Create", cancel_url=cancel_url)}}
+		{{ renderform(form, "Create", cancel_url=cancel_url)}}
 	</div>
 {% endblock %}

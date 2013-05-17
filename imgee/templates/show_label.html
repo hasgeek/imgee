@@ -7,61 +7,31 @@
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 {% endblock %}
 
-{% block sidebar %}
-<div style='display:none;'>
-    {{form.csrf_token()}}
-</div>
-<div class="span2">
-    <div class="sidebar well">
-      <div class="photostream-profile">
-        <div class="profile-name">
-          <a href="{{ url_for('profile_view', profile=g.user.profile_name) }}">All images</a>
-        </div>
-      </div>
-
-      <div class="options">
-        <a class="btn btn-primary" href="{{url_for('upload_file', profile=g.user.profile_name)}}">Upload images</a>
-        <a class="btn btn-primary" href="{{url_for('create_label')}}">New label</a>
-      </div>
-
-      <ul class="labels nav nav-list">
-        <li class="nav-header">Labels</li>        
-            {% if profile.labels %}
-                {% for label in profile.labels|sort(attribute='name') %}
-                    <li><a href="{{url_for('show_label', profile_name=profile.name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
-                {% endfor %}
-            {% else %}
-                <li>No Labels yet. <a href="{{url_for('create_label')}}"><i class="icon-plus"></i>&nbsp;Create new label</a></li>
-            {% endif %}
-      </ul>
-    </div>
-</div>
-{% endblock %}  
 
 
 {% block albumcontent %}
     <div class="span10">
         <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
-        <a class="btn btn-danger" style="float:right;" href="{{url_for('delete_label', profile_name=g.user.profile_name ,label_name=label.name)}}">
-            <i class="icon-trash"></i>&nbsp;Delete Label</a>
-        <br />
+        <a class="btn btn-danger" href="{{url_for('delete_label', profile_name=g.user.profile_name ,label_name=label.name)}}"><i class="icon-trash"></i>&nbsp;Delete Label</a>
+        <br /><br />
         <div class="albumpage well">
             {%if not files %}
                 There are no images with label "{{label.name}}" yet.
                 <div class="padding"></div>
             {% else %}
-                <div class="gallery row">
+            <div class="row">
+                <div class="gallery label-category span10">
+
                     {% for img in files %}
                         <div class="image">
-                            <div class="thumbnail">
-                                <a href="{{url_for('view_image', profile=g.user.profile_name, img_name=img.name)}}">
-                                    <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
-                                </a>
-                            </div>
-                            <div class="title">{{img.title}}</div>
+                            <a href="{{url_for('view_image', profile=g.user.profile_name, img_name=img.name)}}">
+                                <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
+                            </a>
+                            <div class="label-title">{{img.title}}</div>
                         </div>
                     {% endfor %}
                 </div>
+            </div>
             {% endif %}
         </div>
     </div>

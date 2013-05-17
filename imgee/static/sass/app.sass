@@ -25,9 +25,67 @@
     margin-top: 20px
   h4
     margin-top: 15px
+.view-image
+  //background-color: #ccc
+  .heading
+    margin-bottom: 20px
+  .editable_title
+    form
+      padding-bottom: 40px
+      button
+        margin-top: 3px
 
+.resize
+  input, textarea
+    width: 100px
+    display: inline-block
+    margin-right: 5px
+  label
+    float: left
+    margin-top: 8px
+    width: 50px
+  #img_link
+    margin-bottom: 5px
+    margin-top: 5px
 
 /* ======== profile, pop_up_gallery, show_label pages ========= */
+.topbar-btn
+  color: #0087cf
+  background-color: #f5f5f5
+  padding: 2px
+  padding-left: 8px
+  padding-right: 8px
+  float: right
+  margin-bottom: 8px
+  border-radius: 3px
+  &:hover
+    text-decoration: none
+    color: #EB5B1F
+    border-color: #EB5B1F
+.photostream-profile
+  background-color: #F5F5F5
+
+  .profile-image
+    height: 40px
+    width: 40px
+    background-color: #ccc
+    display: block
+    float: right
+    margin: 10px
+    background-image: image-url('user.png')
+    background-size: 40px 40px
+  .profile-name
+    margin-left: 20px
+    display: block
+    margin-top: 18px
+    margin-bottom: 4px
+    a
+      font-size: 18px
+      &:hover
+        text-decoration: none
+
+.topbar-options
+  margin-top: 8px
 .sidebar
   .nav-list
     li
@@ -39,54 +97,88 @@
     margin-bottom: 10px
   .options
     text-align: left
-  .photostream-profile
-    padding-bottom: 12px
-    a
-      font-size: 18px
-      &:hover
-        text-decoration: none
+  
 
 .albumpage
-  padding-left: 60px
-  padding-top: 25px
-  background: none repeat scroll 0 0 #FFFFFF
-  border: 1px solid #ECECEC
-  border-radius: 4px 4px 4px 4px
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1) inset
-  display: block
+  border: 0px solid #ECECEC
+  padding-top: 20px
 
-.image
-  width: 150px
-  height: 200px
-  display: block
-  float: left
-  padding-left: 15px
-  padding-right: 15px
-  margin-top: 20px
-  .title
-    width: 130px
-    margin-left: auto
-    margin-right: auto
-    margin-top: 3px
-    white-space: nowrap
-    overflow: hidden
-    text-overflow: ellipsis
-    font-size: 14px
-    font-weight: bold
-  .title, .labels
-    text-align: center
-.editable_text
+li.image
+  .image-thumb > a > img
+    box-shadow: 1px 1px 2px #ccc
+
+/*** list-grid switcher 88/
+
+/** list view **/
+ul.list
+  list-style: none
+  li
+    display: block
+    clear: both
+    border-bottom: 1px solid #e5e5e5
+    margin-top: 5px
+    float: left
+    width: 100%
+    &:first-child
+      border-top: 1px solid #E5E5E5
+      padding-top: 5px
+
+    section.left
+      display: block
+      float: left
+      width: 90px
+      position: relative
+      img
+        width: 70px
+        height: 70px
+    section.right
+      display: block
+      float: left
+      text-align: left
+      position: relative
+      
+
+/** grid view **/
+ul.grid
+  list-style: none
+  
+  li
+    position: relative
+    float: left
+    margin-right: 5px
+    border-bottom: 0px
+    padding-bottom: 0px
+    padding-top: 0px
+
+    section.left
+      position: relative
+    section.right
+      display: none
+
+.title
+  font-size: 20px
+  text-align: left
+  margin-bottom: 10px
+  margin-top: 0px
+
+.editable_title
+  padding: 5px
+  padding-bottom: 8px
   &:hover
-    background-color: #ccc
+    background-color: #E5E5E5
   form
-    height: 200px
+    height: 20px
     z-index: 999
+    padding-bottom: 5px
     input
-      background-color: #ccc
+      background-color: #FFF7E8
       border: 0
       box-shadow: none
       width: 120px
       height: 150px
+    button
+      margin-top: -10px
+      margin-left: 5px
 
 
 .thumbnail
@@ -100,18 +192,48 @@
     width: 130px
     height: 130px
 
-.label
-  background-color: #FFF
-  border: 1px solid #E7E7E7
-  border-radius: 0
-  padding: 0
-  padding-left: 5px
-  padding-right: 5px
-  margin-right: 2px
-  margin-left: 2px
-  font-size: 10px
-  text-shadow: none
+.label-category
+  .image
+    width: 180px
+    margin-right: 5px
+    height: 160px
+    font-size: 13px
+    float: left
+    text-overflow: ellipsis
+    overflow: hidden
+    img
+      margin-left: auto
+      margin-right: auto
+      width: 100px
 
+.label
+  position: relative
+  background-color: #0087cf
+  border-radius: 0
+  padding-top: 1px
+  padding-bottom: 2px
+  padding-left: 7px
+  padding-right: 12px
+  margin-right: 5px
+  margin-left: 2px
+  font-size: 11px
+  text-shadow: none
+  a
+    color: #fff
+.label:after
+  content: ""
+  position: absolute
+  top: 0
+  right: 0
+  border-width: 0 10px 10px 0
+  border-style: solid
+  border-color: #fff #fff #68BBE7 #68BBE7
+  background: #68BBE7
+  -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2)
+  -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2)
+  box-shadow: 0 1px 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2)
+  display: block
+  width: 0
 
 /* ======== view_image page ========= */
 .heading
@@ -155,6 +277,9 @@ form
   margin-top: 20px
   padding: 0px
   background: transparent
+  a.btn
+    margin-top: 10px
+    margin-left: -150px
   button
     float: right
     margin: 10px

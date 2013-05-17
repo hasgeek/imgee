@@ -67,59 +67,89 @@
 </div>
 {%- endmacro %}
 
+{% block headerbox -%}
+  <header>
+    {% block networkbar %}{{ networkbar(siteid=config['SITE_ID'], login=config['LASTUSER_CLIENT_ID'] and true or false) }}{% endblock %}
+    <div id="page-header" class="container">
+      <div class="row">
+        <div class="span7">
+          {% block logo -%}
+            <div id="logo"><a href="{{ g.user.profile_url }}">{{ config['SITE_TITLE'] }}</a></div>
+          {%- endblock %}
+        </div>
 
-{% macro rendersubmit(buttons=[], css_class="", tabindex='', cancel_url='') -%}
-<div class="form-actions clearfix{% if css_class %} {{ css_class}}{% endif %}">
-  {% for name, value, widget_class in buttons -%}
-    <button type="submit"
-      {%- if name %} name="{{ name|e }}"{% else %} {% endif -%}
-      {% if widget_class %} class="btn {{ widget_class|e }}" {% else %} class="btn"{% endif -%}
-      {%- if tabindex %} tabindex="{{ tabindex }}" {% endif -%}
-      >{{ value|e }}</button>
-  {% endfor %}
-  {% if cancel_url %}<a href="{{ cancel_url }}" class="btn cancel">Cancel</a>{% endif %}
-  <span class="loading hidden">&nbsp;</span>
-</div>
-{%- endmacro %}
+        <div class="span5">
+          <div class="row topbar-options">
 
-{% macro renderform_inner(form, formid) -%}
-  {%- if form.errors %}
-    <div class="alert alert-error">
-      <a class="close" data-dismiss="alert">×</a>
-      Please correct the indicated errors.
+          <div class="span2">
+            <a class="topbar-btn" href="{{url_for('upload_file', profile=(profile or g.user.profile).name )}}"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Upload images</a>
+            <a class="topbar-btn" href="{{url_for('create_label')}}"><i class="icon-tag"></i>&nbsp;&nbsp;Create label</a>   
+
+          </div>
+            {%- block header %}
+              <div class="photostream-profile span3"> 
+                <div class="row">
+                  <div class="span2">
+                    <div class="profile-name">
+                      <a href="{{ g.user.profile_url }}">Your images</a> 
+                    </div>
+                  </div>
+                  <div class="span1">
+                    <div class="profile-image"></div>
+                  </div> 
+                </div>                
+              </div>
+            {% endblock %}
+          </div>
+      </div>
     </div>
-  {%- endif %}
-  {% if message %}<p>{{ message }}</p>{% endif %}
-  <div style="display:none;"><input type="hidden" name="form.id" value="{{ formid }}" /></div>
-  {{ form.hidden_tag() }}
-  {%- if form.csrf_token.errors %}
-    {% for error in form.csrf_token.errors %}<div class="alert alert-error">{{ error }}</div>{% endfor %}
-  {% endif %}
-  {%- set autofocus = true %}
-  {% for field in form -%}
-    {%- if field.widget.input_type and field.widget.input_type == 'hidden' -%}
-      {# Don't show hidden #}
-    {%- else -%}
-      {{ renderfield(field, widget_css_class="field-" + field.id, autofocus=autofocus) }}
-      {%- if autofocus %}{% set autofocus = false %}{% endif %}
-    {%- endif %}
-  {% endfor %}
-{%- endmacro %}
+  </div>
+  </header>
+{%- endblock %}
 
-{% macro renderformcreate(form, formid, submit, message='', action='', cancel_url='', multipart=False) %}
-  <form id="{{ formid }}" method="POST" {%- if action %} action="{{ action }}" {%- endif %}{%- if multipart %} enctype="multipart/form-data" {%- endif %} accept-charset="UTF-8" class="form-horizontal">
-    {{ renderform_inner(form, formid) }}
-    {{ rendersubmit([(None, submit or "Submit", 'btn-primary')], cancel_url=cancel_url) }}
-  </form>
-{% endmacro %}
 
 {% block basecontent %}
   {% block content %}
     <div class="row album">
-      {% block sidebar %}
-      {% endblock %}
+
       {% block albumcontent %}
       {% endblock %}
+
+      {% block sidebar %}
+        <div style='display:none;'>
+            {{form.csrf_token()}}
+        </div>
+
+        <div class="span2">
+            <div class="sidebar well">
+              <a class="btn" href="{{url_for('upload_file',  profile=profile.name)}}"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Upload images</a>              
+              <ul class="nav nav-list">
+                <li class="nav-header">Profiles</li>
+                  <li><a href="{{ g.user.profile_url }}">{{ g.user.fullname }}</a></li>
+                {%- for org in g.user.organizations_owned() %}
+                  <li><a href="{{ url_for('profile', name=org['name']) }}">{{ org.title }}</a></li>
+                {%- endfor %}
+              </ul>
+
+              <ul class="labels nav nav-list">
+
+                <li class="nav-header">Labels</li>        
+                    {% if profile.labels %}
+                        {% for label in profile.labels |sort(attribute='name')%}
+                            <li><a href="{{url_for('show_label', profile_name=profile.name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
+                        {% endfor %}
+                    {% else %}
+                        <li>No Labels yet. <a href="{{url_for('create_label')}}">&nbsp;Create new label</a></li>
+                    {% endif %}
+              </ul>              
+              &nbsp;<a href="{{url_for('create_label')}}"><i class="icon-plus"></i>&nbsp;New label</a>
+              <!-- 
+              <a href="{{ url_for('profile_view', profile=profile.name) }}">Your images</a>   
+                <a class="btn btn-primary pull-right" href="{{url_for('upload_file',  profile=profile.name)}}"><i class="icon-upload-alt"></i>&nbsp;Upload images</a>
+                <a class="btn btn-primary pull-right" href="{{url_for('create_label')}}"><i class="icon-tag"></i>&nbsp;New label</a> -->
+            </div>
+        </div>
+      {% endblock %}      
     </div>
   {% endblock %}
 {% endblock %}

@@ -5,64 +5,48 @@
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
 <script> var profile = '{{g.user.profile_name}}'; </script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
 {% endblock %}
 
-{% block sidebar %}
-<div style='display:none;'>
-    {{form.csrf_token()}}
-</div>
-
-<div class="span2">
-    <div class="sidebar well">
-      <div class="photostream-profile">
-        <div class="profile-name">
-          <a href="{{ g.user.profile_url }}">All images</a>
-        </div>
-      </div>
-
-      <div class="options">
-        <a class="btn btn-primary" href="{{url_for('upload_file',  profile=g.user.profile_name)}}">Upload images</a>
-        <a class="btn btn-primary" href="{{url_for('create_label')}}">New label</a>
-      </div>
-
-      <ul class="labels nav nav-list">
-        <li class="nav-header">Labels</li>        
-            {% if profile.labels %}
-                {% for label in profile.labels |sort(attribute='name')%}
-                    <li><a href="{{url_for('show_label', profile_name=profile_name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
-                {% endfor %}
-            {% else %}
-                <li>No Labels yet. <a href="{{url_for('create_label')}}">&nbsp;Create new label</a></li>
-            {% endif %}
-      </ul>
-    </div>
-</div>
-{% endblock %}  
+  
 
 {% block albumcontent %}
 <div class="span10">
-    <div class="albumpage well">
+    <div class="row">
+        <div class="list-grid-selector span10">
+            <div class="btn-group">
+                <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i>&nbsp;&nbsp;Thumbnails</a>
+                <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i>&nbsp;&nbsp;Detailed view</a>
+            </div>
+        </div>
+    </div>
+    <div class="albumpage row">
         {% if files %}
-            <div class="gallery">
-                <div class="row">
-                {% for img in files %}
-                    <div class="image">
-                        <div class="thumbnail">
-                            <a href="{{url_for('view_image', profile=g.user.profile_name, img_name=img.name)}}" title="view image">
-                                <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
-                            </a>
-                        </div>
-                        <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
-                        <div class="labels">
-                            {% for label in img.labels %}
-                                <span class="label">
-                                    <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}"><i class="icon-tag"></i>&nbsp;{{label.name}}</a>
-                                </span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endfor %}
-                </div>
+            <div class="gallery span10">
+                <ul id="showcase" class="grid">
+                    {% for img in files %}
+                        <li class="image">
+                            <section class="left">
+                                <div class="image-thumb">
+                                    <a href="{{url_for('view_image', profile=g.user.profile_name, img_name=img.name)}}" title="view image">
+                                        <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
+                                    </a>
+                                </div>
+                            </section>
+                            <section class="right">
+                                <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
+                                <div class="labels">
+                                    {% for label in img.labels %}
+                                        <span class="label">
+                                            <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </section>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
         {% else %}
             There are no images uploaded yet. <a href="{{url_for('upload_file', profile=g.user.profile_name)}}">Upload them.</a>
