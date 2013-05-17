@@ -1,4 +1,6 @@
 {% extends "layout.html" %}
+{% from 'baseframe/forms.html' import renderform %}
+
 {% block title %}{{ profile.title }}{% endblock %}
 
 {% block footerscripts %}
@@ -9,19 +11,21 @@
 
 {% block sidebar %}
 <div style='display:none;'>
-    {{form.csrf_token()}}
+    {{title_form.csrf_token()}}
 </div>
 
 <div class="span2">
     <div class="sidebar well">
       <div class="photostream-profile">
         <div class="profile-name">
-          <a href="{{ g.user.profile_url }}">All images</a>
+          <a href="{{url_for('view_all', profile=g.user.profile_name)}}">All images</a>
         </div>
       </div>
 
       <div class="options">
+        {% if not upload_form %}
         <a class="btn btn-primary" href="{{url_for('upload_file',  profile=g.user.profile_name)}}">Upload images</a>
+        {% endif %}
         <a class="btn btn-primary" href="{{url_for('create_label', profile=g.user.profile_name)}}">New label</a>
       </div>
 
@@ -41,10 +45,17 @@
 {% endblock %}  
 
 {% block albumcontent %}
+{% if upload_form %}
+<div class="span7">
+{% else %}
 <div class="span10">
+{% endif %}
+
+    {% if unlabelled %}
     <div class="heading">Archived Images</div>
     <span class="note">Images without any labels are displayed here.<span>
     <br />
+    {% endif %}
     <div class="albumpage well">
         {% if files %}
             <div class="gallery">
@@ -77,6 +88,16 @@
         {% endif %}
     </div>
 </div>
+
+{% if upload_form %}
+<div class="span3">
+    <div class="form-box well">
+        <div class="form-title">Upload image</div><hr />
+        {% set action_url=url_for('upload_file', profile=g.user.profile_name) %}
+        <div>{{ renderform(upload_form, 'Upload', multipart=True, action=action_url)}}</div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 

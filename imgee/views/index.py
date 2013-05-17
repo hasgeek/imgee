@@ -89,9 +89,22 @@ def edit_title(profile):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def profile_view(profile):
+    files = profile.stored_files.order_by('created_at desc').limit(10).all()
+    title_form = forms.EditTitleForm()
+    upload_form = forms.UploadImageForm()
+    return render_template('profile.html', profile=profile, files=files,
+                    upload_form=upload_form, title_form=title_form)
+
+
+@app.route('/<profile>/view')
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+def view_all(profile):
+    """View all images owned by profile."""
     files = profile.stored_files.order_by('created_at desc').all()
-    form = forms.EditTitleForm()
-    return render_template('profile.html', profile=profile, files=files, form=form)
+    title_form = forms.EditTitleForm()
+    return render_template('profile.html', profile=profile, files=files, title_form=title_form)
+
 
 @app.route('/<profile>/archive')
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -99,8 +112,8 @@ def profile_view(profile):
 def unlabelled_images(profile):
     """Get all unlabelled images owned by profile"""
     files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by('created_at desc').all()
-    form = forms.EditTitleForm()
-    return render_template('profile.html', profile=profile, files=files, form=form, unlabelled=True)
+    title_form = forms.EditTitleForm()
+    return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
 
 @app.route('/<profile>/view/<img_name>')
