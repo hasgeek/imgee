@@ -2,7 +2,7 @@
 
 from flask import (render_template, request, g, url_for,
     redirect, flash)
-from coaster.views import load_models
+from coaster.views import load_models, load_model
 
 from imgee import app, forms, lastuser
 from imgee.models import Label, StoredFile, Profile, db
@@ -14,19 +14,20 @@ from imgee.models import Label, StoredFile, Profile, db
     (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def show_label(profile, label):
-    files = label.stored_files.filter(Profile.userid == profile.userid).order_by('stored_file.created_at desc').all()
+    files = label.stored_files.order_by('stored_file.created_at desc').all()
     form = forms.EditLabelForm()
     return render_template('show_label.html', form=form, label=label, files=files, profile=profile)
 
 
-@app.route('/labels/new', methods=['GET', 'POST'])
-@lastuser.requires_login
-def create_label():
+@app.route('/<profile>/newlabel', methods=['GET', 'POST'])
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['new-label', 'siteadmin'], addlperms=lastuser.permissions)
+def create_label(profile):
     profile_id = g.user.userid
     form = forms.CreateLabelForm(profile_id=profile_id)
     if form.validate_on_submit():
         label = form.label.data
-        utils_save_label(label, profile_id)
+        utils_save_label(label, profile)
         flash('The label "%s" was created.' % label)
         return redirect(g.user.profile_url)
     return render_template('create_label.html', form=form)
@@ -46,18 +47,22 @@ def delete_label(profile, label):
     return render_template('delete_label.html', form=form, label=label)
 
 
-@app.route('/<profile_name>/edit_label', methods=['POST'])
-@lastuser.requires_login
-def edit_label(profile_name):
+@app.route('/<profile_name>/<label_name>/edit', methods=['POST'])
+@load_models(
+    (Profile, {'name': 'profile_name'}, 'profile'),
+    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+def edit_label(profile, label):
     form = forms.EditLabelForm()
     if form.validate_on_submit():
         label_id = request.form.get('label_id')
-        label = Label.query.filter(Profile.userid == g.user.userid, Label.id == label_id).first_or_404()
-        label.name = request.form.get('label')
+        if label.id != int(label_id):
+            abort(404)
+        label.name = request.form.get('label_name')
         db.session.commit()
         return label.name
     else:
-        return form.label.errors[0], 400
+        return form.label_name.errors[0], 400
 
 
 @app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
@@ -80,8 +85,7 @@ def manage_labels(profile, img):
     return render_template('view_image.html', form=form, img=img)
 
 
-def utils_save_label(label_name, profile_id):
-    profile = Profile.query.filter_by(userid=profile_id).one()
+def utils_save_label(label_name, profile):
     label = Label(title=label_name, profile=profile)
     label.make_name()
     db.session.add(label)

@@ -5,12 +5,13 @@ from uuid import uuid4
 from flask import (render_template, request, g, url_for,
     redirect, flash)
 from urlparse import urljoin
-from sqlalchemy import and_
+from sqlalchemy import and_, not_
 
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
+from imgee.utils import newid
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
@@ -38,14 +39,13 @@ def _redirect_url_frm_upload(profile_name):
 
 @app.route('/<profile>/new', methods=['GET', 'POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file(profile):
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         filename = secure_filename(request.files['uploaded_file'].filename)
-        uniq_name = uuid4().hex
-        stored_file = StoredFile(name=uniq_name, title=filename, profile=profile)
+        stored_file = StoredFile(name=newid(), title=filename, profile=profile)
         db.session.add(stored_file)
         db.session.commit()
         content_type = get_file_type(filename)
@@ -89,9 +89,31 @@ def edit_title(profile):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def profile_view(profile):
+    files = profile.stored_files.order_by('created_at desc').limit(10).all()
+    title_form = forms.EditTitleForm()
+    upload_form = forms.UploadImageForm()
+    return render_template('profile.html', profile=profile, files=files,
+                    upload_form=upload_form, title_form=title_form)
+
+
+@app.route('/<profile>/view')
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+def view_all(profile):
+    """View all images owned by profile."""
     files = profile.stored_files.order_by('created_at desc').all()
-    form = forms.EditTitleForm()
-    return render_template('profile.html', profile=profile, files=files, form=form)
+    title_form = forms.EditTitleForm()
+    return render_template('profile.html', profile=profile, files=files, title_form=title_form)
+
+
+@app.route('/<profile>/archive')
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+def unlabelled_images(profile):
+    """Get all unlabelled images owned by profile"""
+    files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by('created_at desc').all()
+    title_form = forms.EditTitleForm()
+    return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
 
 @app.route('/<profile>/view/<img_name>')
