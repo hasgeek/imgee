@@ -58,26 +58,17 @@ $('select#profiles').change(function(){
     </div>
     <div class="albumpage row">
         {% if files %}
-            <div class="gallery span8">
+            <div class="popup gallery span8">
                 <ul id="showcase" class="grid">
                     {% for img in files %}
                         <li class="image">
                             <section class="left">
                                 <div class="image-thumb">
-                                    <a href="{{url_for('view_image', profile=g.user.profile_name, img_name=img.name)}}" title="view image">
-                                        <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
-                                    </a>
+                                    <a><img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/></a>
                                 </div>
                             </section>
                             <section class="right">
                                 <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
-                                <div class="labels">
-                                    {% for label in img.labels %}
-                                        <span class="label">
-                                            <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>
-                                        </span>
-                                    {% endfor %}
-                                </div>
                             </section>
                         </li>
                     {% endfor %}
