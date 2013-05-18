@@ -378,14 +378,21 @@ input[type="file"]
 
   .cancel
     float: right
+  .gallery
+    ul
+      margin-left: 0
   .albumpage
-    padding-left: 30px
-    padding-top: 20px
+    margin-bottom: 50px
+
   .sidebar
     .btn
       width: auto
   .form-box.well
     margin-top: 20px
+  .photostream-profile
+    .profile-image
+      margin: 10px
+      margin-top: -30px
   
 @media (min-width: 768px) and (max-width: 979px)
   .well
@@ -394,33 +401,14 @@ input[type="file"]
         float: left
         btn
           float: left
-  .albumpage
-    padding-left: 48px
-    padding-top: 20px
+  .topbar-btn
+    font-size: 11px
+    i
+      display: none
+  .photostream-profile
+    .profile-name > a
+      font-size: 14px
 
 @media (min-width: 980px) and (max-width: 1200px)
-  .albumpage
-    padding-left: 48px
-    padding-top: 20px
 
-@media screen and (max-width: 500px)
-  .image
-    width: 80%
-    height: auto
-    float: none
-    margin-right: auto
-    margin-left: auto
-    .title
-      width: 100%
-      white-space: nowrap
-      overflow: hidden
-      text-overflow: ellipsis
 
-  .thumbnail
-    width: 60%
-    img
-      width: 100%
-      height: auto
-  .albumpage
-    padding-left: 10px
-    padding-top: 20px
