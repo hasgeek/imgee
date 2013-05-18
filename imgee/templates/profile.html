@@ -14,6 +14,7 @@
 
 {% block albumcontent %}
     <div class="span10">
+        {% if files %}
         <div class="row">
             <div class="list-grid-selector span10">
                 <div class="btn-group">
@@ -22,6 +23,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         {% if unlabelled %}
             {% if profile.labels %}
                 <div class="heading note">Unlabeled-image Archive</div>
@@ -58,11 +60,13 @@
                     </ul>
                 </div>
             {% else %}
+            <div class="span10">
                 {% if unlabelled %}
                 Hurray! Not a single image is without a label.
                 {% else %}
                 There are no images uploaded yet. <a href="{{url_for('upload_file', profile=g.user.profile_name)}}">Upload them.</a>
                 {% endif %}
+            </div>
             {% endif %}
         </div>
     </div>
