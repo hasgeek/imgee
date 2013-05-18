@@ -96,9 +96,9 @@ $('select#profiles').change(function(){
     <div class="form-box well">
         <div class="form-title"><i class="icon-user"></i>&nbsp;&nbsp;Go to Profile</div><hr />
         <form action="{{url_for('pop_up_gallery', profile='PROFILE')}}" id="change_profile" method="GET">
-        {{ renderfield(cp_form.profiles)}}
-        <input type="hidden" id="from" name="from"></input>
-        <button type="submit" style="display:none;">Submit</button>
+            {{ renderfield(cp_form.profiles)}}
+            <input type="hidden" id="from" name="from"></input>
+            <button type="submit" style="display:none;">Submit</button>
         </form>
     </div>
     <br/>

@@ -14,8 +14,6 @@ $(document).ready(function(){
             if(selectedOptionId == 'listview') {
                 $(this).addClass('active');
                 $('#gridview').removeClass('active');
-                $('#showcase').addClass('row');
-                $('.image').addClass('span8');
 
                 showcase.removeClass('grid');
                 showcase.addClass('list');
@@ -24,9 +22,7 @@ $(document).ready(function(){
             else if(selectedOptionId == 'gridview') {
                 $(this).addClass('active');
                 $('#listview').removeClass('active');
-                $('#showcase').removeClass('row');
-                $('.image').removeClass('span8');
-
+                
                 showcase.removeClass('list');
                 showcase.addClass('grid');
             }

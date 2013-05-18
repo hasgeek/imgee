@@ -66,7 +66,7 @@
 .topbar-btn {
   color: #0087cf;
   background-color: whitesmoke;
-  padding: 2px;
+  padding: 3px;
   padding-left: 8px;
   padding-right: 8px;
   float: right;
@@ -95,8 +95,12 @@
 .photostream-profile .profile-name {
   margin-left: 20px;
   display: block;
-  margin-top: 18px;
+  margin-top: 8px;
   margin-bottom: 4px;
+}
+.photostream-profile .profile-name .name {
+  margin-top: 8px;
+  margin-bottom: 2px;
 }
 .photostream-profile .profile-name a {
   font-size: 18px;
@@ -123,6 +127,10 @@
   text-align: left;
 }
 
+.icon-tag.alt {
+  opacity: 0.1;
+}
+
 .albumpage {
   border: 0px solid #ececec;
   padding-top: 20px;
@@ -141,6 +149,7 @@ ul.list li {
   display: block;
   clear: both;
   border-bottom: 1px solid #e5e5e5;
+  border-right: 10px solid white;
   margin-top: 5px;
   float: left;
   width: 100%;
@@ -281,6 +290,10 @@ ul.grid li section.right {
 .heading {
   font-size: 20px;
   margin-bottom: 20px;
+}
+.heading.note {
+  margin-top: 30px;
+  margin-bottom: -20px;
 }
 
 .image-display {
