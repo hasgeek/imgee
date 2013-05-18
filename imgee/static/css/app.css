@@ -457,9 +457,12 @@ input[type="file"] {
     float: right;
   }
 
+  .gallery ul {
+    margin-left: 0;
+  }
+
   .albumpage {
-    padding-left: 30px;
-    padding-top: 20px;
+    margin-bottom: 50px;
   }
 
   .sidebar .btn {
@@ -468,6 +471,11 @@ input[type="file"] {
 
   .form-box.well {
     margin-top: 20px;
+  }
+
+  .photostream-profile .profile-image {
+    margin: 10px;
+    margin-top: -30px;
   }
 }
 @media (min-width: 768px) and (max-width: 979px) {
@@ -478,42 +486,14 @@ input[type="file"] {
     float: left;
   }
 
-  .albumpage {
-    padding-left: 48px;
-    padding-top: 20px;
+  .topbar-btn {
+    font-size: 11px;
   }
-}
-@media (min-width: 980px) and (max-width: 1200px) {
-  .albumpage {
-    padding-left: 48px;
-    padding-top: 20px;
-  }
-}
-@media screen and (max-width: 500px) {
-  .image {
-    width: 80%;
-    height: auto;
-    float: none;
-    margin-right: auto;
-    margin-left: auto;
-  }
-  .image .title {
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .topbar-btn i {
+    display: none;
   }
 
-  .thumbnail {
-    width: 60%;
-  }
-  .thumbnail img {
-    width: 100%;
-    height: auto;
-  }
-
-  .albumpage {
-    padding-left: 10px;
-    padding-top: 20px;
+  .photostream-profile .profile-name > a {
+    font-size: 14px;
   }
 }
