@@ -22,7 +22,7 @@ function parseQuery(s){
 
 $('div.thumbnail').click(function (){
     var query_dict = parseQuery();
-    var to = query_dict['from'] or '';
+    var to = query_dict['from'] || '';
     to = decodeURIComponent(to);
     var img_id = $(this).attr('id');
     $.postMessage(img_id, to, window.opener);
