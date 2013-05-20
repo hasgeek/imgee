@@ -79,12 +79,13 @@ class UploadTestCase(ImgeeTestCase):
 
     def test_file_count(self):
         filename1, r1 = self.upload()
-        img1_id = test_utils.get_img_id(filename1)
 
         # if the same file is uploaded twice, imgee should treat them as different
         filename2, r2 = self.upload()
-        img2_id = test_utils.get_img_id(filename2)
-        self.assertNotEquals(img1_id, img2_id)
+        self.assertEquals(filename1, filename2)
+
+        imgs = StoredFile.query.filter_by(title=filename1).all()
+        self.assertEquals(len(imgs), 2)
 
     def test_thumbnail_size(self):
         img_name, r = self.upload()
