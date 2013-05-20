@@ -37,7 +37,7 @@ class LabelTestCase(ImgeeTestCase):
     def test_add_remove_label(self):
         # upload image
         img_name, r = self.upload()
-        img_id = test_utils.get_img_id(r.data, img_name)
+        img_id = test_utils.get_img_id(img_name)
         # create label
         label = self.test_labels[0]
         self.create_label(label)
