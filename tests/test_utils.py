@@ -13,14 +13,9 @@ def upload(test_client, filepath, upload_url):
     return filename, response
 
 
-def get_img_id(r, img_title):
-    img = StoredFile.query.filter_by(title=img_title).first()
+def get_img_id(img_title):
+    img = StoredFile.query.filter_by(title=img_title).order_by('created_at desc').first()
     return img and img.name
-
-def get_image_count(html):
-    soup = BeautifulSoup(html)
-    imgs = soup.findAll('li', attrs={'class': 'image'})
-    return len(imgs)
 
 
 def download_image(url):
