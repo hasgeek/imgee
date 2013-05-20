@@ -81,7 +81,7 @@ class UploadTestCase(ImgeeTestCase):
         filename2, r2 = self.upload()
         self.assertEquals(test_utils.get_image_count(r2.data), 2)
 
-        filename3, r3 = self.upload('imgee/static/img/creampaper.png')
+        filename3, r3 = self.upload('imgee/static/img/logo.png')
         self.assertEquals(test_utils.get_image_count(r3.data), 3)
 
     def test_thumbnail_size(self):

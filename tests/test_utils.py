@@ -3,7 +3,7 @@ from StringIO import StringIO
 import requests
 import os
 from PIL import Image
-
+from imgee.models import StoredFile
 
 def upload(test_client, filepath, upload_url):
     content = open(filepath).read()
@@ -14,28 +14,12 @@ def upload(test_client, filepath, upload_url):
 
 
 def get_img_id(r, img_title):
-    """
-    >>> r = r'''<div class="image">
-    ... <span class="delete"><a href="/delete/abcd">X</a></span>
-    ... <a href="/asldevi/view/abcd">
-    ...     <img src="/thumbnail/abcd"/>
-    ... </a>
-    ... <div class="title">earth_moon_4test.gif</div>
-    ... <div class="labels">
-    ... </div>'''
-    ...
-    >>> get_img_id(r, 'earth_moon_4test.gif')
-    u'abcd'
-    """
-    soup = BeautifulSoup(r)
-    img_div = soup.find(text=img_title).findParent('div', attrs={'class': 'image'})
-    x = img_div.find('a')['href']
-    return x.split('/')[-1]
-
+    img = StoredFile.query.filter_by(title=img_title).first()
+    return img and img.name
 
 def get_image_count(html):
     soup = BeautifulSoup(html)
-    imgs = soup.findAll('div', attrs={'class': 'image'})
+    imgs = soup.findAll('li', attrs={'class': 'image'})
     return len(imgs)
 
 
