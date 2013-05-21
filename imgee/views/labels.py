@@ -36,7 +36,7 @@ def create_label(profile):
 @app.route('/<profile>/<label>/delete', methods=['GET', 'POST'])
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
-    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
     permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
 def delete_label(profile, label):
     form = forms.RemoveLabelForm()
