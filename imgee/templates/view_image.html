@@ -15,29 +15,9 @@
         $('a#img_link').attr('href', url_with_size);
     });
 
- // function create_label(label){
- //     console.log('creating label ' + label);
- //     var csrf = $('#csrf_token').attr('value');
- //     $.post("{{url_for('create_label', profile=g.user.profile_name)}}", //_json',
- //        {'label': label, csrf_token: csrf}, function (data){
- //            console.log(data);
- //            alert('created ' + data['label']);
- //        });
- // }
- // $('select.notselect').select2({
- //     allowClear: true,
- //     placeholder: "Select Labels",
- //     formatNoMatches: function(term){
- //         return "<a href='javascript:create_label(\"TERM\");'>Create Label</a>".replace('TERM', term);
- //     },
- // });
+     var existing_labels = $('#labels:hidden').attr('value').split(',');
 
-     var existing_labels = [];
-     $('select#label').children('option').each(function (){
-         existing_labels.push($(this).text());
-     });
-
-     $('#hlabels').select2({
+     $('#labels').select2({
           tags: existing_labels
      });
 
@@ -85,8 +65,7 @@
                     <div><form action='{{action_url}}' method='POST'>
                     {{form.csrf_token()}}
                     {{form.stored_file_id()}}
-                    {{form.hlabels(value=','.join(labels))}}
-                    <div style="display:none;">{{renderfield(form.label, widget_css_class='notselect')}} </div>
+                    {{form.labels(value=','.join(labels))}}
                     {{rendersubmit([(None, "Submit", 'btn-primary')])}}
                     </form>
                     </div>
