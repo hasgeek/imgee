@@ -11,7 +11,7 @@
 {% block albumcontent %}
     <div class="span10">
         <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
-        <a class="btn btn-danger" href="{{url_for('delete_label', profile_name=g.user.profile_name ,label_name=label.name)}}"><i class="icon-trash"></i>&nbsp;Delete Label</a>
+        <a class="btn btn-danger" href="{{url_for('delete_label', profile=g.user.profile_name ,label=label.name)}}"><i class="icon-trash"></i>&nbsp;Delete Label</a>
         <br /><br />
         <div class="albumpage well">
             {%if not files %}
@@ -23,8 +23,8 @@
 
                     {% for img in files %}
                         <div class="image">
-                            <a href="{{url_for('view_image', profile=g.user.profile_name, img_name=img.name)}}">
-                                <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
+                            <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}">
+                                <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, image=img.name)}}"/>
                             </a>
                             <div class="label-title">{{img.title}}</div>
                         </div>

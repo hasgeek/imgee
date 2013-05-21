@@ -8,7 +8,7 @@ from imgee import app, forms, lastuser
 from imgee.models import Label, StoredFile, Profile, db
 
 
-@app.route('/<profile_name>/<label_name>')
+@app.route('/<profile>/<label>')
 @load_models(
     (Profile, {'name': 'profile_name'}, 'profile'),
     (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
@@ -33,7 +33,7 @@ def create_label(profile):
     return render_template('create_label.html', form=form)
 
 
-@app.route('/<profile_name>/<label_name>/delete', methods=['GET', 'POST'])
+@app.route('/<profile>/<label>/delete', methods=['GET', 'POST'])
 @load_models(
     (Profile, {'name': 'profile_name'}, 'profile'),
     (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
@@ -47,7 +47,7 @@ def delete_label(profile, label):
     return render_template('delete_label.html', form=form, label=label)
 
 
-@app.route('/<profile_name>/<label_name>/edit', methods=['POST'])
+@app.route('/<profile>/<label>/edit', methods=['POST'])
 @load_models(
     (Profile, {'name': 'profile_name'}, 'profile'),
     (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
@@ -65,7 +65,7 @@ def edit_label(profile, label):
         return form.label_name.errors[0], 400
 
 
-@app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
+@app.route('/<profile>/save_labels/<image>', methods=['POST'])
 @load_models(
     (Profile, {'name': 'profile_name'}, 'profile'),
     (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
@@ -88,7 +88,7 @@ def manage_labels(profile, img):
             status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
             plural = 's' if len(saved) > 1 else ''
             flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.title for l in saved), status[s][1], img.title))
-        return redirect(url_for('view_image', profile=g.user.profile_name, img_name=img.name))
+        return redirect(url_for('view_image', profile=g.user.profile_name, image=img.name))
     return render_template('view_image.html', form=form, img=img)
 
 

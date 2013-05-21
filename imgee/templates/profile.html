@@ -41,8 +41,8 @@
                             <li class="image">
                                 <section class="left">
                                     <div class="image-thumb">
-                                        <a href="{{url_for('view_image', profile=g.user.profile_name, img_name=img.name)}}" title="view image">
-                                            <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
+                                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}" title="view image">
+                                            <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, image=img.name)}}"/>
                                         </a>
                                     </div>
                                 </section>
@@ -51,7 +51,7 @@
                                     <div class="labels">
                                         {% for label in img.labels %}
                                             <span class="label">
-                                                <a href="{{url_for('show_label', profile_name=img.profile.name, label_name=label.name)}}">{{label.name}}</a>
+                                                <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}">{{label.name}}</a>
                                             </span>
                                         {% endfor %}
                                     </div>

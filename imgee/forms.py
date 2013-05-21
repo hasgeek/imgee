@@ -34,8 +34,6 @@ def reserved_words():
         r = rule.rule
         if r.startswith('/<profile>/'):
             words.append(r.replace('/<profile>/', '').split('/', 1)[0])
-        elif r.startswith('/<profile_name>/'):
-            words.append(r.replace('/<profile_name>/', '').split('/', 1)[0])
     return words
 
 
@@ -59,6 +57,7 @@ class AddLabelForm(Form):
     label = SelectMultipleField('Labels', coerce=int)
     stored_file_id = HiddenField('stored_file_id')
     hlabels = HiddenField('hlabels')
+
 
 class RemoveLabelForm(Form):
     pass
