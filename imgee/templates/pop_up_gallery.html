@@ -20,7 +20,7 @@ function parseQuery(s){
     return d;
 }
 
-$('div.thumbnail').click(function (){
+$('div.image-thumb').click(function (){
     var query_dict = parseQuery();
     var to = query_dict['from'] || '';
     to = decodeURIComponent(to);
@@ -63,7 +63,7 @@ $('select#profiles').change(function(){
                     {% for img in files %}
                         <li class="image">
                             <section class="left">
-                                <div class="image-thumb">
+                                <div class="image-thumb" id="{{img.name}}">
                                     <a><img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/></a>
                                 </div>
                             </section>
