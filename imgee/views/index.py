@@ -123,7 +123,6 @@ def unlabelled_images(profile):
 def view_image(profile, img):
     img_labels = [label.name for label in img.labels]
     form = forms.AddLabelForm(image=img.name, label=[l.id for l in img.labels])
-    form.label.choices = [(l.id, l.name) for l in img.profile.labels]
     return render_template('view_image.html', profile=profile, form=form, img=img, labels=img_labels)
 
 

@@ -72,12 +72,12 @@ def edit_label(profile, label):
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def manage_labels(profile, img):
     form = forms.AddLabelForm(stored_file_id=img.id)
-    form.label.choices = [(l.id, l.title) for l in profile.labels]
     if form.validate_on_submit():
-        if not form.hlabels.data.strip():
-            form_lns = set()
+        form_label_data = form.labels.data.strip()
+        if form_label_data:
+            form_lns = set(l.strip() for l in form_label_data.split(','))
         else:
-            form_lns = set(l.strip() for l in form.hlabels.data.split(','))
+            form_lns = set()
         profile_lns = set(l.title for l in profile.labels)
         labels = [l for l in profile.labels if l.title in form_lns]
         for lname in form_lns - profile_lns:

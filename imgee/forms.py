@@ -54,9 +54,8 @@ class CreateLabelForm(Form):
 
 
 class AddLabelForm(Form):
-    label = SelectMultipleField('Labels', coerce=int)
     stored_file_id = HiddenField('stored_file_id')
-    hlabels = HiddenField('hlabels')
+    labels = HiddenField('labels')
 
 
 class RemoveLabelForm(Form):
