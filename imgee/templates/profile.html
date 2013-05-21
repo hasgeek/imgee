@@ -14,6 +14,7 @@
 
 {% block albumcontent %}
     <div class="span10">
+        {{ title_form.hidden_tag() }}
         {% if files %}
         <div class="row">
             <div class="list-grid-selector span10">
