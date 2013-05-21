@@ -74,8 +74,15 @@ def manage_labels(profile, img):
     form = forms.AddLabelForm(stored_file_id=img.id)
     form.label.choices = [(l.id, l.title) for l in profile.labels]
     if form.validate_on_submit():
-        form_labels = form.label.data or []
-        labels = [l for l in profile.labels if l.id in form_labels]
+        if not form.hlabels.data.strip():
+            form_lns = set()
+        else:
+            form_lns = set(l.strip() for l in form.hlabels.data.split(','))
+        profile_lns = set(l.title for l in profile.labels)
+        labels = [l for l in profile.labels if l.title in form_lns]
+        for lname in form_lns - profile_lns:
+            l = utils_save_label(lname, profile, commit=False)
+            labels.append(l)
         s, saved = utils_save_labels_to(img, labels)
         if saved:
             status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
@@ -85,11 +92,12 @@ def manage_labels(profile, img):
     return render_template('view_image.html', form=form, img=img)
 
 
-def utils_save_label(label_name, profile):
+def utils_save_label(label_name, profile, commit=True):
     label = Label(title=label_name, profile=profile)
     label.make_name()
     db.session.add(label)
-    db.session.commit()
+    if commit:
+        db.session.commit()
     return label
 
 
