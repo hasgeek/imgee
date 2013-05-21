@@ -9,4 +9,4 @@ def newid():
 
 def get_media_domain():
     scheme = request.scheme
-    return scheme + app.config.get('MEDIA_DOMAIN')
+    return '%s:%s' % (scheme, app.config.get('MEDIA_DOMAIN'))
