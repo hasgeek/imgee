@@ -11,7 +11,7 @@ class LabelTestCase(ImgeeTestCase):
         super(LabelTestCase, self).setUp()
         self.img_id = None
         self.test_files = ['imgee/static/img/imgee.png', ]
-        self.test_labels = ['logos', 'banners', 'profile_photos']
+        self.test_labels = ['logos', 'banners', 'profile-photos']
 
     def upload(self, path=None):
         return test_utils.upload(self.client, path or self.test_files[0], '/%s/new' % self.test_user_name)
