@@ -21,6 +21,9 @@ class Label(BaseScopedNameMixin, db.Model):
     profile = db.relationship('Profile', backref=db.backref('labels', cascade='all, delete-orphan'))
     parent = db.synonym('profile')
 
+    def __repr__(self):
+        return "<%s> of <%s>" % (self.name, self.profile.name)
+
 
 class StoredFile(BaseNameMixin, db.Model):
     """
