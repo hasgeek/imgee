@@ -23,8 +23,7 @@ def show_label(profile, label):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['new-label', 'siteadmin'], addlperms=lastuser.permissions)
 def create_label(profile):
-    profile_id = g.user.userid
-    form = forms.CreateLabelForm(profile_id=profile_id)
+    form = forms.CreateLabelForm(profile_id=profile.id)
     if form.validate_on_submit():
         label = form.label.data
         utils_save_label(label, profile)
