@@ -10,8 +10,8 @@ from imgee.models import Label, StoredFile, Profile, db
 
 @app.route('/<profile>/<label>')
 @load_models(
-    (Profile, {'name': 'profile_name'}, 'profile'),
-    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    (Profile, {'name': 'profile'}, 'profile'),
+    (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def show_label(profile, label):
     files = label.stored_files.order_by('stored_file.created_at desc').all()
@@ -35,7 +35,7 @@ def create_label(profile):
 
 @app.route('/<profile>/<label>/delete', methods=['GET', 'POST'])
 @load_models(
-    (Profile, {'name': 'profile_name'}, 'profile'),
+    (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
     permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
 def delete_label(profile, label):
@@ -49,8 +49,8 @@ def delete_label(profile, label):
 
 @app.route('/<profile>/<label>/edit', methods=['POST'])
 @load_models(
-    (Profile, {'name': 'profile_name'}, 'profile'),
-    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    (Profile, {'name': 'profile'}, 'profile'),
+    (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def edit_label(profile, label):
     form = forms.EditLabelForm()
@@ -67,8 +67,8 @@ def edit_label(profile, label):
 
 @app.route('/<profile>/save_labels/<image>', methods=['POST'])
 @load_models(
-    (Profile, {'name': 'profile_name'}, 'profile'),
-    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    (Profile, {'name': 'profile'}, 'profile'),
+    (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def manage_labels(profile, img):
     form = forms.AddLabelForm(stored_file_id=img.id)

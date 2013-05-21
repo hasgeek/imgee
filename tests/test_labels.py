@@ -44,30 +44,31 @@ class LabelTestCase(ImgeeTestCase):
         # attach label to image
         save_label_url = '/%s/save_labels/%s' % (self.test_user_name, img_id)
         r = self.client.post(save_label_url, data={'hlabels': label})
-        self.assertTrue(r.status_code, 200)
+        self.assertEquals(r.status_code, 302)
         # check if the image is in the label page
         r = self.client.get('/%s/%s' % (self.test_user_name, label))
-        self.assertTrue(r.status_code, 200)
+        self.assertEquals(r.status_code, 200)
         self.assertTrue(img_name in r.data)
         # remove the label from image
         r = self.client.post(save_label_url, data={'hlabels': ''})
-        self.assertTrue(r.status_code, 200)
+        self.assertEquals(r.status_code, 302)
         # check that the image is NOT in the label page
         r = self.client.get('/%s/%s' % (self.test_user_name, label))
-        self.assertTrue(r.status_code, 200)
+        self.assertEquals(r.status_code, 200)
         self.assertTrue('There are no images with label' in r.data)
         self.assertTrue('Removed label' in r.data)
 
     def test_delete_label(self):
         label = self.test_labels[0]
-        self.create_label(label)
+        r = self.create_label(label)
+        r = self.client.get('/%s/%s' % (self.test_user_name, label))
+        self.assertEquals(r.status_code, 200)
         delete_url = '/%s/%s/delete' % (self.test_user_name, label)
         r = self.client.post(delete_url, data={})
         self.assertTrue(r.status_code, 200)
-        r = self.client.get('/%s' % self.test_user_name)
-        self.assertTrue('was deleted' in r.data)
-        r = self.client.get('/%s' % self.test_user_name)
-        self.assertFalse(label in r.data)
+        r = self.client.get('/%s/%s', self.test_user_name, label)
+        self.assertEquals(r.status_code, 404)
+
 
     def tearDown(self):
         s = StoredFile.query.filter_by(name=self.img_id).first()
