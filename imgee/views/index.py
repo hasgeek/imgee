@@ -10,7 +10,7 @@ from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
 from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
-from imgee.utils import newid
+from imgee.utils import newid, get_media_domain
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
@@ -136,7 +136,8 @@ def get_image(image):
     else:
         img_name = image.name
     img_name = get_s3_folder() + img_name + extn
-    return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
+    media_domain = get_media_domain()
+    return redirect(urljoin(media_domain, img_name), code=301)
 
 
 @app.route('/<profile>/thumbnail/<image>')
@@ -152,7 +153,8 @@ def get_thumbnail(profile, img):
         thumbnail = get_s3_folder() + thumbnail + extn
     else:
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
-    return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
+    media_domain = get_media_domain()
+    return redirect(urljoin(media_domain, thumbnail), code=301)
 
 
 @app.route('/<profile>/delete/<image>', methods=['GET', 'POST'])
