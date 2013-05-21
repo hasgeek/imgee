@@ -41,4 +41,5 @@ def init_for(env):
     assets.register('js_all', js)
     assets.register('css_all', css)
     lastuser.init_app(app)
+    app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
     mkdir_p(app.config['UPLOADED_FILES_DEST'])
