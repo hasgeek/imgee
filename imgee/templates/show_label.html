@@ -7,9 +7,9 @@
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 {% endblock %}
 
-
 {% block albumcontent %}
     <div class="span10">
+        {{ form.hidden_tag() }}
         <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
         <a class="btn btn-danger" href="{{url_for('delete_label', profile=g.user.profile_name ,label=label.name)}}"><i class="icon-trash"></i>&nbsp;Delete Label</a>
         <br /><br />
