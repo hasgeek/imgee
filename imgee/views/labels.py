@@ -30,7 +30,7 @@ def create_label(profile):
         utils_save_label(label, profile)
         flash('The label "%s" was created.' % label)
         return redirect(g.user.profile_url)
-    return render_template('create_label.html', form=form)
+    return render_template('create_label.html', form=form, profile=profile)
 
 
 @app.route('/<profile_name>/<label_name>/delete', methods=['GET', 'POST'])

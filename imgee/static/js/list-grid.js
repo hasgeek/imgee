@@ -17,6 +17,8 @@ $(document).ready(function(){
 
                 showcase.removeClass('grid');
                 showcase.addClass('list');
+                $('.left').addClass('span1');
+                $('#row-ctrl').addClass('row');
             }
 
             else if(selectedOptionId == 'gridview') {
@@ -25,6 +27,8 @@ $(document).ready(function(){
                 
                 showcase.removeClass('list');
                 showcase.addClass('grid');
+                $('.left').removeClass('span1');
+                $('#row-ctrl').removeClass('row');
             }
 
         } 

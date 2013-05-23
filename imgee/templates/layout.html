@@ -72,82 +72,70 @@
     {% block networkbar %}{{ networkbar(siteid=config['SITE_ID'], login=config['LASTUSER_CLIENT_ID'] and true or false) }}{% endblock %}
     <div id="page-header" class="container">
       <div class="row">
-        <div class="span7">
+        <!-- Logo -->
+        <div class="span2">
           {% block logo -%}
             <div id="logo"><a href="{{ g.user.profile_url }}">{{ config['SITE_TITLE'] }}</a></div>
           {%- endblock %}
         </div>
-
-        <div class="span5">
-          <div class="row topbar-options">
-
-          <div class="span2">
-            <a class="topbar-btn" href="{{url_for('upload_file', profile=(profile or g.user.profile).name )}}"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Upload images</a>
-            <a class="topbar-btn" href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-tag"></i>&nbsp;&nbsp;Create label</a>   
-
-          </div>
-            {%- block header %}
-              <div class="photostream-profile span3"> 
-                <div class="row">
-                  <div class="span2">
-                    <div class="profile-name">
-                      <div class="name">{{ g.user.fullname }}</div>
-                      <a href="{{ g.user.profile_url }}">Your images</a>
-                    </div>
-                  </div>
-                  <div class="span1">
-                    <div class="profile-image"></div>
-                  </div> 
-                </div>                
-              </div>
-            {% endblock %}
-          </div>
+        <!-- /logo -->
+        <!-- topbar-options -->
+        <div class="span10">
+          {%- block header %}
+            <ul class="topbar-options">
+              <div class="profile-image"></div>
+              <li><a title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-picture"></i>&nbsp;&nbsp;<span>Your images</span></a></li>
+              <li><a class="" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-tag"></i>&nbsp;&nbsp;<span>Add label</span></a></li>
+              <li><a class="" title="Upload image" href="{{url_for('upload_file', profile=(profile or g.user.profile).name )}}"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;<span>Upload</span></a></li> 
+            </ul>
+          {% endblock %}
+        </div>
+        <!-- /topbar-options -->
       </div>
     </div>
-  </div>
   </header>
 {%- endblock %}
 
 
 {% block basecontent %}
   {% block content %}
-    <div class="row album">
-
-      {% block albumcontent %}
-      {% endblock %}
-
-      {% block sidebar %}
-
+    <div class="row">
+    
+      {% block left %}
+        <!-- profile's sidebar -->
         <div class="span2">
-            <div class="sidebar well">
-              <a class="btn" href="{{url_for('upload_file',  profile=profile.name)}}"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Upload images</a>              
-
-              <ul class="labels nav nav-list">
-
-                <li class="nav-header">Labels</li>        
-                  {% if profile.labels %}
-                    {% for label in profile.labels |sort(attribute='name')%}
-                      <li><a href="{{url_for('show_label', profile_name=g.user.profile_name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
-                    {% endfor %}
-                  {% else %}
-                    <li>No Labels yet. <a href="{{url_for('create_label', profile=g.user.profile_name )}}">Create a new label</a></li>
-                  {% endif %}
-                <li><a href="{{url_for('unlabelled_images', profile=g.user.profile_name)}}"><i class="icon-tag alt"></i>
-                  {% if profile.labels %}
-                    Unlabeled
-                  {% else %}
-                    Archive
-                  {% endif %}
-                </a></li>
-              </ul>              
-              &nbsp;<a href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-plus"></i>&nbsp;New label</a>
-              <!-- 
-              <a href="{{ url_for('profile_view', profile=profile.name) }}">Your images</a>   
-                <a class="btn btn-primary pull-right" href="{{url_for('upload_file',  profile=profile.name)}}"><i class="icon-upload-alt"></i>&nbsp;Upload images</a>
-                <a class="btn btn-primary pull-right" href=""><i class="icon-tag"></i>&nbsp;New label</a> -->
-            </div>
+          <div class="profile-info well">
+            <h4><a title="View your uploads" href="{{ g.user.profile_url }}">{{ g.user.fullname }}</a></h4>
+            <a href="{{ g.user.profile_url }}"><div class="profile-image-large"></div></a><hr />
+            <em>{{ profile.stored_files.count() | safe }} images</em>
+          </div>
+          <div class="sidebar well">
+            <ul class="labels nav nav-list">
+              <li class="nav-header">Labels</li>        
+                {% if profile.labels %}
+                  {% for label in profile.labels |sort(attribute='name')%}
+                    <li><a href="{{url_for('show_label', profile_name=g.user.profile_name, label_name=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
+                  {% endfor %}
+                {% else %}
+                  <li>No Labels yet. <a href="{{url_for('create_label', profile=g.user.profile_name )}}">Create a new label</a></li>
+                {% endif %}
+              <li><a href="{{url_for('unlabelled_images', profile=g.user.profile_name)}}"><i class="icon-tag alt"></i>
+                {% if profile.labels %}
+                  Unlabeled
+                {% else %}
+                  Archive
+                {% endif %}
+              </a></li>
+            </ul>              
+            &nbsp;<a href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-plus"></i>&nbsp;New label</a>
+          </div>
         </div>
-      {% endblock %}      
+        <!-- /profile's sidebar -->
+      {% endblock %} 
+
+      {% block right %}
+      {% endblock %} 
+
     </div>
   {% endblock %}
 {% endblock %}
