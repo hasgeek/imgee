@@ -12,8 +12,9 @@ from boto.s3.key import Key
 
 from imgee import app
 from imgee.models import db, Thumbnail
-from imgee.utils import newid
+from imgee.utils import newid, ImageQueue
 
+s3uploadqueue = ImageQueue()
 
 def get_s3_bucket():
     conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
@@ -28,8 +29,7 @@ def save(fp, img_name, remote=True, content_type=None):
         img.write(fp.read())
 
     if remote:
-        fp.seek(0)
-        save_on_s3(fp, img_name, content_type=content_type)
+        s3uploadqueue.add(img_name)
 
 
 def get_file_type(filename):
@@ -43,8 +43,9 @@ def get_s3_folder(f=''):
     return f or ''
 
 
-def save_on_s3(fp, filename, content_type='', folder=''):
+def save_on_s3(fp, filename='', content_type='', folder=''):
     b = get_s3_bucket()
+    filename = filename or fp.name
     folder = get_s3_folder(folder)
     k = b.new_key(folder+filename)
     content_type = content_type or get_file_type(filename)
