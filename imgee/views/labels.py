@@ -8,10 +8,10 @@ from imgee import app, forms, lastuser
 from imgee.models import Label, StoredFile, Profile, db
 
 
-@app.route('/<profile_name>/<label_name>')
+@app.route('/<profile>/<label>')
 @load_models(
-    (Profile, {'name': 'profile_name'}, 'profile'),
-    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    (Profile, {'name': 'profile'}, 'profile'),
+    (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def show_label(profile, label):
     files = label.stored_files.order_by('stored_file.created_at desc').all()
@@ -33,9 +33,9 @@ def create_label(profile):
     return render_template('create_label.html', form=form, profile=profile)
 
 
-@app.route('/<profile_name>/<label_name>/delete', methods=['GET', 'POST'])
+@app.route('/<profile>/<label>/delete', methods=['GET', 'POST'])
 @load_models(
-    (Profile, {'name': 'profile_name'}, 'profile'),
+    (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
     permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
 def delete_label(profile, label):
@@ -47,10 +47,10 @@ def delete_label(profile, label):
     return render_template('delete_label.html', form=form, label=label)
 
 
-@app.route('/<profile_name>/<label_name>/edit', methods=['POST'])
+@app.route('/<profile>/<label>/edit', methods=['POST'])
 @load_models(
-    (Profile, {'name': 'profile_name'}, 'profile'),
-    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    (Profile, {'name': 'profile'}, 'profile'),
+    (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def edit_label(profile, label):
     form = forms.EditLabelForm()
@@ -65,31 +65,39 @@ def edit_label(profile, label):
         return form.label_name.errors[0], 400
 
 
-@app.route('/<profile_name>/save_labels/<img_name>', methods=['POST'])
+@app.route('/<profile>/save_labels/<image>', methods=['POST'])
 @load_models(
-    (Profile, {'name': 'profile_name'}, 'profile'),
-    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    (Profile, {'name': 'profile'}, 'profile'),
+    (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def manage_labels(profile, img):
     form = forms.AddLabelForm(stored_file_id=img.id)
     form.label.choices = [(l.id, l.title) for l in profile.labels]
     if form.validate_on_submit():
-        form_labels = form.label.data or []
-        labels = [l for l in profile.labels if l.id in form_labels]
+        if not form.hlabels.data.strip():
+            form_lns = set()
+        else:
+            form_lns = set(l.strip() for l in form.hlabels.data.split(','))
+        profile_lns = set(l.title for l in profile.labels)
+        labels = [l for l in profile.labels if l.title in form_lns]
+        for lname in form_lns - profile_lns:
+            l = utils_save_label(lname, profile, commit=False)
+            labels.append(l)
         s, saved = utils_save_labels_to(img, labels)
         if saved:
             status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
             plural = 's' if len(saved) > 1 else ''
             flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.title for l in saved), status[s][1], img.title))
-        return redirect(url_for('view_image', profile=g.user.profile_name, img_name=img.name))
+        return redirect(url_for('view_image', profile=g.user.profile_name, image=img.name))
     return render_template('view_image.html', form=form, img=img)
 
 
-def utils_save_label(label_name, profile):
+def utils_save_label(label_name, profile, commit=True):
     label = Label(title=label_name, profile=profile)
     label.make_name()
     db.session.add(label)
-    db.session.commit()
+    if commit:
+        db.session.commit()
     return label
 
 

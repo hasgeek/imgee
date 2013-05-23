@@ -7,7 +7,6 @@
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 {% endblock %}
 
-
 {% block right %}
     <div class="span10 show-label">
         <div class="row">
@@ -28,8 +27,8 @@
 
                     {% for img in files %}
                         <div class="image">
-                            <a href="{{url_for('view_image', profile=g.user.profile_name, img_name=img.name)}}">
-                                <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/>
+                            <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}">
+                                <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, image=img.name)}}"/>
                             </a>
                             <div class="label-title">{{img.title}}</div>
                         </div>
