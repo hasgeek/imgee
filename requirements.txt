@@ -6,3 +6,5 @@ https://github.com/hasgeek/flask-lastuser/zipball/master
 Flask-Admin
 boto
 Pillow
+https://github.com/kushaldas/retask/zipball/master
+redis
