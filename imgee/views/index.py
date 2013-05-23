@@ -54,7 +54,7 @@ def upload_file(profile):
         flash('"%s" uploaded successfully.' % filename)
         return redirect(_redirect_url_frm_upload(profile_name))
     # form invalid or request.method == 'GET'
-    return render_template('form.html', form=upload_form)
+    return render_template('form.html', form=upload_form, profile=profile)
 
 
 @app.route('/<profile>/popup')
@@ -121,11 +121,33 @@ def unlabelled_images(profile):
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def view_image(profile, img):
+def view_image(profile, img):    
+    files = profile.stored_files.order_by('created_at desc').all()
+    for index, im in enumerate(files):
+        if im is img:
+            if index != 0:
+                prev = files[index - 1]
+                if [index - 1] != 0:
+                    prev_step = files[index - 2]
+                else:
+                    prev_step = None
+            else:
+                prev = None
+                prev_step = None
+            if index == (profile.stored_files.count() - 1):
+                next = None
+                next_step = None
+            else:
+                next = files[index + 1]
+                if index == (profile.stored_files.count() - 2):
+                    next_step = None
+                else:
+                    next_step = files[index + 2]
+
     img_labels = [label.name for label in img.labels]
     form = forms.AddLabelForm(img_name=img.name, label=[l.id for l in img.labels])
     form.label.choices = [(l.id, l.name) for l in img.profile.labels]
-    return render_template('view_image.html', profile=profile, form=form, img=img, labels=img_labels)
+    return render_template('view_image.html', profile=profile, form=form, img=img, labels=img_labels, prev=prev, next=next, prev_step=prev_step, next_step=next_step)
 
 
 @app.route('/file/<img_name>')

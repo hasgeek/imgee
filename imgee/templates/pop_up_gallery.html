@@ -42,62 +42,164 @@ $('select#profiles').change(function(){
 
 </script>
 
+<!--<script type="text/javascript">
+    var countChecked = function() {
+        var n = $( "input:checked" ).length;
+        $( "#hi" ).text( n + (n === 1 ? " image is" : " images are") + " selected!" );
+    };
+    countChecked();
+    $( "input[type=checkbox]" ).on( "click", countChecked );
+</script>
+<script type="text/javascript">
+    $( "input" ).on( "click", function() {
+        var checkValues = $('input:checked').map(function() {
+            return $(this).val();
+        }).get();
 
+        $( "#log" ).text(checkValues + " images are checked!" );
+    });
+</script>-->
+<script type="text/javascript">
+    $( "button.select-img" ).hover(function() {
+        var checkValues = $(this).val().split('`');
+        var valSrc=checkValues[0];
+        var valTitle=checkValues[1];
+        var valDate=checkValues[2];
+        $( "#preview-thumb" ).attr('src', valSrc);
+        $('#preview-title').text(valTitle);
+        $('#preview-date').text(valDate);
+
+    });
+</script>
+<script type="text/javascript">
+    $(function(){
+        $(".image").hover(function(){
+            $(this).find(".delete-btn").show();
+            $(this).find(".select-img").show();
+            $(this).find(".zoom-btn").show();
+        },function(){
+            $(this).find(".delete-btn").hide();
+            $(this).find(".select-img").hide();
+            $(this).find(".zoom-btn").hide();
+        });
+    });    
+</script>
 {% endblock %}
 
-{% block albumcontent %}
+{% block headerbox -%}
+{%- endblock %}
 
-<div class="span8">
-    <div class="row">
-        <div class="list-grid-selector span8">
-            <div class="btn-group">
-                <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i>&nbsp;&nbsp;Thumbnails</a>
-                <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i>&nbsp;&nbsp;Detailed view</a>
+{% block left %}                    
+    <div class="side-tab">
+        <div class="span3">
+            <div class="row">
+                <div class="tabbable tabs-left">
+                    <ul class="nav nav-tabs span3">
+                        <li class="active"><a href="#tab-pane1" data-toggle="tab"><i class="icon-cloud-upload"></i><span>&nbsp;&nbsp;Upload</span></a></li>
+                        <li><a href="#tab-pane2" data-toggle="tab"><i class="icon-picture"></i><span>&nbsp;&nbsp;Gallery</span></a></li>
+                        <li><a href="#tab-pane3" data-toggle="tab"><i class="icon-link"></i><span>&nbsp;&nbsp;<span class="hide-mobile">Import from </span>URL</span></a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-    <div class="albumpage row">
-        {% if files %}
-            <div class="popup gallery span8">
-                <ul id="showcase" class="grid">
-                    {% for img in files %}
-                        <li class="image">
-                            <section class="left">
-                                <div class="image-thumb">
-                                    <a><img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/></a>
-                                </div>
-                            </section>
-                            <section class="right">
-                                <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
-                            </section>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% else %}
-            There are no images uploaded yet. <a href="{{url_for('upload_file', profile=g.user.profile_name)}}">Upload them.</a>
-        {% endif %}
-    </div>
-</div>
-
-{% endblock %}  
-
-{% block sidebar %}
-<div class="span4">
-    <div class="form-box well">
-        <div class="form-title"><i class="icon-user"></i>&nbsp;&nbsp;Go to Profile</div><hr />
-        <form action="{{url_for('pop_up_gallery', profile='PROFILE')}}" id="change_profile" method="GET">
-            {{ renderfield(cp_form.profiles)}}
-            <input type="hidden" id="from" name="from"></input>
-            <button type="submit" style="display:none;">Submit</button>
-        </form>
-    </div>
-    <br/>
-    <div class="form-box well">
-        <div class="form-title"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Upload Images</div><hr />
-        {% set action_url= url_for('upload_file', profile=g.user.profile_name) %}
-        {{ renderform(uploadform, "upload", multipart=True, action=action_url) }}
-    </div>
-</div>
-
 {% endblock %}
+
+{% block right %}
+    <div class="span9 popup">
+        <div class="row">
+            <div class="tabbable span9">
+                <div class="tab-content">
+                    <div id="tab-pane1" class="tab-pane active">
+                        <div class="form-box">
+                            <div class="form-title"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Upload Images</div>
+                            <div class="icon-group-popup">
+                                <i class="icon-desktop icon-4x"></i>
+                                <i class="icon-caret-right icon-2x"></i>
+                                <i class="icon-caret-right icon-2x"></i>
+                                <i class="icon-caret-right icon-2x"></i>
+                                <i class="icon-caret-right icon-2x"></i>
+                                <i class="icon-caret-right icon-2x"></i>
+                                <i class="icon-caret-right icon-2x"></i>
+                                <i class="icon-caret-right icon-2x"></i>
+                                <i class="icon-cloud-upload icon-4x"></i>
+                            </div>
+                            <h3>Choose an image to upload from your computer.</h3>
+                            {% set action_url= url_for('upload_file', profile=g.user.profile_name) %}
+                            {{ renderform(uploadform, "upload", multipart=True, action=action_url) }}
+                        </div>                    
+                    </div>
+                    <div id="tab-pane2" class="tab-pane">
+                        <div class="form-box">
+                            <div class="form-title"><i class="icon-picture"></i>&nbsp;&nbsp;Select from gallery</div>
+                        </div>
+                        <div class="span9">
+                            <div class="list-grid-selector">
+                                <div class="btn-group">
+                                    <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i></a>
+                                    <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="choose-gallery">
+                            {% if files %}
+                                <div class="popup-gallery span6">
+                                    <ul id="showcase" class="grid">
+                                        {% for img in files %}
+                                            <li class="image">
+                                                <section class="left">
+
+                                                    <div class="image-thumb">
+                                                        <a class="img" title="{{img.tite}}" href=""><img src="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}"/></a>
+                                                    </div>
+                                                    <div class="select-options">
+                                                        <button class="select-img btn btn-warning" name="" value="{{url_for('get_thumbnail', profile=g.user.profile_name, img_name=img.name)}}`{{img.title}}`{{ img.created_at }}">Select</button><br />
+                                                        <a class="zoom-btn" href="{{ url_for('get_image', img_name=img.name) }}" target="_blank"><i class="icon-zoom-in"></i></a>
+                                                        <a class="delete-btn" href="{{url_for('delete_file', profile=g.user.profile_name, img_name=img.name)}}"><i class="icon-trash"></i></a>
+                                                    </div> 
+
+                                                </section>
+                                                <section class="right">
+                                                    <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
+                                                </section>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="span2 well" id="preview-box">
+                                    <ul class="nav nav-list">
+                                        <li class="nav-header">Title</li>
+                                        <li id="preview-title" class="img-title"><em>No images selected</em></li><br />
+                                        <img id="preview-thumb" src="" /><br />
+                                        <li class="nav-header">Uploaded on</li>
+                                        <li id="preview-date" class="date"><em>No images selected</em></li>
+                                    </ul>                                
+                                </div>
+
+                            {% else %}
+                                <div class="well span9">There are no images uploaded yet.<a href="">Upload one.</a></div>
+                            {% endif %}
+                        </div>                            
+                    </div>
+
+                    <div id="tab-pane3" class="tab-pane">
+                        <div class="form-box">
+                            <div class="form-title"><i class="icon-link"></i>&nbsp;&nbsp;Import from URL</div>
+                            <div class="icon-group-popup">
+                                <i class="icon-link icon-4x"></i>
+                            </div>
+                            <h3>Enter the URL of image</h3>
+                            <form>
+                                <input value="http://" name="enter-url" /><hr />
+                                <button class="btn btn-primary pull-right">Submit</button>
+                            </form> 
+                        </div>                   
+                    </div>
+                </div><!-- /.tab-content -->
+            </div><!-- /.tabbable -->
+        </div><!-- .row-fluid -->      
+    </div>
+{% endblock %} 
+
+{% block basefooter -%}
+{%- endblock %}
