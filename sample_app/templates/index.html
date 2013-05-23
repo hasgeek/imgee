@@ -1,0 +1,20 @@
+<html>
+<head>
+<title>Client App</title>
+
+<script type="text/javascript" src="static/jquery.min.js"></script>
+<script type="text/javascript" src="static/jquery.ba-postmessage.js"></script>
+<script type="text/javascript" src="static/imgee.js"></script>
+<script>
+$(function(){
+    var imgee_url = $('#imgee_url').val() || "{{imgee_url or ''}}";
+    $(".imgee_holder").imgee({'imgee_url': imgee_url + '/popup' , debug:true});
+});
+</script>
+</head>
+
+<body>
+    Imgee Profile URL<input type='text' name="imgee_url" id="imgee_url" placeholder="http://0.0.0.0:4500/profilename"/></br></br>
+    <div class='imgee_holder'></div>
+</body>
+</html>
