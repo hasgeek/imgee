@@ -91,8 +91,7 @@ def profile_view(profile):
     files = profile.stored_files.order_by('created_at desc').limit(10).all()
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
-    return render_template('profile.html', profile=profile, files=files,
-                    upload_form=upload_form, title_form=title_form)
+    return render_template('profile.html', profile=profile, files=files, upload_form=upload_form, title_form=title_form)
 
 
 @app.route('/<profile>/view')

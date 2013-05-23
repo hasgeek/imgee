@@ -14,7 +14,7 @@
                 <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
             </div>
             <div class="span2">
-                <a class="btn btn-danger pull-right" href="{{url_for('delete_label', profile_name=g.user.profile_name ,label_name=label.name)}}" title='Delete label "{{label.name}}"'><i class="icon-trash"></i>&nbsp;<span id="delete">Delete Label</span></a>
+                <a class="btn btn-danger pull-right" href="{{url_for('delete_label', profile=g.user.profile_name ,label=label.name)}}" title='Delete label "{{label.name}}"'><i class="icon-trash"></i>&nbsp;<span id="delete">Delete Label</span></a>
             </div>
         </div>        
         <div class="albumpage well">
