@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
 from werkzeug import secure_filename
-from uuid import uuid4
 from flask import (render_template, request, g, url_for,
     redirect, flash)
 from urlparse import urljoin
@@ -65,7 +64,7 @@ def pop_up_gallery(profile):
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
-    return render_template('pop_up_gallery.html', files=files, profile_name=profile.name,
+    return render_template('pop_up_gallery.html', files=files, profile=profile.name,
             uploadform=form, cp_form=cp_form)
 
 
@@ -116,10 +115,10 @@ def unlabelled_images(profile):
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
 
-@app.route('/<profile>/view/<img_name>')
+@app.route('/<profile>/view/<image>')
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
-    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def view_image(profile, img):    
     files = profile.stored_files.order_by('created_at desc').all()
@@ -145,26 +144,28 @@ def view_image(profile, img):
                     next_step = files[index + 2]
 
     img_labels = [label.name for label in img.labels]
-    form = forms.AddLabelForm(img_name=img.name, label=[l.id for l in img.labels])
+    form = forms.AddLabelForm(image=img.name, label=[l.id for l in img.labels])
     form.label.choices = [(l.id, l.name) for l in img.profile.labels]
     return render_template('view_image.html', profile=profile, form=form, img=img, labels=img_labels, prev=prev, next=next, prev_step=prev_step, next_step=next_step)
 
 
-@app.route('/file/<img_name>')
-def get_image(img_name):
-    img = StoredFile.query.filter_by(name=img_name).first_or_404()
-    name, extn = os.path.splitext(img.title)
+@app.route('/file/<image>')
+@load_model(StoredFile, {'name': 'image'}, 'image')
+def get_image(image):
+    name, extn = os.path.splitext(image.title)
     if extn and extn.lstrip('.').lower() in image_formats:
         size = request.args.get('size', '')
-        img_name = get_resized_image(img, size)
+        img_name = get_resized_image(image, size)
+    else:
+        img_name = image.name
     img_name = get_s3_folder() + img_name + extn
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), img_name), code=301)
 
 
-@app.route('/<profile>/thumbnail/<img_name>')
+@app.route('/<profile>/thumbnail/<image>')
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
-    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def get_thumbnail(profile, img):
     name, extn = os.path.splitext(img.title)
@@ -177,10 +178,10 @@ def get_thumbnail(profile, img):
     return redirect(urljoin(app.config.get('MEDIA_DOMAIN'), thumbnail), code=301)
 
 
-@app.route('/<profile>/delete/<img_name>', methods=['GET', 'POST'])
+@app.route('/<profile>/delete/<image>', methods=['GET', 'POST'])
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
-    (StoredFile, {'name': 'img_name', 'profile': 'profile'}, 'img'),
+    (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
     permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
 def delete_file(profile, img):
     form = forms.DeleteImageForm()

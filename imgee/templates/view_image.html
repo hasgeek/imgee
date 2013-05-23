@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from 'baseframe/forms.html' import renderform %}
+{% from 'baseframe/forms.html' import rendersubmit %}
 
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
@@ -9,11 +9,38 @@
     $('input#img_width').width(100);
     $('input#img_height').width(100);
     $('input#img_link').width(420);
-    var file_url = "{{url_for('get_image', img_name=img.name)}}";
+    var file_url = "{{url_for('get_image', image=img.name)}}";
     $('input[id^="img_"]').change(function (){
         var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
         $('a#img_link').attr('href', url_with_size);
     });
+
+ // function create_label(label){
+ //     console.log('creating label ' + label);
+ //     var csrf = $('#csrf_token').attr('value');
+ //     $.post("{{url_for('create_label', profile=g.user.profile_name)}}", //_json',
+ //        {'label': label, csrf_token: csrf}, function (data){
+ //            console.log(data);
+ //            alert('created ' + data['label']);
+ //        });
+ // }
+ // $('select.notselect').select2({
+ //     allowClear: true,
+ //     placeholder: "Select Labels",
+ //     formatNoMatches: function(term){
+ //         return "<a href='javascript:create_label(\"TERM\");'>Create Label</a>".replace('TERM', term);
+ //     },
+ // });
+
+     var existing_labels = [];
+     $('select#label').children('option').each(function (){
+         existing_labels.push($(this).text());
+     });
+
+     $('#hlabels').select2({
+          tags: existing_labels
+     });
+
 </script>
 {% endblock %}
 
@@ -93,6 +120,16 @@
         <div class="form-box well">
             <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div><hr />
             <div>{{ renderform(form, 'Manage Labels', action=action_url)}}</div>
+
+            <div>
+                <form action='{{action_url}}' method='POST'>
+                    {{form.csrf_token()}}
+                    {{form.stored_file_id()}}
+                    {{form.hlabels(value=','.join(labels))}}
+                    <div style="display:none;">{{renderfield(form.label, widget_css_class='notselect')}} </div>
+                    {{rendersubmit([(None, "Submit", 'btn-primary')])}}
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %} 
@@ -101,6 +138,7 @@
     <div class="view-image span9">
         <div class="row">
             <div class="span7">
+                {% set img_url= url_for('get_image', image=img.name) %}
                 <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
             </div>
             <div class="span2">
@@ -118,7 +156,7 @@
         <div class="row">
             <div class="span9">                
                 <div class="image-display">
-                    <img src="{{url_for('get_image', img_name=img.name)}}" />
+                    <img src="{{url_for('get_image', image=img.name)}}" />
                 </div>
             </div>
         </div>

@@ -44,50 +44,53 @@ class UploadTestCase(ImgeeTestCase):
 
     def test_view_image(self):
         filename, r = self.upload()
-        self.img_id = test_utils.get_img_id(r.data, filename)
+        self.img_id = test_utils.get_img_id(filename)
         view_url = '/%s/view/%s' % (self.test_user_name, self.img_id)
         r = self.client.get(view_url)
         self.assertEquals(r.status_code, 200)
 
     def test_file(self):
         filename, r = self.upload()
-        self.img_id = test_utils.get_img_id(r.data, filename)
+        self.img_id = test_utils.get_img_id(filename)
         self.assertTrue(self.exists_on_media_domain(self.img_id))
 
     def test_thumbnail(self):
         filename, r = self.upload()
-        self.img_id = test_utils.get_img_id(r.data, filename)
+        self.img_id = test_utils.get_img_id(filename)
         self.assertTrue(self.thumbnails_exists_on_media_domain(self.img_id))
 
     def test_delete(self):
         filename, r = self.upload()
-        self.img_id = test_utils.get_img_id(r.data, filename)
-        self.assertEquals(test_utils.get_image_count(r.data), 1)
+        self.img_id = test_utils.get_img_id(filename)
+
+        # check if the file and thumbnail exists
+        self.exists_on_media_domain(self.img_id)
+        self.thumbnails_exists_on_media_domain(self.img_id)
 
         r = self.client.post('/%s/delete/%s' % (self.test_user_name, self.img_id))
-        self.assertEquals(test_utils.get_image_count(r.data), 0)
 
+        # check if the file exists now
         r = self.client.get('/file/%s' % self.img_id)
         self.assertEquals(r.status_code, 404)
 
+        # check if the thumbnail exists
         r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 404)
 
     def test_file_count(self):
         filename1, r1 = self.upload()
-        self.assertEquals(test_utils.get_image_count(r1.data), 1)
 
         # if the same file is uploaded twice, imgee should treat them as different
         filename2, r2 = self.upload()
-        self.assertEquals(test_utils.get_image_count(r2.data), 2)
+        self.assertEquals(filename1, filename2)
 
-        filename3, r3 = self.upload('imgee/static/img/creampaper.png')
-        self.assertEquals(test_utils.get_image_count(r3.data), 3)
+        imgs = StoredFile.query.filter_by(title=filename1).all()
+        self.assertEquals(len(imgs), 2)
 
     def test_thumbnail_size(self):
         img_name, r = self.upload()
         # get the thumbnail link
-        self.img_id = test_utils.get_img_id(r.data, img_name)
+        self.img_id = test_utils.get_img_id(img_name)
         r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 301)
         imgio = test_utils.download_image(r.location)
@@ -98,7 +101,7 @@ class UploadTestCase(ImgeeTestCase):
         img_name, r = self.upload()
         img_w, img_h = self.get_image_size()
 
-        self.img_id = test_utils.get_img_id(r.data, img_name)
+        self.img_id = test_utils.get_img_id(img_name)
         r = self.client.get('/file/%s?size=100x0' % self.img_id)
         self.assertEquals(r.status_code, 301)
         resized_img = test_utils.download_image(r.location)
@@ -111,7 +114,7 @@ class UploadTestCase(ImgeeTestCase):
         img_name, r = self.upload()
         img_w, img_h = self.get_image_size()
 
-        self.img_id = test_utils.get_img_id(r.data, img_name)
+        self.img_id = test_utils.get_img_id(img_name)
         r = self.client.get('/file/%s?size=100x150' % self.img_id)
         self.assertEquals(r.status_code, 301)
         resized_img = test_utils.download_image(r.location)
@@ -132,7 +135,7 @@ class UploadTestCase(ImgeeTestCase):
     def test_resize3_file(self):
         # non resizable images
         file_name, r = self.upload('imgee/static/img/imgee.svg')
-        file_id = test_utils.get_img_id(r.data, file_name)
+        file_id = test_utils.get_img_id(file_name)
         r1 = self.client.get('/file/%s' % file_id)
         r2 = self.client.get('/file/%s?size=100x200' % file_id)
         self.assertEquals(r1.status_code, 301)
@@ -144,7 +147,7 @@ class UploadTestCase(ImgeeTestCase):
         img_name, r = self.upload()
         img_w, img_h = self.get_image_size()
 
-        self.img_id = test_utils.get_img_id(r.data, img_name)
+        self.img_id = test_utils.get_img_id(img_name)
         r = self.client.get('/file/%s?size=100' % self.img_id)
         self.assertEquals(r.status_code, 301)
         resized_img = test_utils.download_image(r.location)
