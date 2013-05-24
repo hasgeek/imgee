@@ -2,7 +2,7 @@
 #: Site title
 SITE_TITLE = 'Imgee'
 #: Site id (for network bar)
-SITE_ID = ''
+SITE_ID = 'imgee'
 #: Database backend
 SQLALCHEMY_DATABASE_URI = 'sqlite:///imgee.db'
 #: Secret key

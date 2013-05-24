@@ -30,6 +30,11 @@ def mkdir_p(dirname):
 def init_for(env):
     coaster.app.init_app(app, env)
     baseframe.init_app(app, requires=['baseframe', 'imgee'])
+    app.config.get('NETWORKBAR_LINKS', []).append({
+        'name': 'imgee',
+        'title': 'Images',
+        'url': None,
+        })
     lastuser.init_app(app)
     if app.config.get('MEDIA_DOMAIN') and (
             app.config['MEDIA_DOMAIN'].startswith('http:') or
