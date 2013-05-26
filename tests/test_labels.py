@@ -43,14 +43,14 @@ class LabelTestCase(ImgeeTestCase):
         self.create_label(label)
         # attach label to image
         save_label_url = '/%s/save_labels/%s' % (self.test_user_name, img_id)
-        r = self.client.post(save_label_url, data={'hlabels': label})
+        r = self.client.post(save_label_url, data={'labels': label})
         self.assertEquals(r.status_code, 302)
         # check if the image is in the label page
         r = self.client.get('/%s/%s' % (self.test_user_name, label))
         self.assertEquals(r.status_code, 200)
         self.assertTrue(img_name in r.data)
         # remove the label from image
-        r = self.client.post(save_label_url, data={'hlabels': ''})
+        r = self.client.post(save_label_url, data={'labels': ''})
         self.assertEquals(r.status_code, 302)
         # check that the image is NOT in the label page
         r = self.client.get('/%s/%s' % (self.test_user_name, label))
