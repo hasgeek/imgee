@@ -161,16 +161,13 @@ def get_image(image):
     return redirect(urljoin(media_domain, img_name), code=301)
 
 
-@app.route('/<profile>/thumbnail/<image>')
-@load_models(
-    (Profile, {'name': 'profile'}, 'profile'),
-    (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def get_thumbnail(profile, img):
-    name, extn = os.path.splitext(img.title)
+@app.route('/thumbnail/<image>')
+@load_model(StoredFile, {'name': 'image'}, 'image')
+def get_thumbnail(image):
+    name, extn = os.path.splitext(image.title)
     if extn and extn.lstrip('.').lower() in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
-        thumbnail = get_resized_image(img, tn_size, thumbnail=True)
+        thumbnail = get_resized_image(image, tn_size, thumbnail=True)
         thumbnail = get_s3_folder() + thumbnail + extn
     else:
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')

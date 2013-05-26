@@ -23,7 +23,7 @@ class UploadTestCase(ImgeeTestCase):
         return requests.get(r.location).ok
 
     def thumbnails_exists_on_media_domain(self, img_id):
-        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, img_id))
+        r = self.client.get('/thumbnail/%s' % (img_id))
         self.assertEquals(r.status_code, 301)
         return requests.get(r.location).ok
 
@@ -74,7 +74,7 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(r.status_code, 404)
 
         # check if the thumbnail exists
-        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, self.img_id))
+        r = self.client.get('/thumbnail/%s' % (self.img_id))
         self.assertEquals(r.status_code, 404)
 
     def test_file_count(self):
@@ -91,7 +91,7 @@ class UploadTestCase(ImgeeTestCase):
         img_name, r = self.upload()
         # get the thumbnail link
         self.img_id = test_utils.get_img_id(img_name)
-        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, self.img_id))
+        r = self.client.get('/thumbnail/%s' % (self.img_id))
         self.assertEquals(r.status_code, 301)
         imgio = test_utils.download_image(r.location)
         img = Image.open(imgio)
