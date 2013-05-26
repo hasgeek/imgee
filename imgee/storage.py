@@ -6,6 +6,7 @@ import mimetypes
 from StringIO import StringIO
 from PIL import Image
 from redis import Redis
+import redis
 from rq import Queue
 
 from boto import connect_s3
@@ -18,14 +19,15 @@ from imgee.utils import newid
 
 
 def save_later_on_s3(*args, **kwargs):
-    if app.testing:
+    q = get_image_queue(kwargs.pop('queue', 'default'))
+    kwargs.setdefault('bucket', get_s3_bucket())
+    kwargs.setdefault('folder', get_s3_folder())
+    # if redis is running that can be used by RQ, upload async
+    try:
+        q.enqueue('imgee.storage.save_on_s3', *args, **kwargs)
+    except redis.exceptions.ConnectionError:
         kwargs.pop('queue', '')
         save_on_s3(*args, **kwargs)
-    else:
-        q = get_image_queue(kwargs.pop('queue', 'default'))
-        kwargs.setdefault('bucket', get_s3_bucket())
-        kwargs.setdefault('folder', get_s3_folder())
-        q.enqueue('imgee.storage.save_on_s3', *args, **kwargs)
 
 
 def get_image_queue(name='default', async=True):
