@@ -42,3 +42,6 @@ AWS_FOLDER = ''     # set this if you want all files to be uploaded to a particu
 MEDIA_DOMAIN = 'http://%s.s3.amazonaws.com' % AWS_BUCKET
 THUMBNAIL_SIZE = (75, 75)   # (w, h) in px
 UNKNOWN_FILE_THUMBNAIL = 'set path to unknown file thumbnail on media_domain'
+
+# redis settings
+REDIS_URL = "redis://localhost:6379/0"
