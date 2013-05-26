@@ -23,8 +23,7 @@ def show_label(profile, label):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['new-label', 'siteadmin'], addlperms=lastuser.permissions)
 def create_label(profile):
-    profile_id = g.user.userid
-    form = forms.CreateLabelForm(profile_id=profile_id)
+    form = forms.CreateLabelForm(profile_id=profile.id)
     if form.validate_on_submit():
         label = form.label.data
         utils_save_label(label, profile)
@@ -36,7 +35,7 @@ def create_label(profile):
 @app.route('/<profile>/<label>/delete', methods=['GET', 'POST'])
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
-    (Label, {'name': 'label_name', 'profile': 'profile'}, 'label'),
+    (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
     permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
 def delete_label(profile, label):
     form = forms.RemoveLabelForm()
@@ -72,12 +71,12 @@ def edit_label(profile, label):
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def manage_labels(profile, img):
     form = forms.AddLabelForm(stored_file_id=img.id)
-    form.label.choices = [(l.id, l.title) for l in profile.labels]
     if form.validate_on_submit():
-        if not form.hlabels.data.strip():
-            form_lns = set()
+        form_label_data = form.labels.data.strip()
+        if form_label_data:
+            form_lns = set(l.strip() for l in form_label_data.split(','))
         else:
-            form_lns = set(l.strip() for l in form.hlabels.data.split(','))
+            form_lns = set()
         profile_lns = set(l.title for l in profile.labels)
         labels = [l for l in profile.labels if l.title in form_lns]
         for lname in form_lns - profile_lns:

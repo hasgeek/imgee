@@ -5,25 +5,16 @@
 import os
 
 from flask import Flask
-from flask.ext.assets import Environment, Bundle
 from flask.ext.lastuser import LastUser
-from baseframe import baseframe, baseframe_js, baseframe_css
+from baseframe import baseframe, assets, Version
 import coaster.app
+from ._version import __version__
 
-# First, make an app
-
+version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
 lastuser = LastUser()
 
-# Second, setup baseframe and assets
-
-app.register_blueprint(baseframe)
-
-assets = Environment(app)
-js = Bundle(baseframe_js)
-css = Bundle(baseframe_css, 'css/app.css')
-
-# Third, after config, import the models and views
+assets['imgee.css'][version] = 'css/app.css'
 
 import imgee.models
 import imgee.views
@@ -38,7 +29,15 @@ def mkdir_p(dirname):
 # Configure the app
 def init_for(env):
     coaster.app.init_app(app, env)
-    assets.register('js_all', js)
-    assets.register('css_all', css)
+    baseframe.init_app(app, requires=['baseframe', 'imgee'])
+    app.config.get('NETWORKBAR_LINKS', []).append({
+        'name': 'imgee',
+        'title': 'Images',
+        'url': None,
+        })
     lastuser.init_app(app)
+    if app.config.get('MEDIA_DOMAIN') and (
+            app.config['MEDIA_DOMAIN'].startswith('http:') or
+            app.config['MEDIA_DOMAIN'].startswith('https:')):
+        app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
     mkdir_p(app.config['UPLOADED_FILES_DEST'])
