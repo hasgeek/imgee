@@ -5,6 +5,8 @@ import re
 import mimetypes
 from StringIO import StringIO
 from PIL import Image
+from redis import Redis
+from rq import Queue
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
@@ -13,6 +15,24 @@ from boto.s3.key import Key
 from imgee import app
 from imgee.models import db, Thumbnail
 from imgee.utils import newid
+
+
+def save_later_on_s3(*args, **kwargs):
+    if app.testing:
+        kwargs.pop('queue', '')
+        save_on_s3(*args, **kwargs)
+    else:
+        q = get_image_queue(kwargs.pop('queue', 'default'))
+        kwargs.setdefault('bucket', get_s3_bucket())
+        kwargs.setdefault('folder', get_s3_folder())
+        q.enqueue('imgee.storage.save_on_s3', *args, **kwargs)
+
+
+def get_image_queue(name='default', async=True):
+    if app.testing:
+        async = False
+    redis_conn = Redis.from_url(app.config['REDIS_URL'])
+    return Queue(name, connection=redis_conn, async=async)
 
 
 def get_s3_bucket():
@@ -28,8 +48,7 @@ def save(fp, img_name, remote=True, content_type=None):
         img.write(fp.read())
 
     if remote:
-        fp.seek(0)
-        save_on_s3(fp, img_name, content_type=content_type)
+        save_later_on_s3(local_path, img_name, content_type=content_type, queue='default')
 
 
 def get_file_type(filename):
@@ -37,22 +56,24 @@ def get_file_type(filename):
 
 
 def get_s3_folder(f=''):
-    f = f or app.config['AWS_FOLDER']
+    f = f or app.config.get('AWS_FOLDER', '')
     if f and not f.endswith('/'):
         f = f + '/'
     return f or ''
 
 
-def save_on_s3(fp, filename, content_type='', folder=''):
-    b = get_s3_bucket()
-    folder = get_s3_folder(folder)
-    k = b.new_key(folder+filename)
-    content_type = content_type or get_file_type(filename)
-    headers = {
-        'Cache-Control': 'max-age=31536000',  # 60*60*24*365
-        'Content-Type': content_type,
-    }
-    k.set_contents_from_file(fp, policy='public-read', headers=headers)
+def save_on_s3(file_path, filename='', content_type='', bucket='', folder=''):
+    with open(file_path) as fp:
+        b = bucket or get_s3_bucket()
+        folder = get_s3_folder(folder)
+        filename = filename or fp.name
+        k = b.new_key(folder+filename)
+        content_type = content_type or get_file_type(filename)
+        headers = {
+            'Cache-Control': 'max-age=31536000',  # 60*60*24*365
+            'Content-Type': content_type,
+        }
+        k.set_contents_from_file(fp, policy='public-read', headers=headers)
 
 
 def path_for(img_name):
@@ -90,9 +111,9 @@ def resize_and_save(img, size, thumbnail=False):
     scaled_img_name = newid()
     content_type = get_file_type(img.title)  # eg: image/jpeg
     format = content_type.split('/')[1] if content_type else None
-    scaled = resize_img(src_path, size, format, thumbnail=thumbnail)
-    save_on_s3(scaled, scaled_img_name+extn, content_type)
-
+    scaled_path = resize_img(src_path, size, format, thumbnail=thumbnail)
+    # give high priority to saving thumbnails on S3
+    save_later_on_s3(scaled_path, scaled_img_name+extn, content_type, queue='high')
     size_s = "%sx%s" % size
     scaled = Thumbnail(name=scaled_img_name, size=size_s, stored_file=img)
     db.session.add(scaled)
@@ -133,10 +154,10 @@ def resize_img(src, size, format, thumbnail):
         left, top = int((w-tw)/2), int((h-th)/2)
         resized = resized.crop((left, top, left+tw, top+th))
 
-    imgio = StringIO()
-    resized.save(imgio, format=format, quality=100)
-    imgio.seek(0)
-    return imgio
+    name, extn = os.path.splitext(src)
+    resized_path = '%s_%sx%s%s' % (name, size[0], size[1], extn)
+    resized.save(resized_path, format=format, quality=100)
+    return resized_path
 
 
 def split_size(size):
