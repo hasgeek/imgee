@@ -10,6 +10,7 @@
 {% block right %}
     <div class="span10 show-label">
         <div class="row">
+            {{form.hidden_tag()}}
             <div class="span8">
                 <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
             </div>
