@@ -14,6 +14,9 @@ from imgee.utils import newid, get_media_domain
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
+@app.context_processor
+def global_vars():
+    return {'cl_form': forms.CreateLabelForm(), 'uf_form': forms.UploadImageForm()}
 
 @app.route('/')
 def index():

@@ -1,11 +1,7 @@
 {% extends "layout.html" %}
 {% from 'baseframe/forms.html' import renderform %}
 
-{% block basecontent %}
-	{% block sidebar %}
-	{% endblock %}
-	{% block albumcontent %}
-	{% endblock %}
+{% block maincontent %}
 	<div class="delete-box alert alert-error">
 		<div class="form-title"><i class="icon-trash"></i>&nbsp;&nbsp;Confirm delete</div><hr />
 		<p>Are you sure you want to delete "<strong>{{file.title}}</strong>"?</p>

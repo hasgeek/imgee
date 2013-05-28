@@ -7,11 +7,11 @@
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 {% endblock %}
 
-{% block right %}
-    <div class="span10 show-label">
+{% block maincontent %}
+    <div class="span9 show-label">
         <div class="row">
             {{form.hidden_tag()}}
-            <div class="span8">
+            <div class="span7">
                 <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
             </div>
             <div class="span2">
@@ -24,7 +24,7 @@
                 <div class="padding"></div>
             {% else %}
             <div class="row">
-                <div class="gallery label-category span10">
+                <div class="gallery label-category span9">
 
                     {% for img in files %}
                         <div class="image">
