@@ -7,7 +7,7 @@ from StringIO import StringIO
 from PIL import Image
 from redis import Redis
 import redis
-from rq import Queue
+from flask.ext.rq import get_queue
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
@@ -17,9 +17,13 @@ from imgee import app
 from imgee.models import db, Thumbnail
 from imgee.utils import newid
 
+# changes in these values have to be made in rq.sh too.
+DEFAULT_QUEUE = 'imgee-default'
+THUMBNAIL_QUEUE = 'imgee-thumbnails'   # high queue for thumbnails for them to appear sooner
+
 
 def save_later_on_s3(*args, **kwargs):
-    q = get_image_queue(kwargs.pop('queue', 'default'))
+    q = get_queue(kwargs.pop('queue', DEFAULT_QUEUE))
     kwargs.setdefault('bucket', get_s3_bucket())
     kwargs.setdefault('folder', get_s3_folder())
     # if redis is running that can be used by RQ, upload async
@@ -28,13 +32,6 @@ def save_later_on_s3(*args, **kwargs):
     except redis.exceptions.ConnectionError:
         kwargs.pop('queue', '')
         save_on_s3(*args, **kwargs)
-
-
-def get_image_queue(name='default', async=True):
-    if app.testing:
-        async = False
-    redis_conn = Redis.from_url(app.config['REDIS_URL'])
-    return Queue(name, connection=redis_conn, async=async)
 
 
 def get_s3_bucket():
@@ -50,7 +47,7 @@ def save(fp, img_name, remote=True, content_type=None):
         img.write(fp.read())
 
     if remote:
-        save_later_on_s3(local_path, img_name, content_type=content_type, queue='default')
+        save_later_on_s3(local_path, img_name, content_type=content_type, queue=DEFAULT_QUEUE)
 
 
 def get_file_type(filename):
@@ -114,8 +111,8 @@ def resize_and_save(img, size, thumbnail=False):
     content_type = get_file_type(img.title)  # eg: image/jpeg
     format = content_type.split('/')[1] if content_type else None
     scaled_path = resize_img(src_path, size, format, thumbnail=thumbnail)
-    # give high priority to saving thumbnails on S3
-    save_later_on_s3(scaled_path, scaled_img_name+extn, content_type, queue='high')
+    # separate queue for thumbnails so that we can give high priority to save them on S3
+    save_later_on_s3(scaled_path, scaled_img_name+extn, content_type, queue=THUMBNAIL_QUEUE)
     size_s = "%sx%s" % size
     scaled = Thumbnail(name=scaled_img_name, size=size_s, stored_file=img)
     db.session.add(scaled)
