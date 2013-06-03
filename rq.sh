@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rqworker -c rqdev imgee-thumbnails imgee-default
+rqworker -c rqdev thumbnails default
