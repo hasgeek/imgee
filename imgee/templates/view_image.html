@@ -17,8 +17,10 @@
         $('a#img_link').attr('href', url_with_size);
     });
 
-     var existing_labels = $('#labels:hidden').attr('value').split(',');
-
+     var existing_labels = [];
+     {% for label in profile.labels %}
+        existing_labels.push('{{label.name}}');
+     {% endfor %}
      $('#labels').select2({
           tags: existing_labels
      });
