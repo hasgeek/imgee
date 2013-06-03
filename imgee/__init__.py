@@ -5,6 +5,7 @@
 import os
 
 from flask import Flask
+from flask.ext.rq import RQ
 from flask.ext.lastuser import LastUser
 from baseframe import baseframe, assets, Version
 import coaster.app
@@ -30,6 +31,7 @@ def mkdir_p(dirname):
 def init_for(env):
     coaster.app.init_app(app, env)
     baseframe.init_app(app, requires=['baseframe', 'imgee'])
+    RQ(app)     # pick up RQ configuration from the app
     app.config.get('NETWORKBAR_LINKS', []).append({
         'name': 'imgee',
         'title': 'Images',
