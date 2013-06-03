@@ -7,4 +7,4 @@ Flask-Admin
 boto
 Pillow
 redis
-rq==0.3.7
+Flask-RQ
