@@ -8,42 +8,6 @@
 <script> var profile = '{{g.user.profile_name}}'; </script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
-<!--POPUP DEMO -->
-  <script type="text/javascript">
-    $('#myModal').modal(options);
-  </script>
-<!-- /POPUP DEMO -->
-<script type="text/javascript">
-  
-  $(".more1").click(function(){    
-    var val = $(this).text();
-    if (val == "More") {
-      $(".expandable1").css('height', '100%');
-      $(this).text("Less");
-    } else {
-      $(".expandable1").css('height', '80');
-      $(this).text("More");
-    }
-    return false;
-  });
-   $(".more2").click(function(){
-    var val = $(this).text();
-    if (val == "More") {
-      $(".expandable2").css('height', '100%');
-      $(this).text("Less");
-    } else {
-      $(".expandable2").css('height', '80');
-      $(this).text("More");
-    }
-    return false;
-  });
-   if($(".expandable2").height() <= '80'){
-      $("more2").hide();
-   }else{
-      $("more2").show();
-   }
-</script>
-
 {% endblock %}
 
 {% block maincontent %}
@@ -114,11 +78,13 @@
           </div><!-- gallery-->
         {% else %}
           <div class="well">
+            <div class="span8">
             {% if unlabelled %}
               Hurray! Not a single image is without a label.
             {% else %}
               There are no images uploaded yet. <a href="{{url_for('upload_file', profile=g.user.profile_name)}}">Upload them.</a>
             {% endif %}
+            </div>
           </div>
         {% endif %}
       </div><!-- /span9 -->

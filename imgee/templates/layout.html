@@ -17,8 +17,14 @@
         {% block sidebar %}
         
           <div class="sidebar well">
-            <h4><a href="{{ url_for('profile_view',profile=profile.name) }}">{{ profile.title }}</a></h4>
-            <em>{{ profile.stored_files.count() | safe }} images</em>
+            <h4 class="selected-profile"><a href="{{ url_for('profile_view',profile=profile.name) }}">{{ profile.title }}</a></h4>
+            <em>
+              {% if profile.stored_files.count() == 1 %}
+                1 image
+              {% else %}
+                {{ profile.stored_files.count() | safe }} images
+              {% endif %}
+            </em>
             <br /><br />
             <!-- Upload image -->
             <a href="#uploadModal" role="button" title="Upload image" class="btn" data-toggle="modal"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload image</a>
@@ -100,33 +106,48 @@
   {% endblock %}
 {% endblock %}
 
-{% block footerscripts %}
+{% block layoutscripts %}
 <script type="text/javascript">
-  $(".more1").click(function(){
-    alert("Handler for .click() called.");
+  var hlimit = 80;
+  $(document).ready(function(){
+      if($('.expandable1').height() <= hlimit){
+          $('.more1').hide();
+          $('.expandable1').css('height', '100%');
+      }else{
+          $('.more1').show();
+          $('.expandable1').css('height', hlimit);
+      }
+      if($('.expandable2').height() <= hlimit){
+          $('.more2').hide();
+          $('.expandable2').css('height', '100%');
+      }else{
+          $('.more2').show();
+          $('.expandable2').css('height', hlimit);
+      }
+  }); 
+  $(".more1").click(function(){    
     var val = $(this).text();
     if (val == "More") {
       $(".expandable1").css('height', '100%');
       $(this).text("Less");
     } else {
-      $(".expandable1").css('height', '80');
+      $(".expandable1").css('height', hlimit);
       $(this).text("More");
     }
     return false;
   });
    $(".more2").click(function(){
-    alert("Handler for .click() called.");
     var val = $(this).text();
     if (val == "More") {
       $(".expandable2").css('height', '100%');
       $(this).text("Less");
     } else {
-      $(".expandable2").css('height', '80');
+      $(".expandable2").css('height', hlimit);
       $(this).text("More");
     }
     return false;
   });
 </script>
-
+{% block footerscripts %}{% endblock %}
 {% endblock %}
 
