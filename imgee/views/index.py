@@ -14,6 +14,9 @@ from imgee.utils import newid, get_media_domain
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
+@app.context_processor
+def global_vars():
+    return {'cl_form': forms.CreateLabelForm(), 'uf_form': forms.UploadImageForm()}
 
 @app.route('/')
 def index():
@@ -88,7 +91,7 @@ def edit_title(profile):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def profile_view(profile):
-    files = profile.stored_files.order_by('created_at desc').limit(10).all()
+    files = profile.stored_files.order_by('created_at desc').all()
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
     return render_template('profile.html', profile=profile, files=files, upload_form=upload_form, title_form=title_form)
