@@ -1,6 +1,9 @@
 .expandable1, .expandable2 {
-  height: 80px;
   overflow: hidden;
+}
+
+.selected-profile a {
+  color: #e95a1e;
 }
 
 li.image .image-thumb > img {
@@ -107,6 +110,13 @@ ul.grid li section.right {
 }
 .img-attr ul li {
   list-style-type: none;
+}
+
+.show-label .heading {
+  color: #856a91;
+}
+.show-label .editable_label {
+  color: #eb5b1f;
 }
 
 /* ======== General ========= */
