@@ -43,12 +43,10 @@ def upload_file(profile):
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
-        filename = secure_filename(request.files['uploaded_file'].filename)
-        stored_file = StoredFile(name=newid(), title=filename, profile=profile)
-        db.session.add(stored_file)
-        db.session.commit()
+        file_ = request.files['uploaded_file']
+        filename = secure_filename(file_.filename)
         content_type = get_file_type(filename)
-        save(request.files['uploaded_file'], stored_file.name, content_type=content_type)
+        save(request.files['uploaded_file'], profile=profile, content_type=content_type)
         profile_name = Profile.query.filter_by(userid=profileid).one().name
         flash('"%s" uploaded successfully.' % filename)
         return redirect(_redirect_url_frm_upload(profile_name))
