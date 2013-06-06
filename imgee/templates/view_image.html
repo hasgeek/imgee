@@ -32,12 +32,18 @@
     <div class="span3">
         <div class="sidebar well">
             <ul class="nav nav-list">
-                <li class="nav-header">Title</li>        
+                <li class="nav-header">Title</li>
                 <li class="img-title">{{ img.title }}</li>
-                <li class="nav-header">Created</li>        
+                <li class="nav-header">Size</li>
+                <li class="img-title">{{ (img.size/1024) | round(2) }} KB</li>
+                <li class="nav-header">Width</li>
+                <li class="img-title">{{ img.width }} px</li>
+                <li class="nav-header">Height</li>
+                <li class="img-title">{{img.height}} px</li>
+                <li class="nav-header">Created</li>
                 <li class="date">{{ img.created_at }}</li>
                 <hr />
-                <li class="nav-header">Labels</li>        
+                <li class="nav-header">Labels</li>
                 {% if img.labels %}                    
                     {% for label in img.labels %}
                         <li>
