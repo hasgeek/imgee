@@ -5,6 +5,9 @@
 .selected-profile a {
   color: #e95a1e;
 }
+.selected-profile a:hover {
+  text-decoration: none;
+}
 
 li.image .image-thumb > img {
   box-shadow: 1px 1px 2px #cccccc;
@@ -471,6 +474,7 @@ ul.grid li section.right {
 .editable_title form button {
   margin-top: -10px;
   margin-left: 5px;
+  margin-bottom: 20px;
 }
 
 .editable_label:hover {
@@ -733,6 +737,10 @@ input[type="file"] {
     margin-left: 0px;
   }
 
+  .span3.push-left {
+    padding-top: 30px;
+  }
+
   .sidebar .btn {
     width: auto;
   }
@@ -789,15 +797,8 @@ input[type="file"] {
     height: 380px;
   }
 
-  .gallery ul.grid .view-all {
-    clear: both;
-    float: left;
-  }
   .gallery ul.list section.top {
     display: none;
-  }
-  .gallery ul.list .view-all {
-    margin-right: 0px;
   }
   .gallery ul.list .left {
     clear: both;
@@ -810,46 +811,24 @@ input[type="file"] {
     clear: both;
     float: left;
   }
-  .gallery ul.list .span9 {
-    margin-left: -10px;
+  .gallery ul.list .span8 {
+    display: inline-block;
+    margin-left: 0px;
     margin-top: 0px;
     width: auto;
   }
-  .gallery ul.list .span9 .title {
+  .gallery ul.list .span8 .title {
     margin-top: -40px;
     margin-left: 10px;
   }
-  .gallery ul.list .span9 .span2, .gallery ul.list .span9 .span3 {
+  .gallery ul.list .span8 .span2, .gallery ul.list .span8 .span3 {
     clear: both;
   }
-  .gallery ul.list .span9 .date {
+  .gallery ul.list .span8 .date {
     font-size: 11px;
     margin-bottom: 10px;
     margin-left: 15px;
     color: #999999;
-  }
-  .gallery ul.list .span9 .labels {
-    margin-left: 10px;
-  }
-  .gallery ul.list .span5 {
-    margin-left: -10px;
-    margin-top: 0px;
-    width: auto;
-  }
-  .gallery ul.list .span5 .title {
-    margin-top: -40px;
-    margin-left: 10px;
-  }
-  .gallery ul.list .span5 .span2, .gallery ul.list .span5 .span3 {
-    clear: both;
-  }
-  .gallery ul.list .span5 .labels {
-    margin-left: 10px;
-  }
-  .gallery ul.list .span5 .label {
-    margin-bottom: 5px;
-    margin-top: 0px;
-    display: inline-block;
   }
   .gallery ul.list .label-adjust {
     display: block;
@@ -999,19 +978,9 @@ input[type="file"] {
     display: none;
   }
 
-  .gallery .span9 {
+  .gallery .span8 {
     margin-left: 60px;
     margin-top: -40px;
-  }
-  .gallery .span5 {
-    margin-left: 50px;
-    margin-top: -40px;
-  }
-  .gallery .span5 .label {
-    margin-bottom: 2px;
-  }
-  .gallery .span5 .label-adjust {
-    display: block;
   }
 }
 @media (min-width: 980px) and (max-width: 1200px) {
@@ -1033,20 +1002,8 @@ input[type="file"] {
     height: 400px;
   }
 
-  .gallery .list .view-all {
-    margin-right: 0px;
-  }
-  .gallery .grid .view-all {
-    margin-top: 73px;
-    margin-right: 45px;
-  }
-
-  .gallery .span9 {
+  .gallery .span8 {
     margin-left: 60px;
-    margin-top: -40px;
-  }
-  .gallery .span5 {
-    margin-left: 63px;
     margin-top: -40px;
   }
 

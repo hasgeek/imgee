@@ -297,6 +297,7 @@
     button
       margin-top: -10px
       margin-left: 5px
+      margin-bottom: 20px
 .editable_label
   &:hover
     background-color: #FFF7E8
@@ -512,6 +513,8 @@ input[type="file"]
     .span6, .span10, .span4
       width: 100%
       margin-left: 0px
+  .span3.push-left
+    padding-top: 30px
   .sidebar
     .btn
       width: auto
@@ -557,15 +560,9 @@ input[type="file"]
       width: 388px
       height: 380px
   .gallery
-    ul.grid
-      .view-all
-        clear: both
-        float: left
     ul.list
       section.top
         display: none
-      .view-all
-        margin-right: 0px
       .left
         clear: both
         float: right
@@ -574,8 +571,9 @@ input[type="file"]
       .right
         clear: both
         float: left
-      .span9
-        margin-left: -10px
+      .span8
+        display: inline-block
+        margin-left: 0px
         margin-top: 0px
         width: auto
         .title
@@ -588,24 +586,6 @@ input[type="file"]
           margin-bottom: 10px
           margin-left: 15px
           color: #999
-        .labels
-          margin-left: 10px
-      .span5
-        margin-left: -10px
-        margin-top: 0px
-        width: auto
-        .title
-          margin-top: -40px
-          margin-left: 10px
-        .span2, .span3
-          clear: both        
-        .labels
-          margin-left: 10px
-
-        .label 
-          margin-bottom: 5px
-          margin-top: 0px
-          display: inline-block
 
       .label-adjust
         display: block
@@ -723,16 +703,9 @@ input[type="file"]
   span#delete
     display: none
   .gallery
-    .span9
+    .span8
       margin-left: 60px
       margin-top: -40px
-    .span5
-      margin-left: 50px
-      margin-top: -40px
-      .label 
-        margin-bottom: 2px
-      .label-adjust
-        display: block
 
 @media (min-width: 980px) and (max-width: 1200px)
   .span9.tabbable
@@ -747,19 +720,8 @@ input[type="file"]
       width: 768px
       height: 400px
   .gallery
-    .list
-      .view-all
-        margin-right: 0px
-    .grid
-      .view-all
-        margin-top: 73px
-        margin-right: 45px
-  .gallery
-    .span9
+    .span8
       margin-left: 60px
-      margin-top: -40px
-    .span5
-      margin-left: 63px
       margin-top: -40px
   .browse-img
     height: 120px
