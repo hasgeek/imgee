@@ -1,144 +1,132 @@
 {% extends "baseframe.html" %}
 {% from "baseframe/components.html" import networkbar with context %}
+{% from "baseframe/forms.html" import renderfield, renderform %}
 
-{% macro renderfield(field, css_class="", widget_css_class=None, sidetext=None, tabindex='', autofocus=False) -%}
-<div class="control-group{% if field.errors %} error{% endif %}{% if css_class %} {{ css_class}}{% endif %} {%- if field.widget.html_tag in ['ul', 'ol'] %} listwidget {%- endif %}" id="field-{{ field.id }}">
-  {%- if field.widget.input_type == 'checkbox' %}
-    <div class="controls inline">{% if widget_css_class %}{{ field(class=widget_css_class, tabindex=tabindex) }}{% else %}{{ field(tabindex=tabindex) }}{% endif %} {{ field.label }}
-      {%- if sidetext %}
-        <span class="help-inline">{{ sidetext }}</span>
-      {%- endif %}
-      {%- if field.description %}
-        {%- if field.errors -%}
-          {%- for error in field.errors %}
-            <p class="help-error"><span>{{ error }}</span></p>
-          {%- endfor %}
-        {%- endif %}
-        <p class="help-block">{{ field.description }}</p>
-      {%- endif %}
-    </div>
-  {%- else %}
-    <label class="control-label" for="{{ field.id }}">{{ field.label.text }} {% if field.flags.required -%}
-      <span class="help-required" title="Required">*</span>
-    {%- endif %}</label>
-    <div class="controls">
-      {%- if autofocus %}
-        {%- if widget_css_class %}
-          {%- if tabindex %}
-            {{ field(autofocus="autofocus", class=widget_css_class, tabindex=tabindex) }}
-          {%- else %}
-            {{ field(autofocus="autofocus", class=widget_css_class) }}
-          {%- endif %}
-        {%- else %}
-          {%- if tabindex %}
-            {{ field(autofocus="autofocus", tabindex=tabindex) }}
-          {%- else %}
-            {{ field(autofocus="autofocus") }}
-          {%- endif %}
-        {%- endif %}
-      {%- else %}
-        {%- if widget_css_class %}
-          {%- if tabindex %}
-            {{ field(class=widget_css_class, tabindex=tabindex) }}
-          {%- else %}
-            {{ field(class=widget_css_class) }}
-          {%- endif %}
-        {%- elif (field.widget.input_type or "") == "" %}
-          {{ field() }}
-        {%- else %}
-          {%- if tabindex %}
-            {{ field(tabindex=tabindex) }}
-          {%- else %}
-            {{ field() }}
-          {%- endif %}
-        {%- endif %}
-      {%- endif %}
-      {%- if sidetext %}
-        <span class="help-inline">{{ sidetext }}</span>
-      {%- endif %}
-      {%- if field.errors -%}
-        {% for error in field.errors -%}
-          <p class="help-error"><span>{{ error }}</span></p>
-        {% endfor %}
-      {%- endif %}
-      {% if field.description %}<p class="help-block">{{ field.description }}</p>{% endif %}
-    </div>
-  {%- endif %}
-</div>
-{%- endmacro %}
-
-{% block headerbox -%}
-  <header>
-    {% block networkbar %}{{ networkbar(siteid=config['SITE_ID'], login=config['LASTUSER_CLIENT_ID'] and true or false) }}{% endblock %}
-    <div id="page-header" class="container">
-      <div class="row">
-        <!-- Logo -->
-        <div class="span2">
-          {% block logo -%}
-            <div id="logo"><a href="{{ g.user.profile_url }}">{{ config['SITE_TITLE'] }}</a></div>
-          {%- endblock %}
-        </div>
-        <!-- /logo -->
-        <!-- topbar-options -->
-        <div class="span10">
-          {%- block header %}
-            <ul class="topbar-options">
-              <div class="profile-image"></div>
-              <li><a title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-picture"></i>&nbsp;&nbsp;<span>Your images</span></a></li>
-              <li><a class="" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-tag"></i>&nbsp;&nbsp;<span>Add label</span></a></li>
-              <li><a class="" title="Upload image" href="{{url_for('upload_file', profile=(profile or g.user.profile).name )}}"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;<span>Upload</span></a></li> 
-            </ul>
-          {% endblock %}
-        </div>
-        <!-- /topbar-options -->
-      </div>
-    </div>
-  </header>
+{% block logo -%}
+  <div id="logo"><a href="{{ g.user.profile_url }}">{{ config['SITE_TITLE'] }}</a></div>
 {%- endblock %}
-
 
 {% block basecontent %}
   {% block content %}
     <div class="row">
-    
-      {% block left %}
-        <!-- profile's sidebar -->
-        <div class="span2">
-          <div class="profile-info well">
-            <h4><a title="View your uploads" href="{{ g.user.profile_url }}">{{ g.user.fullname }}</a></h4>
-            <a href="{{ g.user.profile_url }}"><div class="profile-image-large"></div></a><hr />
-            <em>{{ profile.stored_files.count() | safe }} images</em>
-          </div>
+      <div class="span9 push-right">
+        {% block maincontent %}
+        {% endblock %}
+      </div>
+      <div class="span3 push-left">
+        {% block sidebar %}
+        
           <div class="sidebar well">
-            <ul class="labels nav nav-list">
-              <li class="nav-header">Labels</li>        
-                {% if profile.labels %}
-                  {% for label in profile.labels |sort(attribute='name')%}
-                    <li><a href="{{url_for('show_label', profile=g.user.profile_name, label=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
-                  {% endfor %}
-                {% else %}
-                  <li>No Labels yet. <a href="{{url_for('create_label', profile=g.user.profile_name )}}">Create a new label</a></li>
-                {% endif %}
-              <li><a href="{{url_for('unlabelled_images', profile=g.user.profile_name)}}"><i class="icon-tag alt"></i>
-                {% if profile.labels %}
-                  Unlabeled
-                {% else %}
-                  Archive
-                {% endif %}
-              </a></li>
-            </ul>              
-            &nbsp;<a href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-plus"></i>&nbsp;New label</a>
-          </div>
-        </div>
-        <!-- /profile's sidebar -->
-      {% endblock %} 
+            <h4><a href="{{ url_for('profile_view',profile=profile.name) }}">{{ profile.title }}</a></h4>
+            <em>{{ profile.stored_files.count() | safe }} images</em>
+            <br /><br />
+            <!-- Upload image -->
+            <a href="#uploadModal" role="button" title="Upload image" class="btn" data-toggle="modal"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload image</a>
+            <div id="uploadModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Upload image</h3>
+              </div>
+              <div class="modal-body">
+                  <div class="form-box well">
+                    <form action="{{ url_for('upload_file', profile=profile.name) }}" method="POST">
+                      {{ renderform(uf_form) }}
+                    </form>
+                  </div>                 
+              </div>
+            </div>
+            <!-- //Upload image -->
+            <hr />
 
-      {% block right %}
-      {% endblock %} 
-    </div>
+            <ul class="nav nav-list expandable1">
+              <li class="nav-header">Labels</li> 
+              <!-- List labels -->
+              {% if profile.labels %}
+                {% for label in profile.labels |sort(attribute='name')%}
+                  <li><a href="{{url_for('show_label', profile=profile.name, label=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
+                {% endfor %}
+              {% else %}
+                <li>No Labels yet.</li>
+              {% endif %}
+              <!-- //List labels -->
+            </ul><!-- /nav nav-list -->
+            <a href="" class="more1">More</a>
+            <ul class="nav nav-list">
+              <!-- Unlabelled archive -->
+              <li><a href="{{url_for('unlabelled_images', profile=profile.name)}}"><i class="icon-tag alt"></i>
+              {% if profile.labels %}
+                Unlabeled
+              {% else %}
+                Archive
+              {% endif %}
+              </a></li>
+              <!-- //Unlabelled archive-->
+            </ul>   
+            <!-- Create new label -->
+            <a href="#labelModal" role="button" title="Upload image" class="" data-toggle="modal"><i class="icon-plus"></i>&nbsp;Newlabel</a>
+            {% if profile %}
+              <div id="labelModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true">
+                  <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                      <h3>Create Label</h3>
+                  </div>
+                  <div class="modal-body">
+                      <div class="create-box well">
+                          <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Create label</div><hr />        
+                          <form action="{{ url_for('create_label', profile=profile.name) }}" method="POST">
+                            {{ renderform(cl_form) }}
+                          </form> 
+                      </div>                        
+                  </div>
+              </div>
+            {%- endif %}
+              <!-- //Create new label --> 
+            <hr>
+            <ul class="nav nav-list expandable2">
+              <li class="nav-header">Profile And Organizations</li> 
+              <li><a title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
+              {%- for org in g.user.organizations_owned() %}
+                <li><a href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
+              {%- endfor %}
+            </ul>
+            <a href="" class="more2">More</a>
+
+          </div><!-- /sidebar well-->
+          {% block extendedsidebar %}
+          {% endblock %}
+        {% endblock %} 
+      </div><!-- /span3 -->   
+    </div><!-- /row -->
   {% endblock %}
 {% endblock %}
 
 {% block footerscripts %}
+<script type="text/javascript">
+  $(".more1").click(function(){
+    alert("Handler for .click() called.");
+    var val = $(this).text();
+    if (val == "More") {
+      $(".expandable1").css('height', '100%');
+      $(this).text("Less");
+    } else {
+      $(".expandable1").css('height', '80');
+      $(this).text("More");
+    }
+    return false;
+  });
+   $(".more2").click(function(){
+    alert("Handler for .click() called.");
+    var val = $(this).text();
+    if (val == "More") {
+      $(".expandable2").css('height', '100%');
+      $(this).text("Less");
+    } else {
+      $(".expandable2").css('height', '80');
+      $(this).text("More");
+    }
+    return false;
+  });
+</script>
+
 {% endblock %}
 

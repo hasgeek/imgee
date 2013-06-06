@@ -1,52 +1,25 @@
 @import "compass"
+@import "sidebar"
+@import "profile"
+@import "view-image"
+@import "popup"
 
 /* ======== General ========= */
 .logo
   margin-top: 25px
 #logo
   @include replace-text-with-dimensions('logo.png')
-header
-  background-color: #E7E7E7
-  border-bottom: 4px solid #F8F8F8
-  #logo
-    width: 110px
-    height: 54px
-    background-size: 100% 
-  #page-header
-    border-bottom: none
-.topbar-options
-  li
-    list-style: none
-    float: right
-    margin-top: 16px
-    &:first-child, &:nth-child(2)
-      border-right: none
-    a
-      padding-left: 12px
-      margin-right: 12px
-      &:first-child
-        border-left: none
-      i
-        color: #C4C4C4
-      &:hover
-        text-decoration: none
-        i
-          color: #999
+
 .well
   hr
     margin: 8px 0 8px 0
-.padding
-  padding-bottom: 15px
+.date
+  font-size: 11px
+  color: #999
 
 /* ======== sidebar ========= */
 
 .sidebar
-  li.date
-    font-size: 11px
-    color: #666
-  li.img-title
-    font-weight: bold
-    font-size: 13px
   .nav-list
     li
       text-shadow: none
@@ -74,114 +47,10 @@ header
   border: 0px solid #ECECEC
   padding-top: 20px
 
-li.image
-  .image-thumb > img
-    box-shadow: 1px 1px 2px #ccc
 
-.gallery
-  ul
-    margin-left: 0
-    margin-top: -8px
-/*** list-grid switcher 88/
-.list-grid-selector
-  .btn
-    text-shadow: none
-  .btn.active, .btn:active
-    box-shadow: none
-
-/** list view **/
-ul.list
-  list-style: none
-  section.top
-    display: block
-    margin-bottom: 25px
-    margin-left: 12px
-
-  li
-    display: block
-    clear: both
-    border-top: 1px solid #e5e5e5
-    margin-left: 30px
-    padding-top: 6px
-    float: left
-    &:last-child
-      border-bottom: 1px solid #E5E5E5
-    &:hover
-      background-color: #f5f5f5
-    .span1
-      margin-left: 0
-
-    section.left
-      display: block
-      float: left
-      position: relative
-      img
-        width: 35px
-        height: 35px
-    section.right
-      display: block
-      float: left
-      text-align: left
-      position: relative
-      
-
-/** grid view **/
-ul.grid
-  list-style: none
-  section.top
-    display: none
-  
-  li
-    position: relative
-    float: left
-    margin-right: 5px
-    border-bottom: 0px
-    padding-bottom: 0px
-    padding-top: 0px
-
-    section.left
-      position: relative
-    section.right
-      display: none
-
-.profile-image
-  height: 35px
-  width: 35px
-  display: block
-  float: right
-  background-image: image-url('user.png')
-  background-size: 35px 35px
-  border-radius: 3px
-  margin-top: 9px
-
-.profile-info
-  .profile-image-large
-    height: 50px
-    width: 50px
-    display: block
-    background-image: image-url('user.png')
-    background-size: 50px 50px
-  h4 > a
-    display: block
-    color: #333
-    padding-bottom: 10px
-    &:hover
-      text-decoration: none
-      color: #F0A40C
-  em
-    color: #999
-    font-size: 11px
 
 
 /* ======== view_image page ========= */
-.view-image
-  .heading
-    margin-bottom: 20px
-  .editable_title
-    form
-      padding-bottom: 40px
-      button
-        margin-top: 3px
 
 .resize
   input, textarea
@@ -627,25 +496,6 @@ input[type="file"]
 
 @media screen and (max-width: 767px)
 
-  header 
-    .row > .span2
-      display: block
-      float: left
-      margin: 0
-      width: auto
-    .row > .span10
-      float: right
-  .home-logo
-    width: 60%
-  .delete-box, .create-box, .upload-box
-    width: 80%
-  .create-box
-    .form-horizontal
-      .controls
-        margin-top: 20px
-      label
-        width: 50px
-
   .cancel
     float: right
   .gallery
@@ -920,4 +770,9 @@ input[type="file"]
     width: 1050px
     margin-left: -530px
 
+
+
+@media (max-width: 767px)
+  .main-content.push-right
+    float: none
 

@@ -8,161 +8,146 @@
 <script> var profile = '{{g.user.profile_name}}';</script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script>
-    $('input#img_width').width(100);
-    $('input#img_height').width(100);
-    $('input#img_link').width(420);
-    var file_url = "{{url_for('get_image', image=img.name)}}";
-    $('input[id^="img_"]').change(function (){
-        var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
-        $('a#img_link').attr('href', url_with_size);
-    });
+  $('input#img_width').width(100);
+  $('input#img_height').width(100);
+  $('input#img_link').width(420);
+  var file_url = "{{url_for('get_image', image=img.name)}}";
+  $('input[id^="img_"]').change(function (){
+      var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
+      $('a#img_link').attr('href', url_with_size);
+  });
 
-     var existing_labels = [];
-     {% for label in profile.labels %}
-        existing_labels.push('{{label.name}}');
-     {% endfor %}
-     $('#labels').select2({
-          tags: existing_labels
-     });
-
+   var existing_labels = [];
+   {% for label in profile.labels %}
+      existing_labels.push('{{label.name}}');
+   {% endfor %}
+   $('#labels').select2({
+        tags: existing_labels
+   });
 </script>
 {% endblock %}
 
-{% block left %}
-    <div class="span3">
-        <div class="sidebar well">
-            <ul class="nav nav-list">
-                <li class="nav-header">Title</li>        
-                <li class="img-title">{{ img.title }}</li>
-                <li class="nav-header">Created</li>        
-                <li class="date">{{ img.created_at }}</li>
-                <hr />
-                <li class="nav-header">Labels</li>        
-                {% if img.labels %}                    
-                    {% for label in img.labels %}
-                        <li>
-                            <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}"><i class="icon-tag"></i>&nbsp;{{label.name}}</a>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <li><em>No labels yet.</em></li>
-                {% endif %}
-            </ul>  
+{% block extendedsidebar %}
+  <div class="sidebar row">                
+    <div class="span3 browse-img">
+      <h4><a href="{{ g.user.profile_url }}">Browse your gallery</a></h4>
+      {% if prev_step != None %}
+        <div class="image-thumb"> 
+          <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev_step.name)}}" title="view image">   
+            <img src="{{url_for('get_thumbnail', image=prev_step.name)}}"/>
+          </a>
         </div>
-
-        <div class="sidebar row">                
-            <div class="span3 browse-img">
-                <h4><a href="{{ g.user.profile_url }}">Browse your gallery</a></h4>
-
-                {% if prev_step != None %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev_step.name)}}" title="view image">   
-                            <img src="{{url_for('get_thumbnail', image=prev_step.name)}}"/>
-                        </a>
-                    </div>
-                {% endif %}
-                {% if prev != None %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev.name)}}" title="view image">   
-                            <img src="{{url_for('get_thumbnail', image=prev.name)}}"/>
-                        </a>
-                    </div>
-                {% endif %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}" title="view image">   
-                            <img class="active" src="{{url_for('get_thumbnail', image=img.name)}}"/>
-                        </a>
-                    </div>
-                {% if next != None %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=next.name)}}" title="view image">   
-                            <img src="{{url_for('get_thumbnail', image=next.name)}}"/>
-                        </a>
-                    </div>
-                {% endif %}
-                {% if next_step != None %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=next_step.name)}}" title="view image">   
-                            <img src="{{url_for('get_thumbnail', image=next_step.name)}}"/>
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
+      {% endif %}
+      {% if prev != None %}
+        <div class="image-thumb"> 
+          <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev.name)}}" title="view image">   
+            <img src="{{url_for('get_thumbnail', image=prev.name)}}"/>
+          </a>
         </div>
-
-        {% set img_url= url_for('get_image', image=img.name) %}
-        <div class="form-box well resize">
-            <div class="form-title"><i class="icon-cut"></i>&nbsp;&nbsp;Resize image</div><hr />
-            <strong>Enter the dimensions:</strong><br /><br />
-            <label>Width:</label><input id='img_width' placeholder="w" />px<br />
-            <label>Height:</label><input id='img_height' placeholder="h" />px<br />
-            <a class="btn btn-primary" href='{{img_url}}' id='img_link'>Resized image</a>
-            <a class="btn" href='{{img_url}}'>&nbsp;Original image</a><br />                    
-        </div> 
-
-        {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
-        <div class="form-box well">
-            <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div><hr />
-
-            <div>
-                <form action='{{action_url}}' method='POST'>
-                    {{form.csrf_token()}}
-                    {{form.stored_file_id()}}
-                    {{form.labels(value=','.join(labels))}}
-                    {{rendersubmit([(None, "Submit", 'btn-primary')])}}
-                </form>
-            </div>
+      {% endif %}
+        <div class="image-thumb"> 
+          <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}" title="view image">   
+            <img class="active" src="{{url_for('get_thumbnail', image=img.name)}}"/>
+          </a>
         </div>
+      {% if next != None %}
+        <div class="image-thumb"> 
+          <a href="{{url_for('view_image', profile=g.user.profile_name, image=next.name)}}" title="view image">   
+            <img src="{{url_for('get_thumbnail', image=next.name)}}"/>
+          </a>
+        </div>
+      {% endif %}
+      {% if next_step != None %}
+        <div class="image-thumb"> 
+          <a href="{{url_for('view_image', profile=g.user.profile_name, image=next_step.name)}}" title="view image">   
+            <img src="{{url_for('get_thumbnail', image=next_step.name)}}"/>
+          </a>
+        </div>
+      {% endif %}
     </div>
+  </div>
 {% endblock %} 
 
-{% block right %}
-    <div class="view-image span9">
-        <div class="row">
-            <div class="span7">
-                {% set img_url= url_for('get_image', image=img.name) %}
-                <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
-            </div>
-            <div class="span2">
-                <div class="btn-group pull-right">
-                    {% if prev != None %}
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
-                    {% endif %}
-                    {% if next != None %}
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=next.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
-                    {% endif %}
-                </div>
-            </div>
+{% block maincontent %}
+  <section class="view-image">
+    <div class="row">
+      <div class="span7">
+        {% set img_url= url_for('get_image', image=img.name) %}
+        <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
+        <div class="img-attr">
+          <ul>
+            <li>Uploaded at: <em>{{ img.created_at }}</em></li>
+            <li>Size: <em>250 KB</em></li>
+            <li>Aspect-ratio: <em>400 x 600 px</em></li>
+          </ul>
         </div>
+      </div><!-- /span7 -->
+      <div class="span2">
+        <div class="btn-group pull-right">
+          {% if prev != None %}
+            <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
+          {% endif %}
+          {% if next != None %}
+            <a href="{{url_for('view_image', profile=g.user.profile_name, image=next.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
+          {% endif %}
+        </div>
+      </div><!-- /span2 -->
+    </div><!-- /row -->
 
-        <div class="row">
-            <div class="span9">                
-                <div class="image-display">
-                    <img src="{{url_for('get_image', image=img.name)}}" />
-                </div>
-            </div>
+    <div class="row">
+      <div class="span9">                
+        <div class="image-display">
+          <img src="{{url_for('get_image', image=img.name)}}" />
         </div>
+      </div>
+    </div><!-- /row -->
 
-        <div class="row">
-            {% if img.labels %}
-                <div class="span7">      
-                Labels:
-                {% for label in img.labels %}
-                    <span class="label">
-                        <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}">{{label.name}}</a>
-                    </span>
-                {% endfor %}
-                <br /><br />
-                </div>
-                <div class="span2">
-                    <a class="btn btn-danger pull-right" href="{{url_for('delete_file', profile=g.user.profile_name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete</a>  
-                </div> 
-            {% else %}
-                <div class="span9">
-                    <a class="btn btn-danger pull-right" href="{{url_for('delete_file', profile=g.user.profile_name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete</a>  
-                </div> 
-            {% endif %}
+    <div class="row">
+      {% if img.labels %}
+        <div class="span7">      
+        Labels:
+        {% for label in img.labels %}
+          <span class="label">
+            <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}">{{label.name}}</a>
+          </span>
+        {% endfor %}
+        <br /><br />
         </div>
-        <hr />
-    </div>
+        <div class="span2">
+            <a class="btn btn-danger pull-right" href="{{url_for('delete_file', profile=g.user.profile_name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete</a>  
+        </div> 
+      {% else %}
+        <div class="span9">
+          <a class="btn btn-danger pull-right" href="{{url_for('delete_file', profile=g.user.profile_name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete</a>  
+        </div> 
+      {% endif %}
+    </div><!-- /row -->
+    <hr />
+    <div class="row">
+      <div class="span6">
+        {% set img_url= url_for('get_image', image=img.name) %}
+        <div class="well">
+          <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Resize image</div><hr />
+          Link to <a href='{{img_url}}'>original image</a> | At a different size:
+          <input id='img_width' placeholder="w" />X<input id='img_height' placeholder="h" />
+          <a href='{{img_url}}' id='img_link'> here</a>.
+          <br/>
+        </div>
+      </div><!-- /span6 -->
+      <div class="span3">
+        {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
+        <div class="form-box well">
+          <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div><hr />
+          <div>
+            <form action='{{action_url}}' method='POST'>
+              {{form.csrf_token()}}
+              {{form.stored_file_id()}}
+              {{form.labels(value=','.join(labels))}}
+              {{rendersubmit([(None, "Submit", 'btn-primary')])}}
+            </form>
+          </div>
+        </div>
+      </div><!-- /span3 -->
+    </div><!-- /row -->
+  </section><!-- /view-image -->
 {% endblock %}
