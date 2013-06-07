@@ -46,3 +46,6 @@ class StoredFile(BaseNameMixin, db.Model):
         super(StoredFile, self).__init__(**kwargs)
         if not self.name:
             self.name = newid()
+
+    def __repr__(self):
+        return "StoredFile <%s>" % (self.title)

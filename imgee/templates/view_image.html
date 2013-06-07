@@ -21,6 +21,7 @@
      {% for label in profile.labels %}
         existing_labels.push('{{label.name}}');
      {% endfor %}
+
      $('#labels').select2({
           tags: existing_labels
      });
@@ -58,41 +59,27 @@
 
         <div class="sidebar row">                
             <div class="span3 browse-img">
-                <h4><a href="{{ g.user.profile_url }}">Browse your gallery</a></h4>
+                <h4><a href="{{ g.user.profile_url }}">Browse your gallery </a></h4>
 
-                {% if prev_step != None %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev_step.name)}}" title="view image">   
-                            <img src="{{url_for('get_thumbnail', image=prev_step.name)}}"/>
+                {% for p in prev %}
+                    <div class="image-thumb">
+                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=p.name)}}" title="view image">
+                            <img src="{{url_for('get_thumbnail', image=p.name)}}"/>
                         </a>
                     </div>
-                {% endif %}
-                {% if prev != None %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev.name)}}" title="view image">   
-                            <img src="{{url_for('get_thumbnail', image=prev.name)}}"/>
-                        </a>
-                    </div>
-                {% endif %}
+                {% endfor %}
                     <div class="image-thumb"> 
                         <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}" title="view image">   
                             <img class="active" src="{{url_for('get_thumbnail', image=img.name)}}"/>
                         </a>
                     </div>
-                {% if next != None %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=next.name)}}" title="view image">   
-                            <img src="{{url_for('get_thumbnail', image=next.name)}}"/>
-                        </a>
-                    </div>
-                {% endif %}
-                {% if next_step != None %}
-                    <div class="image-thumb"> 
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=next_step.name)}}" title="view image">   
-                            <img src="{{url_for('get_thumbnail', image=next_step.name)}}"/>
-                        </a>
-                    </div>
-                {% endif %}
+                    {% for n in next %}
+                        <div class="image-thumb">
+                            <a href="{{url_for('view_image', profile=g.user.profile_name, image=n.name)}}" title="view image">
+                                <img src="{{url_for('get_thumbnail', image=n.name)}}"/>
+                            </a>
+                        </div>
+                    {% endfor %}
             </div>
         </div>
 
@@ -114,7 +101,8 @@
                 <form action='{{action_url}}' method='POST'>
                     {{form.csrf_token()}}
                     {{form.stored_file_id()}}
-                    {{form.labels(value=','.join(labels))}}
+                    {% set labels = img.labels | join(', ', attribute='name') %}
+                    {{form.labels(value=labels)}}
                     {{rendersubmit([(None, "Submit", 'btn-primary')])}}
                 </form>
             </div>
