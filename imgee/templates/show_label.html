@@ -3,7 +3,7 @@
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.history.js')}}"></script>
-<script> var profile = '{{ g.user.profile_name }}';</script>
+<script> var profile = '{{ profile.name }}';</script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 {% endblock %}
 
@@ -15,7 +15,7 @@
         <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
       </div>
       <div class="span2">
-        <a class="btn btn-danger pull-right" href="{{url_for('delete_label', profile=g.user.profile_name ,label=label.name)}}" title='Delete label "{{label.name}}"'><i class="icon-trash"></i>&nbsp;<span id="delete">Delete Label</span></a>
+        <a class="btn btn-danger pull-right" href="{{url_for('delete_label', profile=profile.name ,label=label.name)}}" title='Delete label "{{label.name}}"'><i class="icon-trash"></i>&nbsp;<span id="delete">Delete Label</span></a>
       </div>
     </div>        
     <div class="gallery well">
@@ -29,7 +29,7 @@
         <div class="gallery label-category span9">
           {% for img in files %}
             <div class="image">
-              <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}">
+              <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}">
                 <img src="{{url_for('get_thumbnail', image=img.name)}}"/>
               </a>
               <div class="label-title">{{img.title}}</div>

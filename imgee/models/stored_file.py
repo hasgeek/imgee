@@ -34,6 +34,9 @@ class StoredFile(BaseNameMixin, db.Model):
     """
     __tablename__ = 'stored_file'
     profile_id = db.Column(None, db.ForeignKey('profile.id'), nullable=False)
+    size = db.Column(db.BigInteger, default=0, nullable=False)  # in bytes
+    width = db.Column(db.Integer, default=0)
+    height = db.Column(db.Integer, default=0)
     thumbnails = db.relationship('Thumbnail', backref='stored_file',
                                  cascade='all, delete-orphan')
     labels = db.relationship('Label', secondary='image_labels',
@@ -43,3 +46,6 @@ class StoredFile(BaseNameMixin, db.Model):
         super(StoredFile, self).__init__(**kwargs)
         if not self.name:
             self.name = newid()
+
+    def __repr__(self):
+        return "StoredFile <%s>" % (self.title)

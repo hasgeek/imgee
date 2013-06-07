@@ -46,15 +46,12 @@ def upload_file(profile):
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
-        filename = secure_filename(request.files['uploaded_file'].filename)
-        stored_file = StoredFile(name=newid(), title=filename, profile=profile)
-        db.session.add(stored_file)
-        db.session.commit()
+        file_ = request.files['uploaded_file']
+        filename = secure_filename(file_.filename)
         content_type = get_file_type(filename)
-        save(request.files['uploaded_file'], stored_file.name, content_type=content_type)
-        profile_name = Profile.query.filter_by(userid=profileid).one().name
+        save(file_, profile=profile, content_type=content_type)
         flash('"%s" uploaded successfully.' % filename)
-        return redirect(_redirect_url_frm_upload(profile_name))
+        return redirect(_redirect_url_frm_upload(profile.name))
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form, profile=profile)
 
@@ -116,38 +113,27 @@ def unlabelled_images(profile):
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
+def get_prev_images(profile, img, limit=3):
+    imgs = profile.stored_files.filter(StoredFile.created_at < img.created_at)
+    return imgs.order_by('created_at desc').limit(limit).all()[::-1]
+
+
+def get_next_images(profile, img, limit=2):
+    imgs = profile.stored_files.filter(StoredFile.created_at > img.created_at)
+    return imgs.order_by('created_at asc').limit(limit).all()
+
 
 @app.route('/<profile>/view/<image>')
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def view_image(profile, img):    
-    files = profile.stored_files.order_by('created_at desc').all()
-    for index, im in enumerate(files):
-        if im is img:
-            if index != 0:
-                prev = files[index - 1]
-                if [index - 1] != 0:
-                    prev_step = files[index - 2]
-                else:
-                    prev_step = None
-            else:
-                prev = None
-                prev_step = None
-            if index == (profile.stored_files.count() - 1):
-                next = None
-                next_step = None
-            else:
-                next = files[index + 1]
-                if index == (profile.stored_files.count() - 2):
-                    next_step = None
-                else:
-                    next_step = files[index + 2]
-
-    img_labels = [label.name for label in img.labels]
+def view_image(profile, img):
+    prev = get_prev_images(profile, img)
+    next = get_next_images(profile, img)
     form = forms.AddLabelForm(stored_file_id=img.name)
-    return render_template('view_image.html', profile=profile, form=form, img=img, labels=img_labels, prev=prev, next=next, prev_step=prev_step, next_step=next_step)
+    return render_template('view_image.html', profile=profile, form=form, img=img,
+                    prev=prev, next=next)
 
 
 @app.route('/file/<image>')

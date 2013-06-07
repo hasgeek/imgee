@@ -5,8 +5,8 @@
 
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
-<script> var profile = '{{g.user.profile_name}}';</script>
-<script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
+<script> var profile = '{{profile.name}}';</script>
 <script>
   $('input#img_width').width(100);
   $('input#img_height').width(100);
@@ -31,39 +31,25 @@
   <div class="sidebar row">                
     <div class="span3 browse-img">
       <h4><a href="{{ g.user.profile_url }}">Browse your gallery</a></h4>
-      {% if prev_step != None %}
-        <div class="image-thumb"> 
-          <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev_step.name)}}" title="view image">   
-            <img src="{{url_for('get_thumbnail', image=prev_step.name)}}"/>
+      {% for p in prev %}
+        <div class="image-thumb">
+          <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" title="view image">
+            <img src="{{url_for('get_thumbnail', image=p.name)}}"/>
           </a>
         </div>
-      {% endif %}
-      {% if prev != None %}
-        <div class="image-thumb"> 
-          <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev.name)}}" title="view image">   
-            <img src="{{url_for('get_thumbnail', image=prev.name)}}"/>
-          </a>
-        </div>
-      {% endif %}
-        <div class="image-thumb"> 
-          <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}" title="view image">   
+      {% endfor %}
+        <div class="image-thumb">
+          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
             <img class="active" src="{{url_for('get_thumbnail', image=img.name)}}"/>
           </a>
         </div>
-      {% if next != None %}
-        <div class="image-thumb"> 
-          <a href="{{url_for('view_image', profile=g.user.profile_name, image=next.name)}}" title="view image">   
-            <img src="{{url_for('get_thumbnail', image=next.name)}}"/>
+      {% for n in next %}
+        <div class="image-thumb">
+          <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" title="view image">
+            <img src="{{url_for('get_thumbnail', image=n.name)}}"/>
           </a>
         </div>
-      {% endif %}
-      {% if next_step != None %}
-        <div class="image-thumb"> 
-          <a href="{{url_for('view_image', profile=g.user.profile_name, image=next_step.name)}}" title="view image">   
-            <img src="{{url_for('get_thumbnail', image=next_step.name)}}"/>
-          </a>
-        </div>
-      {% endif %}
+      {% endfor %}
     </div>
   </div>
 {% endblock %} 
@@ -77,18 +63,18 @@
         <div class="img-attr">
           <ul>
             <li>Uploaded at: <em>{{ img.created_at }}</em></li>
-            <li>Size: <em>250 KB</em></li>
-            <li>Aspect-ratio: <em>400 x 600 px</em></li>
+            <li>Size: <em>{{ (img.size/1024) | round(2) }} KB</em></li>
+            <li>Aspect-ratio: <em>{{ img.width }} x {{ img.height }} px</em></li>
           </ul>
         </div>
       </div><!-- /span7 -->
       <div class="span2">
         <div class="btn-group pull-right">
           {% if prev != None %}
-            <a href="{{url_for('view_image', profile=g.user.profile_name, image=prev.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
+            <a href="{{url_for('view_image', profile=profile.name, image=prev.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
           {% endif %}
           {% if next != None %}
-            <a href="{{url_for('view_image', profile=g.user.profile_name, image=next.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
+            <a href="{{url_for('view_image', profile=profile.name, image=next.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
           {% endif %}
         </div>
       </div><!-- /span2 -->
@@ -97,7 +83,19 @@
     <div class="row">
       <div class="span9">                
         <div class="image-display">
-          <img src="{{url_for('get_image', image=img.name)}}" />
+          <!-- picturefill -->
+          <div data-picture data-alt="{{ img.title }}">
+            <div data-src="{{url_for('get_image', image=img.name)}}"></div>
+            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 250 %}img.width{% else %}250{% endif %}" data-media="(min-width: 480px)"></div>
+            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 538 %}img.width{% else %}538{% endif %}" data-media="(min-width: 768px)"></div>
+            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 700 %}img.width{% else %}700{% endif %}" data-media="(min-width: 980px)"></div>
+            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 870 %}img.width{% else %}870{% endif %}" data-media="(min-width: 1200px)"></div>
+            <!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
+            <noscript>
+              <img src="{{url_for('get_image', image=img.name)}}" alt="{{ img.title }}">
+            </noscript>
+          </div>
+          <!-- //picturefill -->
         </div>
       </div>
     </div><!-- /row -->
@@ -114,11 +112,11 @@
         <br /><br />
         </div>
         <div class="span2">
-            <a class="btn btn-danger pull-right" href="{{url_for('delete_file', profile=g.user.profile_name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete</a>  
+            <a class="btn btn-danger pull-right" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete</a>  
         </div> 
       {% else %}
         <div class="span9">
-          <a class="btn btn-danger pull-right" href="{{url_for('delete_file', profile=g.user.profile_name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete</a>  
+          <a class="btn btn-danger pull-right" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete</a>  
         </div> 
       {% endif %}
     </div><!-- /row -->
