@@ -4,7 +4,7 @@
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.ba-postmessage.min.js')}}"></script>
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
-<script> var profile = '{{g.user.profile_name}}';</script>
+<script> var profile = '{{profile.name}}';</script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
 
@@ -125,7 +125,7 @@ $('select#profiles').change(function(){
                                 <i class="icon-cloud-upload icon-4x"></i>
                             </div>
                             <h3>Choose an image to upload from your computer.</h3>
-                            {% set action_url= url_for('upload_file', profile=g.user.profile_name) %}
+                            {% set action_url= url_for('upload_file', profile=profile.name) %}
                             {{ renderform(uploadform, "upload", multipart=True, action=action_url) }}
                         </div>                    
                     </div>
@@ -155,7 +155,7 @@ $('select#profiles').change(function(){
                                                     <div class="select-options">
                                                         <button class="select-img btn btn-warning" name="" value="{{url_for('get_thumbnail', image=img.name)}}`{{img.title}}`{{ img.created_at }}">Select</button><br />
                                                         <a class="zoom-btn" href="{{ url_for('get_image', image=img.name) }}" target="_blank"><i class="icon-zoom-in"></i></a>
-                                                        <a class="delete-btn" href="{{url_for('delete_file', profile=g.user.profile_name, image=img.name)}}"><i class="icon-trash"></i></a>
+                                                        <a class="delete-btn" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i></a>
                                                     </div> 
 
                                                 </section>

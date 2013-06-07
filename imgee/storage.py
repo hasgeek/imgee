@@ -16,6 +16,7 @@ from boto.s3.key import Key
 from imgee import app
 from imgee.models import db, Thumbnail
 from imgee.utils import newid
+from imgee.models import StoredFile
 
 # changes in these values have to be made in rq.sh too.
 DEFAULT_QUEUE = 'default'
@@ -40,11 +41,32 @@ def get_s3_bucket():
     return bucket
 
 
-def save(fp, img_name, remote=True, content_type=None):
-    img_name = "%s%s" % (img_name, os.path.splitext(fp.filename)[1])
-    local_path = os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
+def get_width_height(img_path):
+    try:
+        img = Image.open(img_path)
+    except:
+        return (0, 0)
+    else:
+        return img.size
+
+
+def save_in_db(name, title, local_path, profile):
+    size_in_bytes = os.path.getsize(local_path)
+    width, height = get_width_height(local_path)
+    stored_file = StoredFile(name=name, title=title, profile=profile,
+                    size=size_in_bytes, width=width, height=height)
+    db.session.add(stored_file)
+    db.session.commit()
+
+
+def save(fp, profile, img_name=None, remote=True, content_type=None):
+    id_ = img_name or newid()
+    img_name = "%s%s" % (id_, os.path.splitext(fp.filename)[1])
+    local_path = path_for(img_name)
     with open(local_path, 'w') as img:
         img.write(fp.read())
+
+    save_in_db(name=id_, title=fp.filename, local_path=local_path, profile=profile)
 
     if remote:
         save_later_on_s3(local_path, img_name, content_type=content_type, queue=DEFAULT_QUEUE)

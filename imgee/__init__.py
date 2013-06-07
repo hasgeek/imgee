@@ -30,7 +30,7 @@ def mkdir_p(dirname):
 # Configure the app
 def init_for(env):
     coaster.app.init_app(app, env)
-    baseframe.init_app(app, requires=['baseframe', 'imgee'])
+    baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
     RQ(app)     # pick up RQ configuration from the app
     app.config.get('NETWORKBAR_LINKS', []).append({
         'name': 'imgee',

@@ -5,7 +5,7 @@
 
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
-<script> var profile = '{{g.user.profile_name}}'; </script>
+<script> var profile = '{{profile.name}}'; </script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
 {% endblock %}
@@ -47,7 +47,7 @@
 
                 {% for img in files %}
                   <li class="image">
-                    <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}" title="view image">
+                    <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
                       <section class="left">
                         <div class="image-thumb">    
                           <img src="{{url_for('get_thumbnail', image=img.name)}}"/>
@@ -57,7 +57,7 @@
                     
                     <section class="right span8">
                       <div class="row">   
-                        <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}" title="view image">                                 
+                        <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">                                 
                           <div class="title editable_title span3" id="{{img.name}}">{{img.title}}</div>
                           <div class="span2 date">{{ img.created_at }}</div>
                         </a>
@@ -74,7 +74,7 @@
             {% if unlabelled %}
               Hurray! Not a single image is without a label.
             {% else %}
-              There are no images uploaded yet. <a href="{{url_for('upload_file', profile=g.user.profile_name)}}">Upload them.</a>
+              There are no images uploaded yet. <a href="{{url_for('upload_file', profile=profile.name)}}">Upload them.</a>
             {% endif %}
             </div>
           </div>
@@ -86,7 +86,7 @@
 <a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 <div class="modal-body">
-<iframe src="{{ url_for('pop_up_gallery', profile=g.user.profile_name)}}" width="1010px" height="450px"></iframe>
+<iframe src="{{ url_for('pop_up_gallery', profile=profile.name)}}" width="1010px" height="450px"></iframe>
 </div>
 </div>
 </div>
