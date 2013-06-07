@@ -9,6 +9,32 @@
   text-decoration: none;
 }
 
+.sidebar .nav-list li {
+  text-shadow: none;
+}
+.sidebar .nav-list a {
+  text-shadow: none;
+}
+.sidebar .btn {
+  width: 90%;
+  margin-bottom: 0px;
+  margin-top: 6px;
+}
+
+.icon-tag.alt {
+  opacity: 0.1;
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+  .sidebar .btn {
+    width: 83%;
+  }
+}
+@media (min-width: 980px) and (max-width: 1200px) {
+  .sidebar .btn {
+    width: 88%;
+  }
+}
 li.image .image-thumb > img {
   box-shadow: 1px 1px 2px #cccccc;
 }
@@ -145,25 +171,6 @@ ul.grid li section.right {
 .date {
   font-size: 11px;
   color: #999999;
-}
-
-/* ======== sidebar ========= */
-.sidebar .nav-list li {
-  text-shadow: none;
-}
-.sidebar .nav-list a {
-  text-shadow: none;
-}
-.sidebar .btn {
-  width: 83%;
-  margin-bottom: 10px;
-}
-.sidebar .options {
-  text-align: left;
-}
-
-.icon-tag.alt {
-  opacity: 0.1;
 }
 
 /* ======== index page ========= */
@@ -741,10 +748,6 @@ input[type="file"] {
     padding-top: 30px;
   }
 
-  .sidebar .btn {
-    width: auto;
-  }
-
   .form-box.well {
     margin-top: 20px;
   }
@@ -935,17 +938,6 @@ input[type="file"] {
   }
 }
 @media (min-width: 768px) and (max-width: 979px) {
-  .topbar-btn {
-    font-size: 11px;
-  }
-  .topbar-btn i {
-    display: none;
-  }
-
-  .photostream-profile .profile-name > a {
-    font-size: 14px;
-  }
-
   .span9.tabbable {
     margin-left: 187px;
   }
@@ -962,11 +954,6 @@ input[type="file"] {
   .modal-body iframe {
     width: 700px;
     height: 380px;
-  }
-
-  ul.grid .view-all {
-    margin-top: 73px;
-    margin-right: 42px;
   }
 
   ul.list .date {

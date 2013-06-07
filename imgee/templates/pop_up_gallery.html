@@ -89,7 +89,7 @@ $('select#profiles').change(function(){
 {% block headerbox -%}
 {%- endblock %}
 
-{% block left %}                    
+{% block sidebar %}                    
     <div class="side-tab">
         <div class="span3">
             <div class="row">
@@ -105,10 +105,10 @@ $('select#profiles').change(function(){
     </div>
 {% endblock %}
 
-{% block right %}
-    <div class="span9 popup">
+{% block maincontent %}
+    <div class="popup">
         <div class="row">
-            <div class="tabbable span9">
+            <div class="tabbable">
                 <div class="tab-content">
                     <div id="tab-pane1" class="tab-pane active">
                         <div class="form-box">
