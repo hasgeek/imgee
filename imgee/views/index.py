@@ -32,7 +32,7 @@ def _get_owned_ids(user=None):
 def _redirect_url_frm_upload(profile_name):
     # if the referrer is from 'pop_up_gallery' redirect back to referrer.
     referrer = request.referrer or ''
-    if url_for('pop_up_gallery', profile=g.user.profile_name) in referrer:
+    if url_for('pop_up_gallery', profile=profile_name) in referrer:
         url = request.referrer
     else:
         url = url_for('profile_view', profile=profile_name)
@@ -45,14 +45,17 @@ def _redirect_url_frm_upload(profile_name):
 def upload_file(profile):
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
+    print "Received upload"
     if upload_form.validate_on_submit():
         file_ = request.files['uploaded_file']
         filename = secure_filename(file_.filename)
         content_type = get_file_type(filename)
         save(file_, profile=profile, content_type=content_type)
         flash('"%s" uploaded successfully.' % filename)
+        print "Upload successful"
         return redirect(_redirect_url_frm_upload(profile.name))
     # form invalid or request.method == 'GET'
+    print "Rendering form"
     return render_template('form.html', form=upload_form, profile=profile)
 
 
@@ -64,7 +67,7 @@ def pop_up_gallery(profile):
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
-    return render_template('pop_up_gallery.html', files=files, profile=profile.name,
+    return render_template('pop_up_gallery.html', files=files, profile=profile,
             uploadform=form, cp_form=cp_form)
 
 

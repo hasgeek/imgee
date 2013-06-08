@@ -7,6 +7,8 @@
 <script> var profile = '{{profile.name}}';</script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/dropzone.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static', filename='js/dropzone-amd-module.js')}}"></script>
 
 <script>
 function parseQuery(s){
@@ -84,6 +86,13 @@ $('select#profiles').change(function(){
         });
     });    
 </script>
+<script type="text/javascript">
+    $(function() {
+    Dropzone.options.uploadimage = {
+      paramName: "uploaded_file"
+      };
+    });
+</script>
 {% endblock %}
 
 {% block headerbox -%}
@@ -97,7 +106,6 @@ $('select#profiles').change(function(){
                     <ul class="nav nav-tabs span3">
                         <li class="active"><a href="#tab-pane1" data-toggle="tab"><i class="icon-cloud-upload"></i><span>&nbsp;&nbsp;Upload</span></a></li>
                         <li><a href="#tab-pane2" data-toggle="tab"><i class="icon-picture"></i><span>&nbsp;&nbsp;Gallery</span></a></li>
-                        <li><a href="#tab-pane3" data-toggle="tab"><i class="icon-link"></i><span>&nbsp;&nbsp;<span class="hide-mobile">Import from </span>URL</span></a></li>
                     </ul>
                 </div>
             </div>
@@ -112,22 +120,11 @@ $('select#profiles').change(function(){
                 <div class="tab-content">
                     <div id="tab-pane1" class="tab-pane active">
                         <div class="form-box">
-                            <div class="form-title"><i class="icon-upload-alt"></i>&nbsp;&nbsp;Upload Images</div>
-                            <div class="icon-group-popup">
-                                <i class="icon-desktop icon-4x"></i>
-                                <i class="icon-caret-right icon-2x"></i>
-                                <i class="icon-caret-right icon-2x"></i>
-                                <i class="icon-caret-right icon-2x"></i>
-                                <i class="icon-caret-right icon-2x"></i>
-                                <i class="icon-caret-right icon-2x"></i>
-                                <i class="icon-caret-right icon-2x"></i>
-                                <i class="icon-caret-right icon-2x"></i>
-                                <i class="icon-cloud-upload icon-4x"></i>
-                            </div>
-                            <h3>Choose an image to upload from your computer.</h3>
-                            {% set action_url= url_for('upload_file', profile=profile.name) %}
-                            {{ renderform(uploadform, "upload", multipart=True, action=action_url) }}
-                        </div>                    
+                            <div class="form-title"><i class="icon-upload-cloud"></i>&nbsp;&nbsp;Upload Image</div>
+                        </div>
+                        <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
+                            {{ uploadform.hidden_tag() }}
+                        </form>                 
                     </div>
                     <div id="tab-pane2" class="tab-pane">
                         <div class="form-box">
@@ -180,20 +177,6 @@ $('select#profiles').change(function(){
                                 <div class="well span9">There are no images uploaded yet.<a href="">Upload one.</a></div>
                             {% endif %}
                         </div>                            
-                    </div>
-
-                    <div id="tab-pane3" class="tab-pane">
-                        <div class="form-box">
-                            <div class="form-title"><i class="icon-link"></i>&nbsp;&nbsp;Import from URL</div>
-                            <div class="icon-group-popup">
-                                <i class="icon-link icon-4x"></i>
-                            </div>
-                            <h3>Enter the URL of image</h3>
-                            <form>
-                                <input value="http://" name="enter-url" /><hr />
-                                <button class="btn btn-primary pull-right">Submit</button>
-                            </form> 
-                        </div>                   
                     </div>
                 </div><!-- /.tab-content -->
             </div><!-- /.tabbable -->

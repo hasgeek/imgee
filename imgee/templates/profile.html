@@ -80,16 +80,19 @@
           </div>
         {% endif %}
 
-<!-- POPUP DEMO -->
-<hr>
-<div class="row">
-<a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
-<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-<div class="modal-body">
-<iframe src="{{ url_for('pop_up_gallery', profile=profile.name)}}" width="1010px" height="450px"></iframe>
-</div>
-</div>
-</div>
+        <!-- POPUP DEMO -->
+        <hr>
+        <div class="row">
+          <a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
+          <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-body">
+              <iframe src="{{ url_for('pop_up_gallery', profile=profile.name)}}" width="1010px" height="405px"></iframe>
+            </div>
+            <div class="modal-footer">
+              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+          </div>
+        </div>
         <!-- /POPUP DEMO -->
 
       </div><!-- /span9 -->
