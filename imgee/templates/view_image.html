@@ -70,11 +70,13 @@
       </div><!-- /span7 -->
       <div class="span2">
         <div class="btn-group pull-right">
-          {% if prev != None %}
-            <a href="{{url_for('view_image', profile=profile.name, image=prev.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
+          {% if prev %}
+            {% set p = prev | last %}
+            <a href="{{url_for('view_image', profile=g.user.profile_name, image=p.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
           {% endif %}
-          {% if next != None %}
-            <a href="{{url_for('view_image', profile=profile.name, image=next.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
+          {% if next %}
+            {% set n = next | first %}
+            <a href="{{url_for('view_image', profile=g.user.profile_name, image=n.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
           {% endif %}
         </div>
       </div><!-- /span2 -->
