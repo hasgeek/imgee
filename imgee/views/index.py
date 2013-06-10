@@ -47,7 +47,7 @@ def upload_file(profile):
     upload_form = forms.UploadImageForm()
     print "Received upload"
     if upload_form.validate_on_submit():
-        file_ = request.files['uploaded_file']
+        file_ = request.files['file']
         filename = secure_filename(file_.filename)
         content_type = get_file_type(filename)
         save(file_, profile=profile, content_type=content_type)
@@ -56,6 +56,7 @@ def upload_file(profile):
         return redirect(_redirect_url_frm_upload(profile.name))
     # form invalid or request.method == 'GET'
     print "Rendering form"
+    print upload_form.errors
     return render_template('form.html', form=upload_form, profile=profile)
 
 
@@ -67,8 +68,7 @@ def pop_up_gallery(profile):
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
-    return render_template('pop_up_gallery.html', files=files, profile=profile,
-            uploadform=form, cp_form=cp_form)
+    return render_template('pop_up_gallery.html', files=files, profile=profile, uploadform=form, cp_form=cp_form)
 
 
 @app.route('/<profile>/edit_title', methods=['POST'])
@@ -94,8 +94,7 @@ def profile_view(profile):
     files = profile.stored_files.order_by('created_at desc').all()
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
-    return render_template('profile.html', profile=profile, files=files, upload_form=upload_form, title_form=title_form)
-
+    return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form)
 
 @app.route('/<profile>/view')
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -106,7 +105,6 @@ def view_all(profile):
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form)
 
-
 @app.route('/<profile>/archive')
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
@@ -116,7 +114,7 @@ def unlabelled_images(profile):
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
-def get_prev_images(profile, img, limit=3):
+def get_prev_images(profile, img, limit=2):
     imgs = profile.stored_files.filter(StoredFile.created_at < img.created_at)
     return imgs.order_by('created_at desc').limit(limit).all()[::-1]
 

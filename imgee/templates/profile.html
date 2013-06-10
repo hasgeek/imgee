@@ -8,6 +8,15 @@
 <script> var profile = '{{profile.name}}'; </script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
+<script type="text/javascript">
+  <script type="text/javascript">
+    $(function() {
+    Dropzone.options.uploadimage = {
+      paramName: "file"
+      };
+    });
+  </script>
+</script>
 {% endblock %}
 
 {% block maincontent %}
@@ -15,11 +24,27 @@
     {{ title_form.hidden_tag() }}
     {% if files %}
       <div class="row">
-        <div class="list-grid-selector span9">
+        <div class="list-grid-selector span7">
           <div class="btn-group">
             <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i></a>
             <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i></a>
           </div>
+        </div>
+        <div class="span2">
+                  <!-- POPUP DEMO -->
+        <div class="row">
+          <a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
+          <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-body">
+              <iframe src="{{ url_for('pop_up_gallery', profile=profile.name)}}" width="980px" height="405px"></iframe>
+            </div>
+            <div class="modal-footer">
+              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+          </div>
+        </div>
+        <!-- /POPUP DEMO -->
+
         </div>
       </div>
     {% endif %}
@@ -40,9 +65,11 @@
             <ul id="showcase" class="grid">
               <div id="row-ctrl">
                 <section class="top">
-                  <div class="span1">Image</div>
-                  <div class="span3">Title</div>
-                  <div class="span2">Uploaded at</div>
+                  <div class="span1 top1">Image</div>
+                  <div class="span3 top2">Title</div>
+                  <div class="span2 top3">Uploaded at</div>
+                  <div class="span1 top4">Size</div>
+                  <div class="span2 top5">Aspect ratio</div>
                 </section>
 
                 {% for img in files %}
@@ -58,8 +85,10 @@
                     <section class="right span8">
                       <div class="row">   
                         <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">                                 
-                          <div class="title editable_title span3" id="{{img.name}}">{{img.title}}</div>
-                          <div class="span2 date">{{ img.created_at }}</div>
+                          <div class="title editable_title span3 list2" id="{{img.name}}">{{img.title}}</div>
+                          <div class="span2 date list3">{{ img.created_at }}</div>
+                          <div class="span1 date list4">{{ (img.size/1024) | round(2) }} KB</div>
+                          <div class="span2 date list5">{{ img.width }} x {{ img.height }} px</div>
                         </a>
                       </div>
                     </section> 
@@ -79,22 +108,6 @@
             </div>
           </div>
         {% endif %}
-
-        <!-- POPUP DEMO -->
-        <hr>
-        <div class="row">
-          <a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
-          <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-body">
-              <iframe src="{{ url_for('pop_up_gallery', profile=profile.name)}}" width="1010px" height="405px"></iframe>
-            </div>
-            <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            </div>
-          </div>
-        </div>
-        <!-- /POPUP DEMO -->
-
       </div><!-- /span9 -->
     </div><!-- /row -->
   </section><!-- /profile -->

@@ -20,7 +20,7 @@ def valid_file(form, field):
 
 
 class UploadImageForm(Form):
-    uploaded_file = FileField("File", validators=[Required(), valid_file])
+    file = FileField("File", validators=[Required(), valid_file])
 
 
 class DeleteImageForm(Form):

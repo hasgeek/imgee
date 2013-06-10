@@ -2,11 +2,9 @@
 {% from 'baseframe/forms.html' import renderform %}
 
 {% block maincontent %}
-<div class="span9">
-	<div class="create-box well">
+	<div class="well">
 		<div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Create label</div><hr />		
 		{% set cancel_url=url_for('profile_view', profile=profile.name) %}
 		{{ renderform(form, "Create", cancel_url=cancel_url)}}
 	</div>
-</div>
 {% endblock %}	
