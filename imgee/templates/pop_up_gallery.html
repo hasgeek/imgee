@@ -11,18 +11,18 @@
 <script type="text/javascript" src="{{url_for('static', filename='js/dropzone-amd-module.js')}}"></script>
 
 <script>
-function parseQuery(s){
+  function parseQuery(s){
     var s = s || window.location.search;
     var d = {};
     var a = s.replace('?', '').split('&');
     for (var i=0; i<a.length; i++){
-        var x = a[i].split('=');
-        d[x[0]] = x[1];
+      var x = a[i].split('=');
+      d[x[0]] = x[1];
     }
     return d;
-}
+  }
 
-$('div.image-thumb').click(function (){
+  $('div.image-thumb').click(function (){
     var query_dict = parseQuery();
     var to = query_dict['from'] || '';
     to = decodeURIComponent(to);
@@ -30,18 +30,17 @@ $('div.image-thumb').click(function (){
     $.postMessage(img_id, to, window.opener);
     console.log('sent img_id '+ img_id + ' ' + to);
     window.close();
-});
+  });
 
-$('select#profiles').change(function(){
+  $('select#profiles').change(function(){
     var profile = $(this).children('option:selected').text();
     $(this).parents('form')
-        .attr('action', function(i, a){
-            var action = a.replace("PROFILE", profile);
-            return action; })
-        .children('input#from').val(window.location.search.replace('?from=', ''))
-        .parents('form').submit();
-});
-
+      .attr('action', function(i, a){
+        var action = a.replace("PROFILE", profile);
+        return action; })
+      .children('input#from').val(window.location.search.replace('?from=', ''))
+      .parents('form').submit();
+  });
 </script>
 
 <!--<script type="text/javascript">
@@ -61,128 +60,139 @@ $('select#profiles').change(function(){
         $( "#log" ).text(checkValues + " images are checked!" );
     });
 </script>-->
-<script type="text/javascript">
+  <script type="text/javascript">
     $( "button.select-img" ).hover(function() {
-        var checkValues = $(this).val().split('`');
-        var valSrc=checkValues[0];
-        var valTitle=checkValues[1];
-        var valDate=checkValues[2];
-        $( "#preview-thumb" ).attr('src', valSrc);
-        $('#preview-title').text(valTitle);
-        $('#preview-date').text(valDate);
-
+      var checkValues = $(this).val().split('`');
+      var valSrc=checkValues[0];
+      var valTitle=checkValues[1];
+      var valDate=checkValues[2];
+      $( "#preview-thumb" ).attr('src', valSrc);
+      $('#preview-title').text(valTitle);
+      $('#preview-date').text(valDate);
     });
-</script>
-<script type="text/javascript">
+  </script>
+  <script type="text/javascript">
     $(function(){
-        $(".image").hover(function(){
-            $(this).find(".delete-btn").show();
-            $(this).find(".select-img").show();
-            $(this).find(".zoom-btn").show();
-        },function(){
-            $(this).find(".delete-btn").hide();
-            $(this).find(".select-img").hide();
-            $(this).find(".zoom-btn").hide();
-        });
+      $(".image").hover(function(){
+        $(this).find(".delete-btn").show();
+        $(this).find(".select-img").show();
+        $(this).find(".zoom-btn").show();
+      },function(){
+        $(this).find(".delete-btn").hide();
+        $(this).find(".select-img").hide();
+        $(this).find(".zoom-btn").hide();
+      });
     });    
-</script>
-<script type="text/javascript">
+  </script>
+  <script type="text/javascript">
     $(function() {
     Dropzone.options.uploadimage = {
-      paramName: "uploaded_file"
+      paramName: "file"
       };
     });
-</script>
+  </script>
 {% endblock %}
 
-{% block headerbox -%}
-{%- endblock %}
 
-{% block sidebar %}                    
-    <div class="side-tab">
-        <div class="span3">
-            <div class="row">
-                <div class="tabbable tabs-left">
-                    <ul class="nav nav-tabs span3">
+{% block root -%}
+  <div id="root">
+    {% block headerbox -%}
+    {%- endblock %}
+
+    {% block main -%}
+      <div class="container">
+        {%- block messages %}{{ flash_messages() }}{% endblock %}
+        {%- block baseheadline %}{% endblock %}
+        {%- block basecontent %}
+          {% block content %}
+            <div class="row popup-container">
+              <div class="span3">
+                {% block sidebar %}                    
+                  <div class="side-tab">
+                    <div class="tabbable tabs-left row">
+                      <ul class="nav nav-tabs span3">
                         <li class="active"><a href="#tab-pane1" data-toggle="tab"><i class="icon-cloud-upload"></i><span>&nbsp;&nbsp;Upload</span></a></li>
                         <li><a href="#tab-pane2" data-toggle="tab"><i class="icon-picture"></i><span>&nbsp;&nbsp;Gallery</span></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endblock %}
-
-{% block maincontent %}
-    <div class="popup">
-        <div class="row">
-            <div class="tabbable">
-                <div class="tab-content">
-                    <div id="tab-pane1" class="tab-pane active">
-                        <div class="form-box">
-                            <div class="form-title"><i class="icon-upload-cloud"></i>&nbsp;&nbsp;Upload Image</div>
-                        </div>
-                        <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
-                            {{ uploadform.hidden_tag() }}
-                        </form>                 
+                      </ul>
                     </div>
-                    <div id="tab-pane2" class="tab-pane">
-                        <div class="form-box">
+                  </div>
+                {% endblock %}
+              </div>
+              <div class="pop-up-gallery span9">
+                {% block maincontent %}
+                  <div class="popup">
+                    <div class="tabbable">
+                      <div class="tab-content span8">
+                        <div id="tab-pane1" class="tab-pane active">
+                          <div class="form-box">
+                            <div class="form-title"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload Image</div>
+                          </div>
+                          <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
+                            {{ uploadform.hidden_tag() }}
+                          </form>                 
+                        </div>
+                        <div id="tab-pane2" class="tab-pane">
+                          <div class="form-box">
                             <div class="form-title"><i class="icon-picture"></i>&nbsp;&nbsp;Select from gallery</div>
-                        </div>
-                        <div class="span9">
+                          </div>
+                          <div class="span8">
                             <div class="list-grid-selector">
-                                <div class="btn-group">
-                                    <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i></a>
-                                    <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i></a>
-                                </div>
+                              <div class="btn-group">
+                                <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i></a>
+                                <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i></a>
+                              </div>
                             </div>
-                        </div>
-                        <div class="choose-gallery">
+                          </div>
+                          <div class="choose-gallery">
                             {% if files %}
-                                <div class="popup-gallery span6">
-                                    <ul id="showcase" class="grid">
-                                        {% for img in files %}
-                                            <li class="image">
-                                                <section class="left">
-
-                                                    <div class="image-thumb">
-                                                        <a class="img" title="{{img.tite}}" href=""><img src="{{url_for('get_thumbnail', image=img.name)}}"/></a>
-                                                    </div>
-                                                    <div class="select-options">
-                                                        <button class="select-img btn btn-warning" name="" value="{{url_for('get_thumbnail', image=img.name)}}`{{img.title}}`{{ img.created_at }}">Select</button><br />
-                                                        <a class="zoom-btn" href="{{ url_for('get_image', image=img.name) }}" target="_blank"><i class="icon-zoom-in"></i></a>
-                                                        <a class="delete-btn" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i></a>
-                                                    </div> 
-
-                                                </section>
-                                                <section class="right">
-                                                    <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
-                                                </section>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                                <div class="span2 well" id="preview-box">
-                                    <ul class="nav nav-list">
-                                        <li class="nav-header">Title</li>
-                                        <li id="preview-title" class="img-title"><em>No images selected</em></li><br />
-                                        <img id="preview-thumb" src="" /><br />
-                                        <li class="nav-header">Uploaded on</li>
-                                        <li id="preview-date" class="date"><em>No images selected</em></li>
-                                    </ul>                                
-                                </div>
+                              <div class="popup-gallery span6">
+                                <ul id="showcase" class="grid">
+                                  {% for img in files %}
+                                    <li class="image">
+                                      <section class="left">
+                                        <div class="image-thumb">
+                                          <a class="img" title="{{img.tite}}" href=""><img src="{{url_for('get_thumbnail', image=img.name)}}"/></a>
+                                        </div>
+                                        <div class="select-options">
+                                          <button class="select-img btn btn-warning" name="" value="{{url_for('get_thumbnail', image=img.name)}}`{{img.title}}`{{ img.created_at }}">Select</button><br />
+                                          <a class="zoom-btn" href="{{ url_for('get_image', image=img.name) }}" target="_blank"><i class="icon-zoom-in"></i></a>
+                                          <a class="delete-btn" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i></a>
+                                        </div> 
+                                      </section>
+                                      <section class="right">
+                                        <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
+                                      </section>
+                                    </li>
+                                  {% endfor %}
+                                </ul>
+                              </div>
+                              <div class="span2 well" id="preview-box">
+                                <ul class="nav nav-list">
+                                  <li class="nav-header">Title</li>
+                                  <li id="preview-title" class="img-title"><em>No images selected</em></li><br />
+                                  <img id="preview-thumb" src="" /><br />
+                                  <li class="nav-header">Uploaded on</li>
+                                  <li id="preview-date" class="date"><em>No images selected</em></li>
+                                </ul>                                
+                              </div>
 
                             {% else %}
-                                <div class="well span9">There are no images uploaded yet.<a href="">Upload one.</a></div>
+                              <div class="well span9">There are no images uploaded yet.<a href="">Upload one.</a></div>
                             {% endif %}
-                        </div>                            
-                    </div>
-                </div><!-- /.tab-content -->
-            </div><!-- /.tabbable -->
-        </div><!-- .row-fluid -->      
-    </div>
-{% endblock %} 
+                          </div>                            
+                        </div>
+                      </div><!-- /.tab-content -->
+                    </div><!-- /.tabbable -->
+                  </div>
+                {% endblock %} 
+              </div>
+            </div>
+          {% endblock %}
+        {% endblock %}
+      </div><!-- /container -->
+    {%- endblock %}
+  </div><!-- /root -->
+{%- endblock %}
 
 {% block basefooter -%}
 {%- endblock %}

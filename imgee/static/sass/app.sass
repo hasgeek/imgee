@@ -35,7 +35,6 @@
 
 
 
-
 /* ======== view_image page ========= */
 
 .resize
@@ -70,193 +69,6 @@
 
 
 /* ======== popup_gallery page ========= */
-.popup
-  margin-top: 0
-  .form-box
-    margin-left: auto
-    margin-right: auto
-    text-align: center
-    padding: 0
-    .icon-group-popup
-      display: block
-      padding-top: 50px
-      padding-bottom: 5px
-      color: #ccc
-      .icon-cloud-upload
-        font-size: 100px
-      .icon-desktop
-        font-size: 85px
-      .icon-link
-        font-size: 100px
-    input
-      margin-top: 50px
-      position: relative
-    .form-title
-      border-bottom: 1px solid #e5e5e5
-      padding: 10px
-      margin: 0
-
-  .form-horizontal 
-    .controls
-      float: none
-    .control-label
-      float: none
-      padding-top: 1px
-  label
-    display: none
-.delete-btn, .select-img, .zoom-btn
-  display: none
-  float: left
-
-.select-options
-  position: relative
-  a:hover
-    text-decoration: none
-
-.span9.tabbable
-  float: left
-  position: relative
-  margin-left: 300px
-
-.side-tab .span3
-  position: fixed
-  margin-top: 3px
-
-#preview-box
-  position: fixed
-  margin-left: 600px
-  margin-top: 3px
-
-.tabs-left .nav-tabs
-  border-right: 1px solid #DDDDDD
-  float: left
-  height: 500px
-
-
-
-.tab-pane .list-grid-selector
-  margin-bottom: 10px
-  margin-top: 10px
-.view-all
-  margin-top: 15px
-  border-bottom: #0087cf 1px solid
-  font-size: 13px
-  margin-right: 50px 
-  &:hover
-    text-decoration: none
-    border-color: #005580
-    i
-      background-color: #005580
-
-  i
-    color: #fff
-    background-color: #0088CC
-    padding-left: 6px
-    padding-right: 6px
-    padding-top: 4px
-    padding-bottom: 2px
-    font-size: 18px
-
-.popup-gallery
-  li.image
-    .image-thumb > img
-      box-shadow: 1px 1px 2px #ccc
-
-  ul.grid
-    list-style: none
-    .select-options
-      height: 20px
-      .delete-btn, .zoom-btn
-        float: left
-        margin-top: -20px
-      .delete-btn
-        float: right
-      .select-img
-        margin-top: -80px
-        margin-left: 5px
-
-    section.top
-      display: none
-    
-    li
-      position: relative
-      float: left
-      margin-right: 5px
-      border-bottom: 0px
-      padding-bottom: 0px
-      padding-top: 0px
-      padding: 15px
-      margin-top: 5px
-      border: 1px solid #fff
-      border-radius: 5px
-      button
-        padding-left: 31px
-        padding-right: 32px
-        padding-top: 10px
-        padding-bottom: 10px
-      img
-        border: 5px solid #fff
-
-      &:hover
-        background-color: #f5f5f5
-        border-color: #ccc
-        img
-          border-color: #F0A40C
-          padding-right: 0
-  ul.list
-    list-style: none
-    .select-options
-      height: 10px
-      &:hover
-        margin-bottom: -20px
-      .delete-btn, .zoom-btn
-        float: left
-        margin-top: -20px
-        margin-left: 110px
-        margin-top: -60px
-      .delete-btn
-        float: left
-        margin-top: -40px
-      .select-img
-        margin-top: -37px
-        margin-left: 40px
-        float: left
-    section.top
-      display: block
-      margin-bottom: 25px
-      margin-left: 12px
-
-    li
-      display: block
-      clear: both
-      border-top: 1px solid #e5e5e5
-      margin-left: -30px
-      padding-top: 6px
-      width: 100%
-      float: left
-
-      &:last-child
-        border-bottom: 1px solid #E5E5E5
-      &:hover
-        background-color: #f5f5f5
-        padding-bottom: 0
-      .span1
-        margin-left: -10px
-
-      section.left
-        display: block
-        float: left
-        margin-left: 10px
-        position: relative
-        img
-          width: 35px
-          height: 35px
-      section.right
-        display: block
-        float: left
-        text-align: left
-        position: relative
-        margin-left: 100px
 
 .title
   font-size: 13px
@@ -287,12 +99,6 @@
   &:hover
     background-color: #FFF7E8
 
-.span5 
-  .editable_title
-    form
-      padding-bottom: 50px
-      button
-        margin-top: 3px
 
 .thumbnail
   background-color: #FFF
@@ -318,6 +124,7 @@
       margin-left: auto
       margin-right: auto
       width: 100px
+      box-shadow: 1px 1px 2px #ccc
 
 .label
   position: relative
@@ -475,8 +282,7 @@ input[type="file"]
         right: auto
 .label-adjust
   display: none
-#root #root_footer
-  height: 0px
+
  
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5)
   #logo
@@ -484,9 +290,6 @@ input[type="file"]
     -webkit-background-size: image-width('logo.png') image-height('logo.png')
 
 @media screen and (max-width: 767px)
-
-  .cancel
-    float: right
   .gallery
     ul
       margin-left: 0
@@ -509,41 +312,7 @@ input[type="file"]
     .profile-image
       margin: 10px
       margin-top: -30px
-  .side-tab .span3
-    position: fixed
-    margin-top: -5px
-    height: 10px
-    width: auto
-    display: block
-    clear: both
-    padding-top: 10px
-    padding-bottom: 23px
-    z-index: 9999
-    background-color: #fff
-    border-bottom: 1px solid #0087cf
-
-
-    .tabs-left .nav-tabs > li, .tabs-right .nav-tabs > li
-      float: left
-      a
-        border-radius: 0
-    .nav-tabs > li
-      margin: 0
-  .span9.popup
-    clear: both
-    margin-top: 50px
-    float: left
-    .span9.tabbable
-      margin-left: 0
-      width: 100%
-  .modal
-    width: 420px
-    margin-left: -200px
-
-  .modal-body
-    iframe
-      width: 388px
-      height: 380px
+  
   .gallery
     ul.list
       section.top
@@ -610,17 +379,10 @@ input[type="file"]
 @media screen and (max-width: 542px)
   .profile-image
     display: none
+  .form-actions a.btn
+    margin-left: 0px
 @media screen and (max-width: 510px)
-  .topbar-options
-    margin-bottom: 5px
-    li
-      span
-        display: none
-      i
-        font-size: 20px
-      a
-        margin-right: 0px
-        color: #999999
+
   .side-tab
     .span3
       padding-bottom: 30px
@@ -658,40 +420,25 @@ input[type="file"]
       height: 380px
   
 @media (min-width: 768px) and (max-width: 979px)
-  .span9.tabbable
-    margin-left: 187px
-  #preview-box
-    margin-left: 400px
-  .modal
-    width: 730px
-    margin-left: -375px
-  .modal-body
-    iframe
-      width: 700px
-      height: 380px
+  
   ul.list
     .date
       font-size: 11px
       color: #999
+    section.top
+      .top3 
+        margin-right: 0px
+
   span#delete
     display: none
   .gallery
     .span8
       margin-left: 60px
       margin-top: -40px
+  .top4, .list4
+    display: none
 
 @media (min-width: 980px) and (max-width: 1200px)
-  .span9.tabbable
-    margin-left: 220px
-  #preview-box
-    margin-left: 530px
-  .modal
-    width: 805px
-    margin-left: -400px
-  .modal-body
-    iframe
-      width: 768px
-      height: 410px
   .gallery
     .span8
       margin-left: 60px
@@ -699,12 +446,6 @@ input[type="file"]
   .browse-img
     height: 120px
     overflow: hidden
-      
-
-@media (min-width: 1200px)
-  .modal
-    width: 1050px
-    margin-left: -530px
 
 
 
