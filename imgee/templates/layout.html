@@ -82,12 +82,14 @@
         <!-- topbar-options -->
         <div class="span10">
           {%- block header %}
+          {% if g.user %}
             <ul class="topbar-options">
               <div class="profile-image"></div>
               <li><a title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-picture"></i>&nbsp;&nbsp;<span>Your images</span></a></li>
               <li><a class="" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-tag"></i>&nbsp;&nbsp;<span>Add label</span></a></li>
               <li><a class="" title="Upload image" href="{{url_for('upload_file', profile=(profile or g.user.profile).name )}}"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;<span>Upload</span></a></li> 
             </ul>
+            {% endif %} <!-- if g.user -->
           {% endblock %}
         </div>
         <!-- /topbar-options -->
@@ -102,6 +104,7 @@
     <div class="row">
     
       {% block left %}
+      {% if g.user %}
         <!-- profile's sidebar -->
         <div class="span2">
           <div class="profile-info well">
@@ -131,6 +134,7 @@
           </div>
         </div>
         <!-- /profile's sidebar -->
+        {% endif %} <!-- if g.user -->
       {% endblock %} 
 
       {% block right %}

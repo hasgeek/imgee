@@ -40,7 +40,6 @@ def _redirect_url_frm_upload(profile_name):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file(profile):
-    profileid = g.user.userid
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['uploaded_file']
