@@ -124,9 +124,9 @@
     </div><!-- /row -->
     <hr />
     <div class="row">
-      <div class="span6">
+      <div class="span9">
         {% set img_url= url_for('get_image', image=img.name) %}
-        <div class="well">
+        <div class="">
           <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Resize image</div><hr />
           Link to <a href='{{img_url}}'>original image</a> | At a different size:
           <input id='img_width' placeholder="w" />X<input id='img_height' placeholder="h" />
@@ -134,7 +134,9 @@
           <br/>
         </div>
       </div><!-- /span6 -->
-      <div class="span3">
+    </div>
+    <div class="row">
+      <div class="span9">
         {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
         <div class="form-box well">
           <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div><hr />
