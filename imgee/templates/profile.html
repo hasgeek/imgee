@@ -3,25 +3,15 @@
 
 {% block title %}{{ profile.title }}{% endblock %}
 
-{% block footerscripts %}
-<script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
-<script> var profile = '{{profile.name}}'; </script>
-<script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
-<script type="text/javascript">
-  <script type="text/javascript">
-    $(function() {
-    Dropzone.options.uploadimage = {
-      paramName: "file"
-      };
-    });
-  </script>
-</script>
-{% endblock %}
-
 {% block maincontent %}
   <section class="profile">
     {{ title_form.hidden_tag() }}
+    <div class="row">
+      <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone profile-dropzone span9" id="uploadimage" method="POST" enctype="multipart/form-data">
+        {{ uf_form.hidden_tag() }}
+        <div id="reload-page" style="display: none"><a class="btn push-right">Finish Upload</a></div>
+      </form>
+    </div>
     {% if files %}
       <div class="row">
         <div class="list-grid-selector span7">
@@ -31,7 +21,7 @@
           </div>
         </div>
         <div class="span2">
-                  <!-- POPUP DEMO -->
+        <!-- POPUP DEMO -->
         <div class="row">
           <a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
           <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -44,7 +34,6 @@
           </div>
         </div>
         <!-- /POPUP DEMO -->
-
         </div>
       </div>
     {% endif %}
@@ -113,3 +102,43 @@
   </section><!-- /profile -->
 {% endblock %}
 
+
+{% block footerscripts %}
+<script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
+<script> var profile = '{{profile.name}}'; </script>
+<script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
+<script type="text/javascript">
+  $(function() {
+  Dropzone.options.uploadimage = {
+    paramName: "file"
+    };
+  });
+</script>
+<script type="text/javascript">
+  $(function(){
+    $('.dropzone').css('min-height', '30px');
+    $('.dropzone').droppable({
+      over: function(event, ui) {
+        $(this).css('height', '200px');
+      },
+      out: function(event, ui) {
+        $(this).css('height', '50px');
+      },
+      drop: function(event, ui) {
+        $(this).css('height', '50px');
+      }
+    });
+  });  
+</script>
+<script type="text/javascript">
+  $('.reload-page').click(function(){
+    location.reload();
+  });
+</script>
+<script type="text/javascript">
+  if($('.profile-dropzone').find('.dz-success-mark')){
+    $('#reload-page').show();
+  }  
+</script>
+{% endblock %}
