@@ -142,6 +142,17 @@ ul.grid li section.right {
   display: none;
 }
 
+.block {
+  display: block;
+  background-color: white;
+  border: 1px solid whitesmoke;
+  margin-bottom: 10px;
+}
+.block .block-title {
+  background-color: whitesmoke;
+  padding-left: 10px;
+}
+
 .view-image .heading {
   margin-bottom: 5px;
 }
@@ -154,6 +165,7 @@ ul.grid li section.right {
 
 .img-attr {
   color: #999999;
+  background-color: whitesmoke;
   font-size: 12px;
 }
 .img-attr em {
@@ -164,6 +176,25 @@ ul.grid li section.right {
 }
 .img-attr ul li {
   list-style-type: none;
+}
+
+.image-display {
+  background-color: white;
+  text-align: center;
+  border: 1px solid #c0bcb4;
+  padding-bottom: 0px;
+  display: block;
+}
+.image-display img {
+  height: 400px;
+  width: 70%;
+  float: left;
+  display: block;
+}
+
+.aside {
+  width: 30%;
+  float: left;
 }
 
 .show-label .heading {
@@ -1074,17 +1105,6 @@ ul.grid li section.right {
 .heading.note {
   margin-top: 30px;
   margin-bottom: -20px;
-}
-
-.image-display {
-  background-color: white;
-  text-align: center;
-  border: 1px solid #c0bcb4;
-  padding-bottom: 0px;
-  margin-bottom: 30px;
-}
-.image-display img {
-  max-height: 600px;
 }
 
 /* ======== forms (in view_image, gellery, form, delete, create_label pages)========= */
