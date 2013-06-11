@@ -64,8 +64,8 @@ class UploadTestCase(ImgeeTestCase):
         self.img_id = test_utils.get_img_id(filename)
 
         # check if the file and thumbnail exists
-        self.exists_on_media_domain(self.img_id)
-        self.thumbnails_exists_on_media_domain(self.img_id)
+        self.assertTrue(self.exists_on_media_domain(self.img_id))
+        self.assertTrue(self.thumbnails_exists_on_media_domain(self.img_id))
 
         r = self.client.post('/%s/delete/%s' % (self.test_user_name, self.img_id))
 
