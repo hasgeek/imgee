@@ -196,7 +196,8 @@ def delete_on_s3(stored_file):
     """
     Delete all the thumbnails and images associated with a file
     """
-    keys = [get_s3_folder()+thumbnail.name for thumbnail in stored_file.thumbnails]
-    keys.append(get_s3_folder()+stored_file.name)
+    extn = os.path.splitext(stored_file.title)[1]
+    keys = [(get_s3_folder() + thumbnail.name + extn) for thumbnail in stored_file.thumbnails]
+    keys.append(get_s3_folder() + stored_file.name + extn)
     bucket = get_s3_bucket()
     bucket.delete_keys(keys)
