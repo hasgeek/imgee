@@ -4,7 +4,7 @@
 
 import os
 
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask.ext.rq import RQ
 from flask.ext.lastuser import LastUser
 from baseframe import baseframe, assets, Version
@@ -27,10 +27,15 @@ def mkdir_p(dirname):
         os.makedirs(dirname)
 
 
+def error403(error):
+    return redirect(url_for('login'))
+
+
 # Configure the app
 def init_for(env):
     coaster.app.init_app(app, env)
     baseframe.init_app(app, requires=['baseframe', 'imgee'])
+    app.error_handlers[403] =  error403
     RQ(app)     # pick up RQ configuration from the app
     app.config.get('NETWORKBAR_LINKS', []).append({
         'name': 'imgee',
