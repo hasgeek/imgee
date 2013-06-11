@@ -60,13 +60,6 @@
       <div class="span7">
         {% set img_url= url_for('get_image', image=img.name) %}
         <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
-        <div class="img-attr">
-          <ul>
-            <li>Uploaded at: <em>{{ img.created_at }}</em></li>
-            <li>Size: <em>{{ (img.size/1024) | round(2) }} KB</em></li>
-            <li>Aspect-ratio: <em>{{ img.width }} x {{ img.height }} px</em></li>
-          </ul>
-        </div>
       </div><!-- /span7 -->
       <div class="span2">
         <div class="btn-group pull-right">
@@ -99,6 +92,15 @@
           </div>
           <!-- //picturefill -->
         </div>
+        <div class="aside">
+          <div class="img-attr">
+            <ul>
+              <li>Uploaded at: <br /><em>{{ img.created_at }}</em></li>
+              <li>Size: <br /><em>{{ (img.size/1024) | round(2) }} KB</em></li>
+              <li>Aspect-ratio: <br /><em>{{ img.width }} x {{ img.height }} px</em></li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div><!-- /row -->
 
@@ -126,8 +128,8 @@
     <div class="row">
       <div class="span9">
         {% set img_url= url_for('get_image', image=img.name) %}
-        <div class="">
-          <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Resize image</div><hr />
+        <div class="block">
+          <div class="block-title"><i class="icon-tag"></i>&nbsp;&nbsp;Resize image</div>
           Link to <a href='{{img_url}}'>original image</a> | At a different size:
           <input id='img_width' placeholder="w" />X<input id='img_height' placeholder="h" />
           <a href='{{img_url}}' id='img_link'> here</a>.
@@ -138,8 +140,8 @@
     <div class="row">
       <div class="span9">
         {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
-        <div class="form-box well">
-          <div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div><hr />
+        <div class="block">
+          <div class="block-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div>
           <div>
             <form action='{{action_url}}' method='POST'>
               {{form.csrf_token()}}
