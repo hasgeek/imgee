@@ -157,9 +157,8 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
 
     def tearDown(self):
-        s = StoredFile.query.filter_by(name=self.img_id).first()
-        if s:
-            storage.delete_on_s3(s)
+        # for s in StoredFile.query.all():
+        #     storage.delete_on_s3(s)
         super(UploadTestCase, self).tearDown()
 
 
