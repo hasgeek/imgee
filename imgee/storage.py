@@ -30,11 +30,9 @@ def save_later_on_s3(*args, **kwargs):
     # if redis is running that can be used by RQ, upload async
     try:
         q.enqueue('imgee.storage.save_on_s3', *args, **kwargs)
-        print '-- in save_later_on_s3: PUSHED TO QUEUE', q.connection.connection_pool.get_connection('ls').port
     except (redis.exceptions.ConnectionError , TypeError):
         kwargs.pop('queue', '')
         s3_key = save_on_s3(*args, **kwargs)
-        print '-- in save_later_on_s3: SAVED', s3_key.name, s3_key.bucket
 
 
 def get_s3_bucket():
