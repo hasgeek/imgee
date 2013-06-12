@@ -16,4 +16,4 @@ SQLALCHEMY_DATABASE_URI = 'sqlite://'
 CSRF_ENABLED = False
 
 # redis settings for RQ
-REDIS_URL = "redis://localhost:4444/0"
+RQ_DEFAULT_URL = "set it here" # set some non empty string here so that the default url is not set.
