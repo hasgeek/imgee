@@ -30,9 +30,9 @@ def save_later_on_s3(*args, **kwargs):
     # if redis is running that can be used by RQ, upload async
     try:
         q.enqueue('imgee.storage.save_on_s3', *args, **kwargs)
-    except redis.exceptions.ConnectionError:
+    except (redis.exceptions.ConnectionError , TypeError):
         kwargs.pop('queue', '')
-        save_on_s3(*args, **kwargs)
+        s3_key = save_on_s3(*args, **kwargs)
 
 
 def get_s3_bucket():
@@ -95,6 +95,7 @@ def save_on_s3(file_path, filename='', content_type='', bucket='', folder=''):
             'Content-Type': content_type,
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
+    return k
 
 
 def path_for(img_name):
