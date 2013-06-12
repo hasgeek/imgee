@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from StringIO import StringIO
 import requests
 import os
