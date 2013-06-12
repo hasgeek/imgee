@@ -14,3 +14,6 @@ MEDIA_DOMAIN = 'https://%s.s3.amazonaws.com' % AWS_BUCKET
 
 SQLALCHEMY_DATABASE_URI = 'sqlite://'
 CSRF_ENABLED = False
+
+# redis settings for RQ
+REDIS_URL = "redis://localhost:4444/0"
