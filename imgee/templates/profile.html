@@ -9,20 +9,25 @@
     <div class="row">
       <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone profile-dropzone span9" id="uploadimage" method="POST" enctype="multipart/form-data">
         {{ uf_form.hidden_tag() }}
-        <div id="reload-page" style="display: none"><a class="btn push-right">Finish Upload</a></div>
+        <i class="icon-cloud-upload"></i>
+        <h4>Drop files to upload<br /></h4>
+          (<em>or click here</em>)
+        {% if upload_flag == True %}
+          <div id="reload-page" style="display: none"><a class="btn push-right">Finish Upload</a></div>
+        {% endif %}
       </form>
     </div>
     {% if files %}
       <div class="row">
-        <div class="list-grid-selector span7">
-          <div class="btn-group">
-            <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i></a>
-            <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i></a>
+        <div class="span7">
+          <div class="list-grid-selector btn-group">
+            <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i><span class="hide-mob">&nbsp;Grid</span></a>
+            <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i><span class="hide-mob">&nbsp;List</span></a>
           </div>
         </div>
         <div class="span2">
         <!-- POPUP DEMO -->
-        <div class="row">
+        <!--<div class="row">
           <a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
           <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-body">
@@ -32,7 +37,7 @@
               <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             </div>
           </div>
-        </div>
+        </div>-->
         <!-- /POPUP DEMO -->
         </div>
       </div>
@@ -50,7 +55,7 @@
     <div class="row">
       <div class="spann9">
         {% if files %}
-          <div class="gallery">
+          <div class="gallery" id="expandable3">
             <ul id="showcase" class="grid">
               <div id="row-ctrl">
                 <section class="top">
@@ -86,6 +91,7 @@
               </div><!-- /row-ctrl -->
             </ul><!-- showcase -->
           </div><!-- gallery-->
+          <a href="#" id="more3"><i class="icon-caret-down"></i></a>
         {% else %}
           <div class="well">
             <div class="span8">
@@ -121,12 +127,15 @@
     $('.dropzone').droppable({
       over: function(event, ui) {
         $(this).css('height', '200px');
+        $('#reload-page').show();
       },
       out: function(event, ui) {
-        $(this).css('height', '50px');
+        $(this).css('height', '30px');
+        $('#reload-page').show();
       },
       drop: function(event, ui) {
-        $(this).css('height', '50px');
+        $(this).css('height', '30px');
+        $('#reload-page').show();
       }
     });
   });  
@@ -136,9 +145,31 @@
     location.reload();
   });
 </script>
+
+
 <script type="text/javascript">
-  if($('.profile-dropzone').find('.dz-success-mark')){
-    $('#reload-page').show();
-  }  
+  var gallerylimit = 315;
+
+  $(document).ready(function(){  
+      if($('#expandable3').height() <= 316){
+          $('#more3').hide();
+          $('#expandable3').css('height', '100%');
+      }else{
+          $('#more3').show();
+          $('#expandable3').css('height', gallerylimit);
+      }
+  }); 
+  $("#more3").click(function(){    
+    var txtval = $(this).children("i").attr("class");
+    if (txtval == "icon-caret-down") {
+      $("#expandable3").css('height', '100%');
+      $(this).children("i").attr("class", "icon-caret-up");
+    } else {
+      $("#expandable3").css('height', gallerylimit);
+      $(this).children("i").attr("class", "icon-caret-down");
+    }
+    return false;
+  });
 </script>
+
 {% endblock %}
