@@ -430,6 +430,16 @@
   }
 }
 
+#more3 {
+  text-align: center;
+  display: block;
+  width: 100%;
+  background: linear-gradient(#f9f9f9, #e8e8e8) repeat scroll 0 0/100% auto #e8e8e8;
+  font-size: 25px;
+  height: 30px;
+  color: #999999;
+}
+
 .image img {
   box-shadow: 1px 1px 2px #cccccc;
 }
@@ -460,6 +470,96 @@
   margin-right: auto;
   width: 100px;
   box-shadow: 1px 1px 2px #cccccc;
+}
+
+li.image .image-thumb > img {
+  box-shadow: 1px 1px 2px #cccccc;
+}
+
+.gallery {
+  margin-top: 20px;
+}
+
+/** list-grid switcher 88/ */
+.list-grid-selector .btn {
+  text-shadow: none;
+}
+.list-grid-selector .btn.active, .list-grid-selector .btn:active {
+  box-shadow: none;
+}
+
+/*list view */
+ul.list {
+  list-style: none;
+}
+ul.list section.top {
+  display: block;
+  margin-bottom: 25px;
+  margin-left: -12px;
+}
+ul.list section.top .top3 {
+  margin-right: -30px;
+}
+ul.list li {
+  display: block;
+  clear: both;
+  border-top: 1px solid #e5e5e5;
+  margin-left: 5px;
+  padding-top: 6px;
+  float: left;
+}
+ul.list li:last-child {
+  border-bottom: 1px solid #e5e5e5;
+}
+ul.list li:hover {
+  background-color: whitesmoke;
+}
+ul.list li .span1 {
+  margin-left: 0;
+}
+ul.list li section.left {
+  display: block;
+  float: left;
+  margin-left: 10px;
+  margin-right: -10px;
+  position: relative;
+}
+ul.list li section.left img {
+  width: 35px;
+  height: 35px;
+}
+ul.list li section.right {
+  display: block;
+  float: left;
+  text-align: left;
+  position: relative;
+}
+ul.list .list2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/*grid view */
+ul.grid {
+  list-style: none;
+}
+ul.grid section.top {
+  display: none;
+}
+ul.grid li {
+  position: relative;
+  float: left;
+  margin-right: 5px;
+  border-bottom: 0px;
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+ul.grid li section.left {
+  position: relative;
+}
+ul.grid li section.right {
+  display: none;
 }
 
 @media screen and (max-width: 767px) {
@@ -494,26 +594,26 @@
   .gallery ul.list .span8 {
     display: inline-block;
     margin-left: 0px;
-    margin-top: 0px;
-    width: auto;
+    margin-top: -40px;
+    width: 100%;
   }
   .gallery ul.list .title {
-    margin-top: -40px;
+    margin-top: -10px;
     margin-left: 10px;
   }
-  .gallery ul.list .span2, .gallery ul.list .span3 {
+  .gallery ul.list .span3 {
     clear: both;
   }
 
   .preview-box {
     display: none;
   }
+
+  .list3, .list4, .list5 {
+    display: none;
+  }
 }
 @media (min-width: 768px) and (max-width: 979px) {
-  ul.list section.top .top3 {
-    margin-right: 0px;
-  }
-
   span#delete {
     display: none;
   }
@@ -521,11 +621,18 @@
   .top4, .list4 {
     display: none;
   }
+
+  ul.list li section.left {
+    margin-right: -20px;
+  }
+
+  ul.list section.top .top3 {
+    margin-right: 0px;
+  }
 }
 @media (min-width: 980px) and (max-width: 1200px) {
-  .browse-img {
-    height: 120px;
-    overflow: hidden;
+  ul.list li section.left {
+    margin-right: -20px;
   }
 }
 .title {
@@ -683,11 +790,6 @@ input[type="file"] {
 .sidebar .nav-list a {
   text-shadow: none;
 }
-.sidebar .btn {
-  width: 90%;
-  margin-bottom: 0px;
-  margin-top: 6px;
-}
 
 .icon-tag.alt {
   opacity: 0.1;
@@ -737,14 +839,22 @@ input[type="file"] {
     border-bottom: white 1px solid;
   }
 }
+@media screen and (max-width: 480px) {
+  .sidebar .image-thumb img {
+    width: 37px;
+    height: 37px;
+  }
+}
 @media (min-width: 768px) and (max-width: 979px) {
-  .sidebar .btn {
-    width: 83%;
+  .sidebar .image-thumb img {
+    width: 25.2px;
+    height: 25.2px;
   }
 }
 @media (min-width: 980px) and (max-width: 1200px) {
-  .sidebar .btn {
-    width: 88%;
+  .sidebar .image-thumb img {
+    width: 37px;
+    height: 37px;
   }
 }
 .dropzone {
@@ -763,110 +873,6 @@ input[type="file"] {
 .profile-dropzone i {
   font-size: 40px;
   color: #cccccc;
-}
-
-#expandable3 {
-  height: 315px;
-}
-
-#more3 {
-  text-align: center;
-  display: block;
-  width: 100%;
-  background: linear-gradient(#f9f9f9, #e8e8e8) repeat scroll 0 0/100% auto #e8e8e8;
-  font-size: 25px;
-  height: 30px;
-  color: #999999;
-}
-
-li.image .image-thumb > img {
-  box-shadow: 1px 1px 2px #cccccc;
-}
-
-.gallery {
-  margin-top: 20px;
-}
-
-/** list-grid switcher 88/ */
-.list-grid-selector .btn {
-  text-shadow: none;
-}
-.list-grid-selector .btn.active, .list-grid-selector .btn:active {
-  box-shadow: none;
-}
-
-/*list view */
-ul.list {
-  list-style: none;
-}
-ul.list section.top {
-  display: block;
-  margin-bottom: 25px;
-  margin-left: -12px;
-}
-ul.list section.top .top3 {
-  margin-right: -30px;
-}
-ul.list li {
-  display: block;
-  clear: both;
-  border-top: 1px solid #e5e5e5;
-  margin-left: 5px;
-  padding-top: 6px;
-  float: left;
-}
-ul.list li:last-child {
-  border-bottom: 1px solid #e5e5e5;
-}
-ul.list li:hover {
-  background-color: whitesmoke;
-}
-ul.list li .span1 {
-  margin-left: 0;
-}
-ul.list li section.left {
-  display: block;
-  float: left;
-  margin-left: 10px;
-  margin-right: -10px;
-  position: relative;
-}
-ul.list li section.left img {
-  width: 35px;
-  height: 35px;
-}
-ul.list li section.right {
-  display: block;
-  float: left;
-  text-align: left;
-  position: relative;
-}
-ul.list .list2 {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/*grid view */
-ul.grid {
-  list-style: none;
-}
-ul.grid section.top {
-  display: none;
-}
-ul.grid li {
-  position: relative;
-  float: left;
-  margin-right: 5px;
-  border-bottom: 0px;
-  padding-bottom: 0px;
-  padding-top: 0px;
-}
-ul.grid li section.left {
-  position: relative;
-}
-ul.grid li section.right {
-  display: none;
 }
 
 .img-attr {
@@ -984,7 +990,7 @@ ul.grid li section.right {
   display: block;
   background-color: whitesmoke;
   border: 1px solid #d5d5d5;
-  border-top: 4px solid #0087cf;
+  border-top: 4px solid #d5d5d5;
   padding-left: 10px;
   padding-right: 10px;
   margin-bottom: 10px;
@@ -1023,7 +1029,7 @@ ul.grid li section.right {
   }
   .aside .labels {
     margin-top: 7px;
-    padding-bottom: 7px;
+    padding-bottom: 15px;
     clear: both;
   }
   .aside .labels li {

@@ -149,16 +149,16 @@
 
 <script type="text/javascript">
   var gallerylimit = 315;
-
-  $(document).ready(function(){  
-      if($('#expandable3').height() <= 316){
-          $('#more3').hide();
-          $('#expandable3').css('height', '100%');
-      }else{
-          $('#more3').show();
-          $('#expandable3').css('height', gallerylimit);
-      }
-  }); 
+  var expheight = $('#expandable3').height();      
+  
+  if(expheight <= gallerylimit){
+      $('#more3').hide();
+      $('#expandable3').css('height', '100%');
+  }else{
+      $('#more3').show();
+      $('#expandable3').css('height', gallerylimit);
+  }
+  
   $("#more3").click(function(){    
     var txtval = $(this).children("i").attr("class");
     if (txtval == "icon-caret-down") {
