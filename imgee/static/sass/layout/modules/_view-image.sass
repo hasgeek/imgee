@@ -1,0 +1,150 @@
+
+	
+.img-attr
+	color: #999999
+	background-color: #F5F5F5
+	font-size: 12px
+	display: block
+	height: 368px
+	em
+		color: #666666
+	&>ul
+		margin-left: 6px
+		li
+			list-style-type: none
+.labels
+	margin-left: -0px
+.image-display-title
+	border-bottom: 1px solid #D5D5D5
+	display: block
+	clear: both
+	position: relative
+	background-color: #EAEAEA
+	padding-bottom: 1px
+	font-style: bold
+	.btn-group
+		position: relative
+		top: 0
+		right: 0
+		float: right
+		display: inline-block
+		margin-right: 2px
+		margin-top: 2px
+	.editable_title	
+		background-color: #EAEAEA
+		width: 80%
+		position: relative
+		left: 0
+		top: 0
+		display: inline-block
+		form
+			padding-bottom: 40px
+			button
+				margin-top: 3px
+	.heading
+		margin-bottom: 0px
+.image-display
+	background-color: #F5F5F5
+	text-align: left
+	border: 1px solid #D5D5D5
+	padding-bottom: 0px
+	display: block
+	margin-bottom: 20px
+.image-display-area    
+	position: relative
+	height: 405px
+	width: 74.5%
+	float: left
+	display: block
+	background-color: #FFFFFF
+	border-right: 1px solid #D5D5D5
+	display: -webkit-box
+	-webkit-box-pack: center
+	-webkit-box-align: center
+	display: -moz-box
+	-moz-box-pack: center
+	-moz-box-align: center
+	display: box
+	box-pack: center
+	box-align: center
+	img
+		max-height: 405px
+		display: inline-block
+	#img
+		text-align: center
+
+.aside
+	width: 25%
+	float: left
+	display: block
+.image-navbox
+	margin-top: 25px
+
+.delete-button
+	float: left
+	display: block
+	position: relative
+	left: 6px
+	bottom: 0
+	top: 0
+
+.block
+	display: block
+	background-color: #F5F5F5
+	border: 1px solid #D5D5D5
+	border-top: 4px solid #0087cf
+	padding-left: 10px
+	padding-right: 10px
+	margin-bottom: 10px
+	border-radius: 4px
+	min-height: 120px
+	.block-title
+		//padding-left: 0px
+		padding-top: 6px
+		padding-bottom: 10px
+		font-size: 14px
+
+@media screen and (max-width: 767px)
+	.image-display
+		border: 1px solid #D5D5D5
+	.image-display-area    
+		height: auto
+		width: 100%
+		float: left
+	.img-attr
+		height: auto
+	.delete-button
+		padding-top: 12px
+		padding-bottom: 10px
+	.aside
+		width: 100%
+		float: none
+		.labels
+			margin-top: 7px
+			padding-bottom: 7px
+			clear: both
+			li
+				float: left
+
+	.image-display-title
+		.editable_title	
+			width: 70%
+@media screen and (min-width: 768px) and (max-width: 979px)
+	.image-display-area    
+		height: 260px
+		img
+			max-height: 260px
+	.img-attr
+		height: 223px
+
+@media screen and (min-width: 980px) and (max-width: 1200px)
+	.image-display-area    
+		height: 340px
+		img
+			max-height: 340px
+	.img-attr
+		height: 303px
+
+@media screen and (min-width: 1200px)
+	.image-display
+		margin-bottom: 30px
