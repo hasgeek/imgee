@@ -1,0 +1,21 @@
+@import "compass"
+@import "color"
+@import "typography"
+
+a:hover
+	text-decoration: none
+
+.logo
+	margin-top: 25px
+#logo
+	@include replace-text-with-dimensions('logo.png')
+
+.well
+	hr
+		margin: 8px 0 8px 0
+
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5)
+	#logo
+		background-image: image-url('logo@2x.png')
+		-webkit-background-size: image-width('logo.png') image-height('logo.png')
