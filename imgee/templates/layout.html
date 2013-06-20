@@ -9,13 +9,12 @@
 {% block basecontent %}
   {% block content %}
     <div class="row">
-      <div class="span9 push-right">
-        {% block maincontent %}
-        {% endblock %}
+      <div class="hide-sidebar">
+          <a href="#" class="hide-sidebar-btn"><i class="icon-plus-sign"></i></a>
       </div>
-      <div class="span3 push-left">
+      <div class="span3 sidebar">
         {% block sidebar %}
-          <div class="sidebar well">
+          <div class="well">
             <h4 class="selected-profile"><a href="{{ url_for('profile_view',profile=profile.name) }}">{{ profile.title }}</a></h4>
             <em>
               {% if profile.stored_files.count() == 1 %}
@@ -24,32 +23,7 @@
                 {{ profile.stored_files.count() | safe }} images
               {% endif %}
             </em>
-            <div id="hideThisFromNonJs1" style="display:none">
-
-              <!-- Upload image -->
-              <a class="hide-mob btn" href="#uploadModal" role="button" title="Upload image" data-toggle="modal"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload image</a>
-              <div id="uploadModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                  <h3>Upload image</h3>
-                </div>
-                <div class="modal-body">
-
-                  <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
-                    {{ uf_form.hidden_tag() }}
-                  </form>    
-                </div>
-              </div>
-              <!-- //Upload image -->
-
-            </div>
-            <noscript>
-              <a class="btn" title="Upload image" href="{{url_for('upload_file', profile=(profile or g.user.profile).name )}}"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload image</a>
-            </noscript>
-            <a class="btn hide-desktop" title="Upload image" href="{{url_for('upload_file', profile=(profile or g.user.profile).name )}}"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload image</a>
-            <hr />
-
-            <ul class="nav nav-list expandable1">
+            <ul class="nav nav-list" id="expandable1">
               <li class="nav-header">Labels</li> 
               <!-- List labels -->
               {% if profile.labels %}
@@ -61,7 +35,7 @@
               {% endif %}
               <!-- //List labels -->
             </ul><!-- /nav nav-list -->
-            <a href="" class="more1">More</a>
+            <a href="#" id="more1"><i class="icon-ellipsis-horizontal"></i></a>
             <ul class="nav nav-list">
               <!-- Unlabelled archive -->
               <li><a href="{{url_for('unlabelled_images', profile=profile.name)}}"><i class="icon-tag alt"></i>
@@ -73,7 +47,7 @@
               </a></li>
               <!-- //Unlabelled archive-->
             </ul>   
-            <div id="hideThisFromNonJs2" style="display:none">
+            <div id="hideThisFromNonJs" style="display:none">
               <!-- Create new label -->
               <a class="hide-mob" href="#labelModal" role="button" title="Upload image" class="" data-toggle="modal"><i class="icon-plus"></i>&nbsp;New label</a>
               {% if profile %}
@@ -98,71 +72,100 @@
             </noscript>
             <a class="hide-desktop" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-plus"></i>&nbsp;New label</a>
             <hr>
-            <ul class="nav nav-list expandable2">
+            <ul class="nav nav-list" id="expandable2">
               <li class="nav-header">Profile And Organizations</li> 
               <li><a title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
               {%- for org in g.user.organizations_owned() %}
                 <li><a href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
               {%- endfor %}
             </ul>
-            <a href="" class="more2">More</a>
+            <a href="#" id="more2"><i class="icon-ellipsis-horizontal"></i></a>
           </div><!-- /sidebar well-->
           {% block extendedsidebar %}
           {% endblock %}
         {% endblock %} 
-      </div><!-- /span3 -->   
+      </div><!-- /span3 --> 
+      <div class="span9 maincontent">
+        
+        {% block maincontent %}
+        {% endblock %}
+      </div>  
     </div><!-- /row -->
   {% endblock %}
 {% endblock %}
 
 {% block layoutscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/dropzone.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='js/dropzone-amd-module.js')}}"></script>
+<!--<script type="text/javascript" src="{{url_for('static', filename='js/dropzone-amd-module.js')}}"></script>-->
+
 <script type="text/javascript">
-  var hlimit = 80;
+  var hlimit = 152;
   $(document).ready(function(){
-      if($('.expandable1').height() <= hlimit){
-          $('.more1').hide();
-          $('.expandable1').css('height', '100%');
+      if($('#expandable1').height() <= hlimit){
+          $('#more1').hide();
+          $('#expandable1').css('height', '100%');
       }else{
-          $('.more1').show();
-          $('.expandable1').css('height', hlimit);
+          $('#more1').show();
+          $('#expandable1').css('height', hlimit);
       }
-      if($('.expandable2').height() <= hlimit){
-          $('.more2').hide();
-          $('.expandable2').css('height', '100%');
+      if($('#expandable2').height() <= hlimit){
+          $('#more2').hide();
+          $('#expandable2').css('height', '100%');
       }else{
-          $('.more2').show();
-          $('.expandable2').css('height', hlimit);
+          $('#more2').show();
+          $('#expandable2').css('height', hlimit);
       }
   }); 
-  $(".more1").click(function(){    
-    var val = $(this).text();
-    if (val == "More") {
-      $(".expandable1").css('height', '100%');
-      $(this).text("Less");
+
+   $("#more1").click(function(){    
+    var txtval = $(this).children("i").attr("class");
+    if (txtval == "icon-ellipsis-horizontal") {
+      $("#expandable1").css('height', '100%');
+      $(this).children("i").attr("class", "icon-caret-up");
     } else {
-      $(".expandable1").css('height', hlimit);
-      $(this).text("More");
+      $("#expandable1").css('height', hlimit);
+      $(this).children("i").attr("class", "icon-ellipsis-horizontal");
     }
     return false;
   });
-   $(".more2").click(function(){
-    var val = $(this).text();
-    if (val == "More") {
-      $(".expandable2").css('height', '100%');
-      $(this).text("Less");
+   $("#more2").click(function(){    
+    var txtval = $(this).children("i").attr("class");
+    if (txtval == "icon-ellipsis-horizontal") {
+      $("#expandable2").css('height', '100%');
+      $(this).children("i").attr("class", "icon-caret-up");
     } else {
-      $(".expandable2").css('height', hlimit);
-      $(this).text("More");
+      $("#expandable2").css('height', hlimit);
+      $(this).children("i").attr("class", "icon-ellipsis-horizontal");
     }
     return false;
   });
+
 </script>
 <script type="text/javascript">
-document.getElementById('hideThisFromNonJs1').style.display='block';
-document.getElementById('hideThisFromNonJs2').style.display='block';
+  $(".hide-sidebar-btn").click(function(){    
+    var txtval = $(this).children("i").attr("class");
+    if (txtval == "icon-plus-sign") {
+      $(this).children("i").attr("class", "icon-remove-sign");
+    } else {
+      $(this).children("i").attr("class", "icon-plus-sign");
+    }
+    return false;
+  });
 </script>
+
+
+  <script>
+    $(document).ready(function(){
+      var click = 0;
+      $(".hide-sidebar-btn").click(function(){
+        $(".sidebar").toggleClass("shift0");
+        $(".maincontent").toggleClass("shift90");     
+      })
+    })
+  </script>
+  <script type="text/javascript">
+  document.getElementById('hideThisFromNonJs').style.display='block';
+  </script>
 {% block footerscripts %}{% endblock %}
 {% endblock %}
 

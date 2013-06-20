@@ -1,0 +1,85 @@
+
+.image
+	img
+		box-shadow: 1px 1px 2px #ccc
+.thumbnail
+	background-color: #FFF
+	width: 88%
+	border-radius: 0
+	height: auto
+	margin-right: auto
+	margin-left: auto
+	img
+		width: 130px
+		height: 130px
+
+
+.label-category
+	.image
+		width: 180px
+		margin-right: 5px
+		height: 160px
+		float: left
+		text-overflow: ellipsis
+		overflow: hidden
+		img
+			margin-left: auto
+			margin-right: auto
+			width: 100px
+			box-shadow: 1px 1px 2px #ccc
+
+
+@media screen and (max-width: 767px)
+	.list-grid-selector
+		display: block
+		position: absolute
+		top: -42px
+		right: 0
+	.gallery
+		ul
+			margin-left: 0      
+		ul.list
+			section.top
+				display: none
+			li
+				margin-left: 0
+				width: 100%
+			.left
+				clear: both
+				float: right
+			.image-thumb
+				margin-left: 5px
+			.right
+				clear: both
+				float: left
+			.span8
+				display: inline-block
+				margin-left: 0px
+				margin-top: 0px
+				width: auto
+			.title
+				margin-top: -40px
+				margin-left: 10px
+			.span2, .span3
+				clear: both
+	.preview-box
+		display: none
+
+
+@media (min-width: 768px) and (max-width: 979px)
+	ul.list
+		section.top
+			.top3 
+				margin-right: 0px
+
+	span#delete
+		display: none
+
+	.top4, .list4
+		display: none
+
+
+@media (min-width: 980px) and (max-width: 1200px)
+	.browse-img
+		height: 120px
+		overflow: hidden
