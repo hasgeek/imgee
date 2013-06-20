@@ -91,7 +91,7 @@
               </div><!-- /row-ctrl -->
             </ul><!-- showcase -->
           </div><!-- gallery-->
-          <a href="#" id="more3"><i class="icon-caret-down"></i></a>
+          <a href="#" id="more3" style="display: none"><i class="icon-caret-down"></i></a>
         {% else %}
           <div class="well">
             <div class="span8">
@@ -149,7 +149,8 @@
 
 <script type="text/javascript">
   var gallerylimit = 315;
-  var expheight = $('#expandable3').height();      
+  var expheight = $('#expandable3').height(); 
+  $('#more3').css('display', 'block');     
   
   if(expheight <= gallerylimit){
       $('#more3').hide();
