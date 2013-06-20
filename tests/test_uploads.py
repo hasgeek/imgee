@@ -18,12 +18,12 @@ class UploadTestCase(ImgeeTestCase):
         return test_utils.upload(self.client, path or self.test_file, '/%s/new' % self.test_user_name)
 
     def exists_on_media_domain(self, img_id):
-        r = self.client.get('/file/%s' % img_id)
+        r = self.client.get('/%s/file/%s' % (self.test_user_name, img_id))
         self.assertEquals(r.status_code, 301)
         return requests.get(r.location).ok
 
     def thumbnails_exists_on_media_domain(self, img_id):
-        r = self.client.get('/thumbnail/%s' % (img_id))
+        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, img_id))
         self.assertEquals(r.status_code, 301)
         return requests.get(r.location).ok
 
@@ -70,11 +70,11 @@ class UploadTestCase(ImgeeTestCase):
         r = self.client.post('/%s/delete/%s' % (self.test_user_name, self.img_id))
 
         # check if the file exists now
-        r = self.client.get('/file/%s' % self.img_id)
+        r = self.client.get('/%s/file/%s' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 404)
 
         # check if the thumbnail exists
-        r = self.client.get('/thumbnail/%s' % (self.img_id))
+        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 404)
 
     def test_file_count(self):
@@ -91,7 +91,7 @@ class UploadTestCase(ImgeeTestCase):
         img_name, r = self.upload()
         # get the thumbnail link
         self.img_id = test_utils.get_img_id(img_name)
-        r = self.client.get('/thumbnail/%s' % (self.img_id))
+        r = self.client.get('/%s/thumbnail/%s' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 301)
         imgio = test_utils.download_image(r.location)
         img = Image.open(imgio)
@@ -102,7 +102,7 @@ class UploadTestCase(ImgeeTestCase):
         img_w, img_h = self.get_image_size()
 
         self.img_id = test_utils.get_img_id(img_name)
-        r = self.client.get('/file/%s?size=100x0' % self.img_id)
+        r = self.client.get('/%s/file/%s?size=100x0' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 301)
         resized_img = test_utils.download_image(r.location)
         resized_w, resized_h = self.get_image_size(resized_img)
@@ -115,7 +115,7 @@ class UploadTestCase(ImgeeTestCase):
         img_w, img_h = self.get_image_size()
 
         self.img_id = test_utils.get_img_id(img_name)
-        r = self.client.get('/file/%s?size=100x150' % self.img_id)
+        r = self.client.get('/%s/file/%s?size=100x150' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 301)
         resized_img = test_utils.download_image(r.location)
         resized_w, resized_h = self.get_image_size(resized_img)
@@ -136,8 +136,8 @@ class UploadTestCase(ImgeeTestCase):
         # non resizable images
         file_name, r = self.upload('imgee/static/img/imgee.svg')
         file_id = test_utils.get_img_id(file_name)
-        r1 = self.client.get('/file/%s' % file_id)
-        r2 = self.client.get('/file/%s?size=100x200' % file_id)
+        r1 = self.client.get('/%s/file/%s' % (self.test_user_name, file_id))
+        r2 = self.client.get('/%s/file/%s?size=100x200' % (self.test_user_name, file_id))
         self.assertEquals(r1.status_code, 301)
         self.assertEquals(r2.status_code, 301)
         self.assertEquals(r1.location, r2.location)
@@ -148,7 +148,7 @@ class UploadTestCase(ImgeeTestCase):
         img_w, img_h = self.get_image_size()
 
         self.img_id = test_utils.get_img_id(img_name)
-        r = self.client.get('/file/%s?size=100' % self.img_id)
+        r = self.client.get('/%s/file/%s?size=100' % (self.test_user_name, self.img_id))
         self.assertEquals(r.status_code, 301)
         resized_img = test_utils.download_image(r.location)
         resized_w, resized_h = self.get_image_size(resized_img)

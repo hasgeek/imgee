@@ -11,7 +11,7 @@
     $('input#img_width').width(100);
     $('input#img_height').width(100);
     $('input#img_link').width(420);
-    var file_url = "{{url_for('get_image', image=img.name)}}";
+    var file_url = "{{url_for('get_image', profile=g.user.profile_name, image=img.name)}}";
     $('input[id^="img_"]').change(function (){
         var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
         $('a#img_link').attr('href', url_with_size);
@@ -64,26 +64,26 @@
                 {% for p in prev %}
                     <div class="image-thumb">
                         <a href="{{url_for('view_image', profile=g.user.profile_name, image=p.name)}}" title="view image">
-                            <img src="{{url_for('get_thumbnail', image=p.name)}}"/>
+                            <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, image=p.name)}}"/>
                         </a>
                     </div>
                 {% endfor %}
                     <div class="image-thumb"> 
                         <a href="{{url_for('view_image', profile=g.user.profile_name, image=img.name)}}" title="view image">   
-                            <img class="active" src="{{url_for('get_thumbnail', image=img.name)}}"/>
+                            <img class="active" src="{{url_for('get_thumbnail', profile=g.user.profile_name, image=img.name)}}"/>
                         </a>
                     </div>
                     {% for n in next %}
                         <div class="image-thumb">
                             <a href="{{url_for('view_image', profile=g.user.profile_name, image=n.name)}}" title="view image">
-                                <img src="{{url_for('get_thumbnail', image=n.name)}}"/>
+                                <img src="{{url_for('get_thumbnail', profile=g.user.profile_name, image=n.name)}}"/>
                             </a>
                         </div>
                     {% endfor %}
             </div>
         </div>
 
-        {% set img_url= url_for('get_image', image=img.name) %}
+        {% set img_url= url_for('get_image', profile=g.user.profile_name, image=img.name) %}
         <div class="form-box well resize">
             <div class="form-title"><i class="icon-cut"></i>&nbsp;&nbsp;Resize image</div><hr />
             <strong>Enter the dimensions:</strong><br /><br />
@@ -114,7 +114,7 @@
     <div class="view-image span9">
         <div class="row">
             <div class="span7">
-                {% set img_url= url_for('get_image', image=img.name) %}
+                {% set img_url= url_for('get_image', profile=g.user.profile_name, image=img.name) %}
                 <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
             </div>
             <div class="span2">
@@ -134,7 +134,7 @@
         <div class="row">
             <div class="span9">                
                 <div class="image-display">
-                    <img src="{{url_for('get_image', image=img.name)}}" />
+                    <img src="{{url_for('get_image', profile=g.user.profile_name, image=img.name)}}" />
                 </div>
             </div>
         </div>
