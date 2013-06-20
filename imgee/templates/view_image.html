@@ -9,19 +9,19 @@
       {% for p in prev %}
         <div class="image-thumb">
           <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" title="view image">
-            <img src="{{url_for('get_thumbnail', image=p.name)}}"/>
+            <img src="{{url_for('get_thumbnail', profile=profile.name, image=p.name)}}"/>
           </a>
         </div>
       {% endfor %}
         <div class="image-thumb">
           <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
-            <img class="active" src="{{url_for('get_thumbnail', image=img.name)}}"/>
+            <img class="active" src="{{url_for('get_thumbnail', profile=profile.name, image=img.name)}}"/>
           </a>
         </div>
       {% for n in next %}
         <div class="image-thumb">
           <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" title="view image">
-            <img src="{{url_for('get_thumbnail', image=n.name)}}"/>
+            <img src="{{url_for('get_thumbnail', profile=profile.name, image=n.name)}}"/>
           </a>
         </div>
       {% endfor %}
@@ -33,7 +33,7 @@
   <section class="view-image">
     <div class="row">
       <div class="span9 image-display">
-        {% set img_url= url_for('get_image', image=img.name) %}
+        {% set img_url= url_for('get_image', profile=profile.name, image=img.name) %}
         <div class="image-display-title">
           <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
           <div class="btn-group">
@@ -50,14 +50,14 @@
         <div class="image-display-area">
           <!-- picturefill -->
           <div id="img" data-picture data-alt="{{ img.title }}">
-            <div data-src="{{url_for('get_image', image=img.name)}}"></div>
-            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 250 %}img.width{% else %}250{% endif %}" data-media="(min-width: 480px)"></div>
-            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 400 %}img.width{% else %}400{% endif %}" data-media="(min-width: 768px)"></div>
-            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 521 %}img.width{% else %}521{% endif %}" data-media="(min-width: 980px)"></div>
-            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 650 %}img.width{% else %}650{% endif %}" data-media="(min-width: 1200px)"></div>
+            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}"></div>
+            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}?size={% if img.width < 250 %}img.width{% else %}250{% endif %}" data-media="(min-width: 480px)"></div>
+            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}?size={% if img.width < 400 %}img.width{% else %}400{% endif %}" data-media="(min-width: 768px)"></div>
+            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}?size={% if img.width < 521 %}img.width{% else %}521{% endif %}" data-media="(min-width: 980px)"></div>
+            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}?size={% if img.width < 650 %}img.width{% else %}650{% endif %}" data-media="(min-width: 1200px)"></div>
             <!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
             <noscript>
-              <img class="image" src="{{url_for('get_image', image=img.name)}}" alt="{{ img.title }}">
+              <img class="image" src="{{url_for('get_image', profile=profile.name, image=img.name)}}" alt="{{ img.title }}">
             </noscript>
           </div>
           <!-- //picturefill -->
@@ -91,7 +91,7 @@
 
     <div class="row">
       <div class="span6">
-        {% set img_url= url_for('get_image', image=img.name) %}
+        {% set img_url= url_for('get_image', profile=profile.name, image=img.name) %}
         <div class="block block-1">
           <div class="block-title"><i class="icon-tag"></i>&nbsp;&nbsp;Resize image</div>
           Link to <a href='{{img_url}}'>original image</a> | At a different size:
@@ -126,18 +126,18 @@
   $('input#img_width').width(100);
   $('input#img_height').width(100);
   $('input#img_link').width(420);
-  var file_url = "{{url_for('get_image', image=img.name)}}";
+  var file_url = "{{url_for('get_image', profile=profile.name, image=img.name)}}";
   $('input[id^="img_"]').change(function (){
       var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
       $('a#img_link').attr('href', url_with_size);
   });
 
-   var existing_labels = [];
-   {% for label in profile.labels %}
-      existing_labels.push('{{label.name}}');
-   {% endfor %}
-   $('#labels').select2({
-        tags: existing_labels
-   });
+  var existing_labels = [];
+  {% for label in profile.labels %}
+    existing_labels.push('{{label.name}}');
+  {% endfor %}
+  $('#labels').select2({
+      tags: existing_labels
+  });
 </script>
 {% endblock %}
