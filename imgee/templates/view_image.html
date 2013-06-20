@@ -52,9 +52,9 @@
           <div id="img" data-picture data-alt="{{ img.title }}">
             <div data-src="{{url_for('get_image', image=img.name)}}"></div>
             <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 250 %}img.width{% else %}250{% endif %}" data-media="(min-width: 480px)"></div>
-            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 538 %}img.width{% else %}538{% endif %}" data-media="(min-width: 768px)"></div>
-            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 700 %}img.width{% else %}700{% endif %}" data-media="(min-width: 980px)"></div>
-            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 870 %}img.width{% else %}870{% endif %}" data-media="(min-width: 1200px)"></div>
+            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 400 %}img.width{% else %}400{% endif %}" data-media="(min-width: 768px)"></div>
+            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 521 %}img.width{% else %}521{% endif %}" data-media="(min-width: 980px)"></div>
+            <div data-src="{{url_for('get_image', image=img.name)}}?size={% if img.width < 650 %}img.width{% else %}650{% endif %}" data-media="(min-width: 1200px)"></div>
             <!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
             <noscript>
               <img class="image" src="{{url_for('get_image', image=img.name)}}" alt="{{ img.title }}">
