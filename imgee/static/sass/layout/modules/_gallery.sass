@@ -1,85 +1,177 @@
 
+#more3
+  text-align: center
+  display: block
+  width: 100%
+  background: linear-gradient(#F9F9F9, #E8E8E8) repeat scroll 0 0 / 100% auto #E8E8E8
+  font-size: 25px
+  height: 30px
+  color: #999
+
 .image
-	img
-		box-shadow: 1px 1px 2px #ccc
+  img
+    box-shadow: 1px 1px 2px #ccc
 .thumbnail
-	background-color: #FFF
-	width: 88%
-	border-radius: 0
-	height: auto
-	margin-right: auto
-	margin-left: auto
-	img
-		width: 130px
-		height: 130px
+  background-color: #FFF
+  width: 88%
+  border-radius: 0
+  height: auto
+  margin-right: auto
+  margin-left: auto
+  img
+    width: 130px
+    height: 130px
 
 
 .label-category
-	.image
-		width: 180px
-		margin-right: 5px
-		height: 160px
-		float: left
-		text-overflow: ellipsis
-		overflow: hidden
-		img
-			margin-left: auto
-			margin-right: auto
-			width: 100px
-			box-shadow: 1px 1px 2px #ccc
+  .image
+    width: 180px
+    margin-right: 5px
+    height: 160px
+    float: left
+    text-overflow: ellipsis
+    overflow: hidden
+    img
+      margin-left: auto
+      margin-right: auto
+      width: 100px
+      box-shadow: 1px 1px 2px #ccc
 
+
+li.image
+  .image-thumb > img
+    box-shadow: 1px 1px 2px #ccc
+
+.gallery
+  margin-top: 20px
+/*** list-grid switcher 88/
+.list-grid-selector
+  .btn
+    text-shadow: none
+  .btn.active, .btn:active
+    box-shadow: none
+
+/** list view **/
+ul.list
+  list-style: none
+  section.top
+    display: block
+    margin-bottom: 25px
+    margin-left: -12px
+    .top3
+      margin-right: -30px
+
+  li
+    display: block
+    clear: both
+    border-top: 1px solid #e5e5e5
+    margin-left: 5px
+    padding-top: 6px
+    float: left
+    &:last-child
+      border-bottom: 1px solid #E5E5E5
+    &:hover
+      background-color: #f5f5f5
+    .span1
+      margin-left: 0
+
+    section.left
+      display: block
+      float: left
+      margin-left: 10px
+      margin-right: -10px
+      position: relative
+      img
+        width: 35px
+        height: 35px
+    section.right
+      display: block
+      float: left
+      text-align: left
+      position: relative
+  .list2
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+      
+
+/** grid view **/
+ul.grid
+  list-style: none
+  section.top
+    display: none
+  
+  li
+    position: relative
+    float: left
+    margin-right: 5px
+    border-bottom: 0px
+    padding-bottom: 0px
+    padding-top: 0px
+
+    section.left
+      position: relative
+    section.right
+      display: none
 
 @media screen and (max-width: 767px)
-	.list-grid-selector
-		display: block
-		position: absolute
-		top: -42px
-		right: 0
-	.gallery
-		ul
-			margin-left: 0      
-		ul.list
-			section.top
-				display: none
-			li
-				margin-left: 0
-				width: 100%
-			.left
-				clear: both
-				float: right
-			.image-thumb
-				margin-left: 5px
-			.right
-				clear: both
-				float: left
-			.span8
-				display: inline-block
-				margin-left: 0px
-				margin-top: 0px
-				width: auto
-			.title
-				margin-top: -40px
-				margin-left: 10px
-			.span2, .span3
-				clear: both
-	.preview-box
-		display: none
+  .list-grid-selector
+    display: block
+    position: absolute
+    top: -42px
+    right: 0
+  .gallery
+    ul
+      margin-left: 0      
+    ul.list
+      section.top
+        display: none
+      li
+        margin-left: 0
+        width: 100%
+      .left
+        clear: both
+        float: right
+      .image-thumb
+        margin-left: 5px
+      .right
+        clear: both
+        float: left
+      .span8
+        display: inline-block
+        margin-left: 0px
+        margin-top: -40px
+        width: 100%
+      .title
+        margin-top: -10px
+        margin-left: 10px
+      .span3
+        clear: both
+  .preview-box
+    display: none
+  .list3, .list4, .list5
+    display: none
 
 
 @media (min-width: 768px) and (max-width: 979px)
-	ul.list
-		section.top
-			.top3 
-				margin-right: 0px
+  
 
-	span#delete
-		display: none
+  span#delete
+    display: none
 
-	.top4, .list4
-		display: none
-
+  .top4, .list4
+    display: none
+  ul.list
+    li
+      section.left
+        margin-right: -20px
+  ul.list
+    section.top
+      .top3 
+        margin-right: 0px
 
 @media (min-width: 980px) and (max-width: 1200px)
-	.browse-img
-		height: 120px
-		overflow: hidden
+  ul.list
+    li
+      section.left
+        margin-right: -20px
