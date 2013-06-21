@@ -43,7 +43,6 @@ def _redirect_url_frm_upload(profile_name):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file(profile):
-    upload_flag = False
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
@@ -52,10 +51,9 @@ def upload_file(profile):
         content_type = get_file_type(filename)
         save(file_, profile=profile, content_type=content_type)
         flash('"%s" uploaded successfully.' % filename)
-        upload_flag = True
         return redirect(_redirect_url_frm_upload(profile.name))
     # form invalid or request.method == 'GET'
-    return render_template('form.html', form=upload_form, profile=profile, upload_flag=upload_flag)
+    return render_template('form.html', form=upload_form, profile=profile)
 
 
 @app.route('/<profile>/popup')
