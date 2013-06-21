@@ -5,13 +5,13 @@
 {% block basecontent %}
 	{% block sidebar %}
 	{% endblock %}
-	{% block albumcontent %}
+	{% block maincontent %}
 	{% endblock %}
-	<div class="delete-box alert alert-error">
+	<div class="alert alert-error">
 		<div class="form-title"><i class="icon-trash"></i>&nbsp;&nbsp;Confirm delete</div><hr />
 		<p>Are you sure you want to delete the label "{{ label.title }}"?<br /></p>
 		<p><i class="icon-info-sign"></i>&nbsp;<strong>Info: Even if you delete it, the files associated with the label will NOT be deleted.</strong></p>
-		{% set cancel_url=url_for('show_label', profile=g.user.profile_name, label=label.name) %}
+		{% set cancel_url=url_for('show_label', profile=profile.name, label=label.name) %}
 		<div class="form-submit">{{ renderform(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}</div>
 	</div>
 {% endblock %}

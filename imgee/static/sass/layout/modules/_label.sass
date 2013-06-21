@@ -1,0 +1,38 @@
+.label
+    position: relative
+    background-color: #0087cf
+    border-radius: 0
+    padding-top: 0.1px
+    padding-bottom: 0.5px
+    padding-left: 7px
+    padding-right: 12px
+    margin-right: 5px
+    margin-left: 2px
+    margin-bottom: 5px
+    font-size: 11px
+    text-shadow: none
+    float: left
+    a
+        color: #fff
+.label:after
+    content: ""
+    position: absolute
+    top: 0
+    right: 0
+    border-width: 0 10px 10px 0
+    border-style: solid
+    border-color: #fff #fff #68BBE7 #68BBE7
+    background: #68BBE7
+    -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2)
+    -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2)
+    box-shadow: 0 1px 0 rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2)
+    display: block
+    width: 0
+
+.view-image
+    .label
+        float: none
+
+@media screen and (max-width: 767px)
+    .label-adjust
+        display: block

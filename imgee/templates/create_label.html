@@ -1,12 +1,10 @@
 {% extends "layout.html" %}
 {% from 'baseframe/forms.html' import renderform %}
 
-{% block right %}
-<div class="span10">
-	<div class="create-box well">
+{% block maincontent %}
+	<div class="well">
 		<div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Create label</div><hr />		
-		{% set cancel_url=url_for('profile_view', profile=profile_name) %}
+		{% set cancel_url=url_for('profile_view', profile=profile.name) %}
 		{{ renderform(form, "Create", cancel_url=cancel_url)}}
 	</div>
-</div>
 {% endblock %}	
