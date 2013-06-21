@@ -46,19 +46,15 @@ def upload_file(profile):
     upload_flag = False
     profileid = g.user.userid
     upload_form = forms.UploadImageForm()
-    print "Received upload"
     if upload_form.validate_on_submit():
         file_ = request.files['file']
         filename = secure_filename(file_.filename)
         content_type = get_file_type(filename)
         save(file_, profile=profile, content_type=content_type)
         flash('"%s" uploaded successfully.' % filename)
-        print "Upload successful"
         upload_flag = True
         return redirect(_redirect_url_frm_upload(profile.name))
     # form invalid or request.method == 'GET'
-    print "Rendering form"
-    print upload_form.errors
     return render_template('form.html', form=upload_form, profile=profile, upload_flag=upload_flag)
 
 
