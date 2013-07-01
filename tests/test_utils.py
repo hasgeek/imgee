@@ -7,7 +7,7 @@ from imgee.models import StoredFile
 def upload(test_client, filepath, upload_url):
     content = open(filepath).read()
     filename = os.path.basename(filepath)
-    d = {'uploaded_file': (StringIO(content), filename)}
+    d = {'file': (StringIO(content), filename)}
     response = test_client.post(upload_url, data=d, follow_redirects=True)
     return filename, response
 

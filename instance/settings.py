@@ -44,4 +44,4 @@ THUMBNAIL_SIZE = (75, 75)   # (w, h) in px
 UNKNOWN_FILE_THUMBNAIL = 'set path to unknown file thumbnail on media_domain'
 
 # redis settings for RQ
-REDIS_URL = "redis://localhost:6379/0"
+RQ_DEFAULT_URL = "redis://localhost:6379/0"

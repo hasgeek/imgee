@@ -2,10 +2,6 @@
 {% from "baseframe/components.html" import networkbar with context %}
 {% from "baseframe/forms.html" import renderfield, renderform %}
 
-{% block logo -%}
-  <div id="logo"><a href="{{ g.user.profile_url }}">{{ config['SITE_TITLE'] }}</a></div>
-{%- endblock %}
-
 {% block basecontent %}
   {% block content %}
     <div class="row">
