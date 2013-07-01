@@ -43,23 +43,16 @@ def _redirect_url_frm_upload(profile_name):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file(profile):
-    upload_flag = False
-    profileid = g.user.userid
     upload_form = forms.UploadImageForm()
-    print "Received upload"
     if upload_form.validate_on_submit():
         file_ = request.files['file']
         filename = secure_filename(file_.filename)
         content_type = get_file_type(filename)
         save(file_, profile=profile, content_type=content_type)
         flash('"%s" uploaded successfully.' % filename)
-        print "Upload successful"
-        upload_flag = True
         return redirect(_redirect_url_frm_upload(profile.name))
     # form invalid or request.method == 'GET'
-    print "Rendering form"
-    print upload_form.errors
-    return render_template('form.html', form=upload_form, profile=profile, upload_flag=upload_flag)
+    return render_template('form.html', form=upload_form, profile=profile)
 
 
 @app.route('/<profile>/popup')
@@ -139,7 +132,7 @@ def view_image(profile, img):
                     prev=prev, next=next)
 
 
-@app.route('/file/<image>')
+@app.route('/<profile>/file/<image>')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image(image):
     name, extn = os.path.splitext(image.title)
@@ -153,7 +146,7 @@ def get_image(image):
     return redirect(urljoin(media_domain, img_name), code=301)
 
 
-@app.route('/thumbnail/<image>')
+@app.route('/<profile>/thumbnail/<image>')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_thumbnail(image):
     name, extn = os.path.splitext(image.title)
