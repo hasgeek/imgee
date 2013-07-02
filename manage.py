@@ -2,7 +2,8 @@
 
 from flask.ext.script import Manager, Server, Option, prompt_bool
 from flask.ext.script.commands import Clean, ShowUrls
-from flask.ext.alembic import ManageMigrations
+from flask.ext.alembic import ManageMigrations, FlaskAlembicConfig
+from alembic import command
 
 from imgee import app, init_for
 from imgee import models
@@ -50,6 +51,20 @@ def create(env):
     "Creates database tables from sqlalchemy models"
     init_for(env)
     db.create_all()
+    config = FlaskAlembicConfig("alembic.ini")
+    command.stamp(config, "head")
+
+
+@database.option('-e', '--env', default='dev', help="runtime environment [default 'dev']")
+def setversion(env):
+    '''
+    Manually set the alembic version of the
+    database to the provided value.
+    '''
+    init_for(env)
+    config = FlaskAlembicConfig("alembic.ini")
+    version = raw_input("Enter the alembic version to be set:")
+    command.stamp(config, version)
 
 
 manager.add_command("db", database)
