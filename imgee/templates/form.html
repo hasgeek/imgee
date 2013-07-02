@@ -1,11 +1,9 @@
 {% extends "layout.html" %}
 {% from 'baseframe/forms.html' import renderform %}
 
-{% block right %}
-<div class="span10">
-	<div class="upload-box well">
-		<div class="form-title"><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload Image</div><hr />
+{% block maincontent %}
+	<div class="well">
+		<h5><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload Image</h5><hr />
 		{{ renderform(form, "upload", multipart=True) }}
 	</div>
-</div>
 {% endblock %}	

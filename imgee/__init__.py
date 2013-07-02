@@ -34,7 +34,7 @@ def error403(error):
 # Configure the app
 def init_for(env):
     coaster.app.init_app(app, env)
-    baseframe.init_app(app, requires=['baseframe', 'imgee'])
+    baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
     app.error_handlers[403] =  error403
     RQ(app)     # pick up RQ configuration from the app
     app.config.get('NETWORKBAR_LINKS', []).append({

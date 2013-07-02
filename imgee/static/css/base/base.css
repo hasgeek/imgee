@@ -1,0 +1,53 @@
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1.8em;
+}
+
+h3 {
+  font-size: 1.6em;
+}
+
+h4 {
+  font-size: 1.4em;
+}
+
+h5 {
+  font-size: 1.2em;
+}
+
+h6 {
+  font-size: 1em;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.logo {
+  margin-top: 25px;
+}
+
+#logo {
+  text-indent: -119988px;
+  overflow: hidden;
+  text-align: left;
+  background-image: url('../../img/logo.png?1370506999');
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  width: 150px;
+  height: 75px;
+}
+
+.well hr {
+  margin: 8px 0 8px 0;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
+  #logo {
+    background-image: url('../../img/logo@2x.png?1370506999');
+    -webkit-background-size: 150px 75px;
+  }
+}

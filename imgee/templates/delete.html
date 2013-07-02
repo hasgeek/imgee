@@ -4,15 +4,15 @@
 {% block basecontent %}
 	{% block sidebar %}
 	{% endblock %}
-	{% block albumcontent %}
+	{% block maincontent %}
 	{% endblock %}
-	<div class="delete-box alert alert-error">
-		<div class="form-title"><i class="icon-trash"></i>&nbsp;&nbsp;Confirm delete</div><hr />
+	<div class="alert alert-error">
+		<h5><i class="icon-trash"></i>&nbsp;&nbsp;Confirm delete</h5><hr />
 		<p>Are you sure you want to delete "<strong>{{file.title}}</strong>"?</p>
 		<p id="warning">
 			<i class="icon-warning-sign"></i>&nbsp;<strong>Warning: If you delete it, you will loss all the links wherever this image appears.</strong>
 		</p>
-		<img src="{{url_for('view_image', profile=g.user.profile_name, image=file.name)}}" />
+		<img src="{{url_for('get_thumbnail', image=file.name)}}"/>
 		{% set cancel_url=url_for('view_image', profile=profile.name, image=file.name) %}
 		{% set action_url=url_for('delete_file', profile=profile.name, image=file.name) %}
 		<div class="form-submit">{{ renderform(form, "delete", "Yes, delete it", action=action_url, cancel_url=cancel_url)}}</div>
