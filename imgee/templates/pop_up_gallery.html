@@ -151,10 +151,10 @@
                                     <li class="image">
                                       <section class="left">
                                         <div class="image-thumb">
-                                          <a class="img" title="{{img.tite}}" href=""><img src="{{url_for('get_thumbnail', image=img.name)}}"/></a>
+                                          <a class="img" title="{{img.tite}}" href=""><img src="{{url_for('get_thumbnail', profile=profile.name, image=img.name)}}"/></a>
                                         </div>
                                         <div class="select-options">
-                                          <button class="select-img btn btn-warning" name="" value="{{url_for('get_thumbnail', image=img.name)}}`{{img.title}}`{{ img.created_at }}">Select</button><br />
+                                          <button class="select-img btn btn-warning" name="" value="{{url_for('get_thumbnail', profile=profile.name, image=img.name)}}`{{img.title}}`{{ img.created_at }}">Select</button><br />
                                           <a class="zoom-btn" href="{{ url_for('get_image', image=img.name) }}" target="_blank"><i class="icon-zoom-in"></i></a>
                                           <a class="delete-btn" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i></a>
                                         </div> 
