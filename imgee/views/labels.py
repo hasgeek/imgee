@@ -43,7 +43,7 @@ def delete_label(profile, label):
         utils_delete_label(label)
         flash('The label "%s" was deleted.' % label.name)
         return redirect(url_for('profile_view', profile=profile.name))
-    return render_template('delete_label.html', form=form, label=label)
+    return render_template('delete_label.html', form=form, label=label, profile=profile)
 
 
 @app.route('/<profile>/<label>/edit', methods=['POST'])

@@ -1,0 +1,62 @@
+@import "modules/modules"
+
+.hide-sidebar
+	display: none
+@media screen and (max-width: 767px)
+	.container
+		padding: 0 6px
+	#page-header
+		border-bottom: 40px solid  #E8E8E8
+		margin-bottom: -60px
+	.row
+		overflow: hidden
+	.sidebar.span3
+		width: 85%
+	.sidebar
+		position: absolute
+		transform: translateX(-110%)
+		-webkit-transform: translateX(-110%) /* Safari and Chrome */
+		transition: transform 0.5s
+		-webkit-transition: -webkit-transform 0.5s /* Safari */  
+	.maincontent
+		//border: 1px solid $grey-4
+		position: relative
+		transform: translateX(0%)
+		-webkit-transform: translateX(0%) /* Safari and Chrome */
+		transition: transform 0.5s
+		-webkit-transition: -webkit-transform 0.5s /* Safari */
+
+	.shift90
+		transform: translateX(90%)
+		-webkit-transform: translateX(90%) /* Safari and Chrome */
+	.shift0
+		transform: translateX(0%)
+		-webkit-transform: translateX(0%) /* Safari and Chrome */
+
+	.hide-sidebar
+		position: relative
+		left: 0
+		right: 0
+		top: 0
+		display: block
+		clear: both
+		margin-bottom: 46px
+		.hide-sidebar-btn
+			display: block
+			width: 25px
+			float: left
+			margin-top: -2px
+			font-size: 30px
+			color: #B5B5B5
+		span[class^="icon-"], span[class*=" icon-"]
+			margin-left: auto
+		.btn-navbar
+			background-color: #EDEDED
+			background-image: linear-gradient(to bottom, #F2F2F2, #E5E5E5)
+			background-repeat: repeat-x
+			border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25)
+			box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.075)
+
+@media screen and (max-width: 480px)
+	.sidebar.span3
+		width: 80%

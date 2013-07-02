@@ -14,6 +14,9 @@ from imgee.utils import newid, get_media_domain
 
 image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
+@app.context_processor
+def global_vars():
+    return {'cl_form': forms.CreateLabelForm(), 'uf_form': forms.UploadImageForm()}
 
 @app.route('/')
 def index():
@@ -29,7 +32,7 @@ def _get_owned_ids(user=None):
 def _redirect_url_frm_upload(profile_name):
     # if the referrer is from 'pop_up_gallery' redirect back to referrer.
     referrer = request.referrer or ''
-    if url_for('pop_up_gallery', profile=g.user.profile_name) in referrer:
+    if url_for('pop_up_gallery', profile=profile_name) in referrer:
         url = request.referrer
     else:
         url = url_for('profile_view', profile=profile_name)
@@ -42,7 +45,7 @@ def _redirect_url_frm_upload(profile_name):
 def upload_file(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
-        file_ = request.files['uploaded_file']
+        file_ = request.files['file']
         filename = secure_filename(file_.filename)
         content_type = get_file_type(filename)
         save(file_, profile=profile, content_type=content_type)
@@ -60,8 +63,7 @@ def pop_up_gallery(profile):
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
-    return render_template('pop_up_gallery.html', files=files, profile=profile.name,
-            uploadform=form, cp_form=cp_form)
+    return render_template('pop_up_gallery.html', files=files, profile=profile, uploadform=form, cp_form=cp_form)
 
 
 @app.route('/<profile>/edit_title', methods=['POST'])
@@ -84,11 +86,10 @@ def edit_title(profile):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def profile_view(profile):
-    files = profile.stored_files.order_by('created_at desc').limit(10).all()
+    files = profile.stored_files.order_by('created_at desc').all()
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
-    return render_template('profile.html', profile=profile, files=files, upload_form=upload_form, title_form=title_form)
-
+    return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form)
 
 @app.route('/<profile>/view')
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -98,7 +99,6 @@ def view_all(profile):
     files = profile.stored_files.order_by('created_at desc').all()
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form)
-
 
 @app.route('/<profile>/archive')
 @load_model(Profile, {'name': 'profile'}, 'profile',
