@@ -5,9 +5,6 @@ import re
 import mimetypes
 from StringIO import StringIO
 from PIL import Image
-from redis import Redis
-import redis
-from flask.ext.rq import get_queue
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
@@ -17,22 +14,6 @@ from imgee import app
 from imgee.models import db, Thumbnail
 from imgee.utils import newid
 from imgee.models import StoredFile
-
-# changes in these values have to be made in rq.sh too.
-DEFAULT_QUEUE = 'imgee'
-THUMBNAIL_QUEUE = 'imgee-thumbnails'   # high queue for thumbnails for them to appear sooner
-
-
-def save_later_on_s3(*args, **kwargs):
-    q = get_queue(kwargs.pop('queue', DEFAULT_QUEUE))
-    kwargs.setdefault('bucket', get_s3_bucket())
-    kwargs.setdefault('folder', get_s3_folder())
-    # if redis is running that can be used by RQ, upload async
-    try:
-        q.enqueue('imgee.storage.save_on_s3', *args, **kwargs)
-    except (redis.exceptions.ConnectionError , TypeError):
-        kwargs.pop('queue', '')
-        s3_key = save_on_s3(*args, **kwargs)
 
 
 def get_s3_bucket():
@@ -69,7 +50,7 @@ def save(fp, profile, img_name=None, remote=True, content_type=None):
     save_in_db(name=id_, title=fp.filename, local_path=local_path, profile=profile)
 
     if remote:
-        save_later_on_s3(local_path, img_name, content_type=content_type, queue=DEFAULT_QUEUE)
+        save_on_s3(local_path, img_name, content_type=content_type)
 
 
 def get_file_type(filename):
@@ -137,8 +118,7 @@ def resize_and_save(img, size, thumbnail=False):
     content_type = get_file_type(img.title)  # eg: image/jpeg
     format = content_type.split('/')[1] if content_type else None
     scaled_path = resize_img(src_path, size, format, thumbnail=thumbnail)
-    # separate queue for thumbnails so that we can give high priority to save them on S3
-    save_later_on_s3(scaled_path, scaled_img_name+extn, content_type, queue=THUMBNAIL_QUEUE)
+    save_on_s3(scaled_path, scaled_img_name+extn, content_type)
     size_s = "%sx%s" % size
     scaled = Thumbnail(name=scaled_img_name, size=size_s, stored_file=img)
     db.session.add(scaled)
