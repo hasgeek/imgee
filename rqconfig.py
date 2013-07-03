@@ -14,5 +14,5 @@ REDIS_PORT = r.port
 REDIS_PASSWORD = r.password
 REDIS_DB = 0
 
-QUEUES = ['high', 'default']
+QUEUES = ['imgee-thumbnails', 'imgee']
 
