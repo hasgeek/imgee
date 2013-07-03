@@ -1,3 +1,4 @@
+#import os
 import unittest
 import requests
 from PIL import Image
@@ -12,7 +13,7 @@ class UploadTestCase(ImgeeTestCase):
     def setUp(self):
         super(UploadTestCase, self).setUp()
         self.img_id = None
-        self.test_file = 'imgee/static/img/imgee.png'
+        self.test_file = '../imgee/static/img/imgee.png'
 
     def upload(self, path=None):
         return test_utils.upload(self.client, path or self.test_file, '/%s/new' % self.test_user_name)
@@ -128,13 +129,13 @@ class UploadTestCase(ImgeeTestCase):
             self.assertEquals(int(resized_w/img_w), int(resized_h/img_h))
 
     def test_non_image_file(self):
-        file_name, r = self.upload('imgee/static/css/app.css')
+        file_name, r = self.upload('../imgee/static/css/app.css')
         self.assertEquals(r.status_code, 200)
         self.assertTrue('Sorry, unknown image format' in r.data)
 
     def test_resize3_file(self):
         # non resizable images
-        file_name, r = self.upload('imgee/static/img/imgee.svg')
+        file_name, r = self.upload('../imgee/static/img/imgee.svg')
         file_id = test_utils.get_img_id(file_name)
         r1 = self.client.get('/%s/file/%s' % (self.test_user_name, file_id))
         r2 = self.client.get('/%s/file/%s?size=100x200' % (self.test_user_name, file_id))

@@ -5,6 +5,7 @@ from PIL import Image
 from imgee.models import StoredFile
 
 def upload(test_client, filepath, upload_url):
+    filepath = os.path.abspath(filepath)
     content = open(filepath).read()
     filename = os.path.basename(filepath)
     d = {'file': (StringIO(content), filename)}
