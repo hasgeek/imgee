@@ -10,7 +10,7 @@ class LabelTestCase(ImgeeTestCase):
     def setUp(self):
         super(LabelTestCase, self).setUp()
         self.img_id = None
-        self.test_files = ['imgee/static/img/imgee.png', ]
+        self.test_files = ['../imgee/static/img/imgee.png', ]
         self.test_labels = ['logos', 'banners', 'profile-photos']
 
     def upload(self, path=None):
