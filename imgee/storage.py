@@ -19,8 +19,8 @@ from imgee.utils import newid
 from imgee.models import StoredFile
 
 # changes in these values have to be made in rq.sh too.
-DEFAULT_QUEUE = 'default'
-THUMBNAIL_QUEUE = 'thumbnails'   # high queue for thumbnails for them to appear sooner
+DEFAULT_QUEUE = 'imgee'
+THUMBNAIL_QUEUE = 'imgee-thumbnails'   # high queue for thumbnails for them to appear sooner
 
 
 def save_later_on_s3(*args, **kwargs):
