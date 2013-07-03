@@ -104,6 +104,8 @@ def path_for(img_name):
 
 def get_resized_image(img, size, thumbnail=False):
     img_name = img.name
+    if not size:
+        return img_name
     if isinstance(size, (str, unicode)):
         size_t = split_size(size)
     elif isinstance(size, tuple):
