@@ -107,7 +107,8 @@ def get_resized_image(img, size, thumbnail=False):
     if isinstance(size, (str, unicode)):
         size_t = split_size(size)
     elif isinstance(size, tuple):
-        size_t, size = size, "%sx%s" % size
+        size_t = size
+    size = "%sx%s" % size_t
     if size_t:
         scaled = Thumbnail.query.filter_by(size=size, stored_file=img).first()
         if scaled:
