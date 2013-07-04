@@ -83,16 +83,19 @@ def path_for(img_name):
     return os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
 
 
+def parse_size(size):
+    """return `size` as a tuple (w, h). None if not formattable"""
+    if isinstance(size, (str, unicode)):
+        return split_size(size)
+    elif isinstance(size, tuple) and len(size) == 2:
+        return size
+
+
 def get_resized_image(img, size, thumbnail=False):
     img_name = img.name
-    if not size:
-        return img_name
-    if isinstance(size, (str, unicode)):
-        size_t = split_size(size)
-    elif isinstance(size, tuple):
-        size_t = size
-    size = "%sx%s" % size_t
+    size_t = parse_size(size)
     if size_t:
+        size = '%sx%s' % size_t
         scaled = Thumbnail.query.filter_by(size=size, stored_file=img).first()
         if scaled:
             img_name = scaled.name
