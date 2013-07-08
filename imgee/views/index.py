@@ -9,10 +9,10 @@ from sqlalchemy import and_, not_
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
-from imgee.storage import delete_on_s3, save, get_resized_image, get_file_type, get_s3_folder
+from imgee.storage import delete_on_s3, save, get_resized_image, get_s3_folder
 from imgee.utils import newid, get_media_domain
 
-image_formats = 'jpg jpe jpeg png gif bmp'.split()
+image_formats = '.jpg .jpe .jpeg .png .gif .bmp'.split()
 
 @app.context_processor
 def global_vars():
@@ -49,8 +49,7 @@ def upload_file(profile):
     if upload_form.validate_on_submit():
         file_ = request.files['file']
         filename = secure_filename(file_.filename)
-        content_type = get_file_type(filename)
-        save(file_, profile=profile, content_type=content_type)
+        save(file_, profile=profile)
         flash('"%s" uploaded successfully.' % filename)
         return redirect(_redirect_url_frm_upload(profile.name))
     # form invalid or request.method == 'GET'
@@ -137,8 +136,8 @@ def view_image(profile, img):
 @app.route('/<profile>/file/<image>')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image(image):
-    name, extn = os.path.splitext(image.title)
-    if extn and extn.lstrip('.').lower() in image_formats:
+    extn = image.extn
+    if extn in image_formats:
         size = request.args.get('size', '')
         img_name = get_resized_image(image, size)
     else:
@@ -151,10 +150,10 @@ def get_image(image):
 @app.route('/<profile>/thumbnail/<image>')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_thumbnail(image):
-    name, extn = os.path.splitext(image.title)
-    if extn and extn.lstrip('.').lower() in image_formats:
+    extn = image.extn
+    if extn in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
-        thumbnail = get_resized_image(image, tn_size, thumbnail=True)
+        thumbnail = get_resized_image(image, tn_size, is_thumbnail=True)
         thumbnail = get_s3_folder() + thumbnail + extn
     else:
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')

@@ -12,7 +12,7 @@ from boto.s3.key import Key
 
 from imgee import app
 from imgee.models import db, Thumbnail
-from imgee.utils import newid
+from imgee.utils import newid, guess_extension
 from imgee.models import StoredFile
 
 
@@ -31,23 +31,25 @@ def get_width_height(img_path):
         return img.size
 
 
-def save_in_db(name, title, local_path, profile):
+def save_in_db(name, title, local_path, profile, mimetype):
     size_in_bytes = os.path.getsize(local_path)
     width, height = get_width_height(local_path)
     stored_file = StoredFile(name=name, title=title, profile=profile,
-                    size=size_in_bytes, width=width, height=height)
+                    size=size_in_bytes, width=width, height=height, mimetype=mimetype)
     db.session.add(stored_file)
     db.session.commit()
 
 
-def save(fp, profile, img_name=None, remote=True, content_type=None):
+def save(fp, profile, img_name=None, remote=True):
     id_ = img_name or newid()
-    img_name = "%s%s" % (id_, os.path.splitext(fp.filename)[1])
+    content_type = get_file_type(fp.filename)
+    img_name = "%s%s" % (id_, guess_extension(content_type))
     local_path = path_for(img_name)
     with open(local_path, 'w') as img:
         img.write(fp.read())
 
-    save_in_db(name=id_, title=fp.filename, local_path=local_path, profile=profile)
+    save_in_db(name=id_, title=fp.filename, local_path=local_path,
+                    profile=profile, mimetype=content_type)
 
     if remote:
         save_on_s3(local_path, img_name, content_type=content_type)
@@ -91,7 +93,7 @@ def parse_size(size):
         return size
 
 
-def get_resized_image(img, size, thumbnail=False):
+def get_resized_image(img, size, is_thumbnail=False):
     img_name = img.name
     size_t = parse_size(size)
     if size_t:
@@ -100,7 +102,7 @@ def get_resized_image(img, size, thumbnail=False):
         if scaled:
             img_name = scaled.name
         else:
-            img_name = resize_and_save(img, size_t, thumbnail=thumbnail)
+            img_name = resize_and_save(img, size_t, is_thumbnail=is_thumbnail)
     return img_name
 
 
@@ -114,13 +116,13 @@ def get_image_locally(img_name):
     return local_path
 
 
-def resize_and_save(img, size, thumbnail=False):
-    extn = os.path.splitext(img.title)[1]
+def resize_and_save(img, size, is_thumbnail=False):
+    extn = img.extn
     src_path = get_image_locally(img.name+extn)
     scaled_img_name = newid()
     content_type = get_file_type(img.title)  # eg: image/jpeg
-    format = content_type.split('/')[1] if content_type else None
-    scaled_path = resize_img(src_path, size, format, thumbnail=thumbnail)
+    format = guess_extension(content_type).lstrip('.')
+    scaled_path = resize_img(src_path, size, format, is_thumbnail=is_thumbnail)
     save_on_s3(scaled_path, scaled_img_name+extn, content_type)
     size_s = "%sx%s" % size
     scaled = Thumbnail(name=scaled_img_name, size=size_s, stored_file=img)
@@ -142,7 +144,7 @@ def get_size((orig_w, orig_h), (w, h)):
     return map(int, size)
 
 
-def resize_img(src, size, format, thumbnail):
+def resize_img(src, size, format, is_thumbnail):
     """
     `size` is a tuple (width, height)
     resize the image at `src` to the specified `size` and return the resized img.
@@ -155,7 +157,7 @@ def resize_img(src, size, format, thumbnail):
     size = get_size(img.size, size)
     resized = img.resize(size, Image.ANTIALIAS)
 
-    if thumbnail:
+    if is_thumbnail:
         # and crop the rest, keeping the center.
         w, h = resized.size
         tw, th = app.config.get('THUMBNAIL_SIZE')
@@ -183,7 +185,7 @@ def delete_on_s3(stored_file):
     """
     Delete all the thumbnails and images associated with a file
     """
-    extn = os.path.splitext(stored_file.title)[1]
+    extn = stored_file.extn
     keys = [(get_s3_folder() + thumbnail.name + extn) for thumbnail in stored_file.thumbnails]
     keys.append(get_s3_folder() + stored_file.name + extn)
     bucket = get_s3_bucket()
