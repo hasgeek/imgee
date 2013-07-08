@@ -65,7 +65,7 @@
         <div class="aside">
           <div class="img-attr">
             <ul>
-              <li>Uploaded at: <br /><em>{{ img.created_at }}</em></li>
+              <li>Uploaded on: <br /><em>{{ img.created_at.strftime('%B %d, %Y') }}</em></li>
               <li>Size: <br /><em>{{ (img.size/1024) | round(2) }} KB</em></li>
               <li>Aspect-ratio: <br /><em>{{ img.width }} x {{ img.height }} px</em></li>
               <li>
