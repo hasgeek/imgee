@@ -13,7 +13,7 @@ class UploadTestCase(ImgeeTestCase):
     def setUp(self):
         super(UploadTestCase, self).setUp()
         self.img_id = None
-        self.test_file = '../imgee/static/img/imgee.png'
+        self.test_file = '../imgee/static/img/imgee.jpeg'
 
     def upload(self, path=None):
         return test_utils.upload(self.client, path or self.test_file, '/%s/new' % self.test_user_name)
