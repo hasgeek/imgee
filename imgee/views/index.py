@@ -16,7 +16,9 @@ image_formats = 'jpg jpe jpeg png gif bmp'.split()
 
 @app.context_processor
 def global_vars():
-    return {'cl_form': forms.CreateLabelForm(), 'uf_form': forms.UploadImageForm()}
+    profile_id = g.user and g.user.profile.id or None
+    cl_form = forms.CreateLabelForm(profile_id=profile_id)
+    return {'cl_form': cl_form, 'uf_form': forms.UploadImageForm()}
 
 @app.route('/')
 def index():
