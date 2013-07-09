@@ -31,7 +31,9 @@ def upgrade():
     connection = op.get_bind()
     sf = StoredFile.__table__
     result = connection.execute(select([sf.c.id, sf.c.title]))
-    mimetypes = [dict(sfid=r[0], mimetype=guess_type(r[1])[0]) for r in result]
+    mimetypes = [dict(sfid=r[0], mimetype=guess_type(r[1])[0]) for r in result if '.' in r[1]]
+    # fix for the stored file with id '3', whose title doesn't have extension
+    mimetypes.append(dict(sfid=3, mimetype='image/png'))
     updt_stmt = sf.update().where(sf.c.id == bindparam('sfid')).values(mimetype=bindparam('mimetype'))
     connection.execute(updt_stmt, mimetypes)
 
