@@ -116,10 +116,23 @@ def get_image_locally(img_name):
     return local_path
 
 
+def get_resized_name(img, size):
+    w, h = size
+    if w and h:
+        name = '%s_w%s_h%s' % (img.name, w, h)
+    elif w:
+        name = '%s_w%s' % (img.name, w)
+    elif h:
+        name = '%s_h%s' % (img.name, h)
+    else:
+        name = img.name
+    return name
+
+
 def resize_and_save(img, size, is_thumbnail=False):
     extn = img.extn
     src_path = get_image_locally(img.name+extn)
-    scaled_img_name = newid()
+    scaled_img_name = get_resized_name(img, size)
     content_type = get_file_type(img.title)  # eg: image/jpeg
     format = guess_extension(content_type).lstrip('.')
     scaled_path = resize_img(src_path, size, format, is_thumbnail=is_thumbnail)
