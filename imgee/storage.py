@@ -96,7 +96,7 @@ def parse_size(size):
 def get_resized_image(img, size, is_thumbnail=False):
     img_name = img.name
     size_t = parse_size(size)
-    if size_t:
+    if size_t and size_t[0] != img.width and size_t[1] != img.height:
         size = '%sx%s' % size_t
         scaled = Thumbnail.query.filter_by(size=size, stored_file=img).first()
         if scaled:
@@ -133,7 +133,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     extn = img.extn
     src_path = get_image_locally(img.name+extn)
     scaled_img_name = get_resized_name(img, size)
-    content_type = get_file_type(img.title)  # eg: image/jpeg
+    content_type = img.mimetype
     format = guess_extension(content_type).lstrip('.')
     scaled_path = resize_img(src_path, size, format, is_thumbnail=is_thumbnail)
     save_on_s3(scaled_path, scaled_img_name+extn, content_type)
