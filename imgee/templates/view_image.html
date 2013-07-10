@@ -97,6 +97,12 @@
           Link to <a href='{{img_url}}'>original image</a> | At a different size:
           <input id='img_width' placeholder="w" />X<input id='img_height' placeholder="h" />
           <a href='{{img_url}}' id='img_link'> here</a>.
+
+          <!--  add style to it and uncomment
+           {% for tn in img.thumbnails %}
+             <a href="{{url_for('get_thumbnail', profile=profile.name, image=tn.name)}}">{{tn.size}}</a> <br />
+          {% endfor %} -->
+
           <br/>
         </div>
       </div><!-- /span6 -->
@@ -127,10 +133,19 @@
   $('input#img_width').width(100);
   $('input#img_height').width(100);
   $('input#img_link').width(420);
-  var file_url = "{{url_for('get_image', profile=profile.name, image=img.name)}}";
-  $('input[id^="img_"]').change(function (){
+
+  function set_resize_url(a){
+      var file_url = "{{url_for('get_image', profile=profile.name, image=img.name)}}";
       var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
-      $('a#img_link').attr('href', url_with_size);
+      a.attr('href', url_with_size);
+  }
+
+  $('a#img_link')
+    .hover(function (){
+      set_resize_url($(this));
+    })
+    .click(function (){
+      set_resize_url($(this));
   });
 
   var existing_labels = [];
