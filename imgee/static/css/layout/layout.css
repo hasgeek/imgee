@@ -570,6 +570,13 @@ ul.grid li section.right {
     right: 0;
   }
 
+  .gallery h4 {
+    margin-top: 20px;
+  }
+  .gallery > hr {
+    border: 0;
+    margin: 10px 0;
+  }
   .gallery ul {
     margin-left: 0;
   }
@@ -800,8 +807,8 @@ input[type="file"] {
   opacity: 0.1;
 }
 
-.hide-mod {
-  display: block;
+.hide-mob {
+  display: inline-block;
 }
 
 .hide-desktop {
@@ -862,6 +869,10 @@ input[type="file"] {
   }
 }
 @media (min-width: 768px) and (max-width: 979px) {
+  .btn-group .hide-mob {
+    display: none;
+  }
+
   .sidebar .image-thumb img {
     width: 25.2px;
     height: 25.2px;
@@ -1218,10 +1229,23 @@ ul#resize li#img-size-custom input {
   #share-links input {
     width: 80%;
   }
-}
-@media screen and (max-width: 480px) {
+
+  .btn-group {
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: right;
+    display: inline-block;
+    margin-right: 2px;
+    margin-top: -41px;
+  }
+
   .heading.editable_title {
-    width: 70%;
+    width: 100%;
+  }
+
+  ul#resize li {
+    margin-bottom: 10px;
   }
 }
 @media screen and (min-width: 768px) and (max-width: 979px) {
@@ -1240,6 +1264,13 @@ ul#resize li#img-size-custom input {
   }
   .image-display img {
     max-height: 500px;
+  }
+
+  ul#resize li {
+    margin-bottom: 10px;
+  }
+  ul#resize li#img-size-custom {
+    width: 139px;
   }
 }
 @media screen and (min-width: 980px) and (max-width: 1200px) {
@@ -1262,6 +1293,15 @@ ul#resize li#img-size-custom input {
 
   #share-links {
     margin-top: 150px;
+  }
+
+  ul#resize li {
+    margin-bottom: 10px;
+    margin-right: 0;
+    padding: 10px 3.5px;
+  }
+  ul#resize li#img-size-custom {
+    width: 121px;
   }
 }
 @media screen and (min-width: 1200px) {
