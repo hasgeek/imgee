@@ -1,3 +1,7 @@
+.nav-list > li > a.active
+	background-color: #0087cf
+	color: #FFFFFF
+
 #expandable1, #expandable2, #expandable3
 	overflow: hidden
 #more1, #more2
@@ -21,15 +25,23 @@
 			text-shadow: none
 .icon-tag.alt
 	opacity: 0.1
-.hide-mod
-	display: block
+.hide-mob
+	display: inline-block
 .hide-desktop
 	display: none
+
 
 .sidebar
 	.browse-img > h5
 		margin-bottom: 20px
 		margin-top: 5px
+	.img-thumb-placeholder-small
+		width: 47px
+		height: 47px
+		display: block
+		//background-color: #ccc
+		float: left
+		margin: 2.5px
 	.image-thumb
 		float: left
 		margin-bottom: 10px
@@ -63,14 +75,23 @@
 			img
 				width: 37px
 				height: 37px
+		.img-thumb-placeholder-small
+			width: 37px
+			height: 37px
 
 
 @media (min-width: 768px) and (max-width: 979px)
+	.btn-group
+		.hide-mob
+			display: none
 	.sidebar
 		.image-thumb
 			img
 				width: 25.2px
 				height: 25.2px
+		.img-thumb-placeholder-small
+			width: 25.2px
+			height: 25.2px
 
 @media (min-width: 980px) and (max-width: 1200px)
 	.sidebar
@@ -78,3 +99,7 @@
 			img
 				width: 37px
 				height: 37px
+		.img-thumb-placeholder-small
+			width: 37px
+			height: 37px
+

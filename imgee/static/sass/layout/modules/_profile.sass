@@ -10,4 +10,35 @@
   i
     font-size: 40px
     color: #CCCCCC
+
+.dropzone .dz-default.dz-message
+  background-position: 0 0
+  background-repeat: no-repeat
+  filter: none
+  height: 143px
+  left: 0
+  margin-left: 0
+  margin-top: 0
+  opacity: 1
+  position: absolute
+  top: 0
+  transition: opacity 0.3s ease-in-out 0s
+  width: 869px
+
       
+#reload-page
+  left: 46%
+  position: relative
+  right: 0
+  top: -37px
+
+@media (min-width: 980px) and (max-width: 1200px)
+  .dropzone .dz-default.dz-message
+    width: 699px
+
+@media (min-width: 768px) and (max-width: 979px)
+  .dropzone .dz-default.dz-message
+    width: 536px 
+@media screen and (max-width: 767px)
+  .dropzone .dz-default.dz-message
+    width: auto

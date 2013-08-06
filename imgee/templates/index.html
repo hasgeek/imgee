@@ -22,8 +22,9 @@
           <div class="row">
             <p>HasGeek's image library</p><hr />
             {% if g.user %}
-              Welcome <strong>{{ g.user.fullname }}!</strong>
-              <a href="{{ g.user.profile_url }}">View your images</a></h4>
+              <h5>Welcome <strong>{{ g.user.fullname }}!</strong></h5>
+              <br />
+              <a href="{{ g.user.profile_url }}" class="btn btn-primary">View your images</a></h4>
             {% else %}
               <a  href="{{ url_for('login') }}" class="btn btn-large">Login / Sign up</a>
             {% endif %}
