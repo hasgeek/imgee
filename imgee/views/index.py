@@ -16,7 +16,7 @@ image_formats = '.jpg .jpe .jpeg .png .gif .bmp'.split()
 
 @app.context_processor
 def global_vars():
-    profile_id = g.user and g.user.profile.id or None
+    profile_id = g.user and (g.user.profile and g.user.profile.id) or None
     cl_form = forms.CreateLabelForm(profile_id=profile_id)
     return {'cl_form': cl_form, 'uf_form': forms.UploadImageForm()}
 
@@ -51,7 +51,11 @@ def upload_file(profile):
         filename = secure_filename(file_.filename)
         save(file_, profile=profile)
         flash('"%s" uploaded successfully.' % filename)
+        print "uploaded successfully"
         return redirect(_redirect_url_frm_upload(profile.name))
+    else: 
+        print "Upload failed!"
+
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form, profile=profile)
 
@@ -112,8 +116,7 @@ def unlabelled_images(profile):
 
 def get_prev_images(profile, img, limit=2):
     imgs = profile.stored_files.filter(StoredFile.created_at < img.created_at)
-    return imgs.order_by('created_at desc').limit(limit).all()[::-1]
-
+    return imgs.order_by('created_at desc').limit(limit).all()[::1]
 
 def get_next_images(profile, img, limit=2):
     imgs = profile.stored_files.filter(StoredFile.created_at > img.created_at)
@@ -129,8 +132,10 @@ def view_image(profile, img):
     prev = get_prev_images(profile, img)
     next = get_next_images(profile, img)
     form = forms.AddLabelForm(stored_file_id=img.name)
+    media_domain = get_media_domain()
+    print media_domain
     return render_template('view_image.html', profile=profile, form=form, img=img,
-                    prev=prev, next=next)
+                    prev=prev, next=next, domain=media_domain)
 
 
 @app.route('/<profile>/file/<image>')
