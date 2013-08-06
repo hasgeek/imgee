@@ -3,25 +3,31 @@
 {% from 'baseframe/forms.html' import renderform %}
 
 {% block extendedsidebar %}
-  <div class="sidebar row">                
+  <div class="sidebar row">
     <div class="span3 browse-img">
       <h5><a href="{{ g.user.profile_url }}">Browse your gallery</a></h5>
-      {% for p in prev %}
-        <div class="image-thumb">
-          <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" title="view image">
-            <img src="{{url_for('get_thumbnail', profile=profile.name, image=p.name)}}"/>
-          </a>
-        </div>
-      {% endfor %}
-        <div class="image-thumb">
-          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
-            <img class="active" src="{{url_for('get_thumbnail', profile=profile.name, image=img.name)}}"/>
-          </a>
-        </div>
+      {% if next|length == 0 %}
+        <div class="img-thumb-placeholder-small"></div>
+        <div class="img-thumb-placeholder-small"></div>
+      {% elif next|length == 1 %}
+        <div class="img-thumb-placeholder-small"></div>
+      {% endif %}
       {% for n in next %}
         <div class="image-thumb">
           <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" title="view image">
             <img src="{{url_for('get_thumbnail', profile=profile.name, image=n.name)}}"/>
+          </a>
+        </div>
+      {% endfor %}
+      <div class="image-thumb">
+        <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
+          <img class="active" src="{{url_for('get_thumbnail', profile=profile.name, image=img.name)}}"/>
+        </a>
+      </div>
+      {% for p in prev %}
+        <div class="image-thumb">
+          <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" title="view image">
+            <img src="{{url_for('get_thumbnail', profile=profile.name, image=p.name)}}"/>
           </a>
         </div>
       {% endfor %}
@@ -30,98 +36,132 @@
 {% endblock %} 
 
 {% block maincontent %}
-  <section class="view-image">
-    <div class="row">
-      <div class="span9 image-display">
-        {% set img_url= url_for('get_image', profile=profile.name, image=img.name) %}
-        <div class="image-display-title">
-          <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
-          <div class="btn-group">
-            {% if prev %}
-              {% set p = prev | last %}
-              <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
-            {% endif %}
-            {% if next %}
-              {% set n = next | first %}
-              <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
-            {% endif %}
-          </div>  
-        </div>              
-        <div class="image-display-area">
-          <!-- picturefill -->
-          <div id="img" data-picture data-alt="{{ img.title }}">
-            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}"></div>
-            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}?size={% if img.width < 250 %}{{img.width}}{% else %}250{% endif %}" data-media="(min-width: 480px)"></div>
-            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}?size={% if img.width < 400 %}{{img.width}}{% else %}400{% endif %}" data-media="(min-width: 768px)"></div>
-            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}?size={% if img.width < 521 %}{{img.width}}{% else %}521{% endif %}" data-media="(min-width: 980px)"></div>
-            <div data-src="{{url_for('get_image', profile=profile.name, image=img.name)}}?size={% if img.width < 650 %}{{img.width}}{% else %}650{% endif %}" data-media="(min-width: 1200px)"></div>
-            <!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
-            <noscript>
-              <img class="image" src="{{url_for('get_image', profile=profile.name, image=img.name)}}" alt="{{ img.title }}">
-            </noscript>
-          </div>
-          <!-- //picturefill -->
-        </div>
-        <div class="aside">
-          <div class="img-attr">
-            <ul>
-              <li>Uploaded on: <br /><em>{{ img.created_at.strftime('%B %d, %Y') }}</em></li>
-              <li>Size: <br /><em>{{ (img.size/1024) | round(2) }} KB</em></li>
-              <li>Aspect-ratio: <br /><em>{{ img.width }} x {{ img.height }} px</em></li>
-              <li>
-                <ul class="labels">
-                  {% if img.labels %}     
-                    <li>Labels:</li>
-                    {% for label in img.labels %}
-                      <li><span class="label">
-                        <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}">{{label.name}}</a>
-                      </span></li>
-                    {% endfor %}
-                {% endif %}
+  <div class="tucked-corners-top">
+    <div class="tucked-corners-bottom"> 
+      <p>
+        <div class="row">
+          {% set img_url= url_for('get_image', profile=profile.name, image=img.name, _external=True) %}
+          <div class="span8">
+            
+            <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
+            <div class="btn-group">
+              {% if next %}
+                {% set n = next | first %}
+                <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
+              {% endif %}
+              {% if prev %}
+                {% set p = prev | last %}
+                <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
+              {% endif %}          
+            </div>              
+            <div class="image-display">
+              <!-- picturefill -->
+              <div id="img" data-picture data-alt="{{ img.title }}">
+                <div data-src="{{ img_url }}"></div>
+                <div data-src="{{ img_url }}?size={% if img.width < 250 %}{{img.width}}{% else %}250{% endif %}" data-media="(max-width: 480px)"></div>
+                <div data-src="{{ img_url }}?size={% if img.width < 400 %}{{img.width}}{% else %}400{% endif %}" data-media="(min-width: 480px)"></div>
+                <div data-src="{{ img_url }}?size={% if img.width < 430 %}{{img.width}}{% else %}430{% endif %}" data-media="(min-width: 768px)"></div>
+                <div data-src="{{ img_url }}?size={% if img.width < 600 %}{{img.width}}{% else %}600{% endif %}" data-media="(min-width: 980px)"></div>
+                <div data-src="{{ img_url }}?size={% if img.width < 770 %}{{img.width}}{% else %}770{% endif %}" data-media="(min-width: 1200px)"></div>
+                <!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
+                <noscript>
+                  <img class="image" src="{{ img_url }}" alt="{{ img.title }}">
+                </noscript>
+              </div>
+            <!-- //picturefill -->
+            </div>
+
+            <div class="">
+              <div class="img-attr">
+                <ul>
+                  <li>Uploaded on: <em>{{ img.created_at.strftime('%B %d, %Y') }}</em></li>
+                  <li>File size: <em>{% if img.size >= 1099511627776 %}{{ (img.size/1099511627776) | round(2) }} TB{% elif img.size >= 1073741824 %}{{ (img.size/1073741824) | round(2) }} GB{% elif img.size >= 1048576 %}{{ (img.size/1048576) | round(2) }} MB{% elif img.size >= 1024 %}{{ (img.size/1024) | round(2) }} KB{% else %}{{ img.size | round(2) }} bytes{% endif %}</em></li>
+                  <li>Image size: <em>{% if( img.width==0 and img.height==0) %}unknown{% else %}{{ img.width }} x {{ img.height }} px{% endif %}</em></li>
                 </ul>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
-          <div class="delete-button">
+        </div><!-- /row -->    
+        <hr>
+        <div class="row">
+          <div class="span8">
+            <div id="share">
+              
+              <div class="block">
+                <div class="block-title"><i class="icon-share"></i>&nbsp;&nbsp;Resize and Share</div>
+                <ul id="resize">
+                  <h6>Resize to (max width) x (max height)</h6><br/>
+                  <li id="img-size-original">
+                    <h6>Original</h6>
+                    <br>
+                    <button>{{ img.width }}x{{ img.height }}</button>
+                  </li>
+                  <li><h6>Avatar</h6><br /><button>150x150</button></li>
+                  <li><h6>Thumbnail</h6><br /><button>100x75</button></li>
+                  <li><h6>Small</h6><br /><button>320x240</button></li>
+                  <li><h6>Medium</h6><br /><button>640x480</button></li>
+                  <li><h6>Large</h6><br /><button>1024x768</button></li>
+                  <li id="img-size-custom">
+                    <h6>Custom</h6>
+                    <br>
+                    <h5><input id='img_width' placeholder="w" />X<input id='img_height' placeholder="h" />
+                    <a href='{{img_url}}' id='img_link'>here</a></h5>
+                  </li>
+                </ul>
+
+                <div id="share-links">
+                  <div class="row">
+                    <div class="span2"><label for=""><strong>Direct Link</strong></label></div>
+                    <div class="span5"><input type="text" name="direct-link" value="{{img_url}}" onClick="this.select();"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="span2"><label for=""><strong>Embed HTML</strong></label></div>
+                    <div class="span5"><input type="text" name="html-code" value='<a href="{{img_url}}"><img src="{{img_url}}" /></a>' onClick="this.select();"></div>
+                  </div>
+                </div>
+                <!--  add style to it and uncomment
+                 {% for tn in img.thumbnails %}
+                   <a href="{{url_for('get_thumbnail', profile=profile.name, image=tn.name)}}">{{tn.size}}</a> <br />
+                {% endfor %} -->
+
+              </div>
+            </div>
+            <br />  
+          </div><!-- /span8 -->
+          <div class="span4">
+            {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
+            <div class="block block-2">
+              <div class="block-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div>
+              <div>
+                <form action='{{action_url}}' method='POST'>
+                  {{form.csrf_token()}}
+                  {{form.stored_file_id()}}
+                  {{form.labels(value=','.join(labels))}}
+                  {{rendersubmit([(None, "Submit", 'btn-primary')])}}
+                </form>
+              </div>
+            </div>
+          </div><!-- /span4 -->
+          <div class="span4">
+            <ul class="labels">
+              {% if img.labels %}     
+                <li>Labels:</li>
+                {% for label in img.labels %}
+                  <li><span class="label">
+                    <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}">{{label.name}}</a>
+                  </span></li>
+                {% endfor %}
+            {% endif %}
+            </ul>
+            <div class="delete-button">
             <a class="btn btn-danger" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete image</a> 
           </div>
-        </div>
-      </div>
-    </div><!-- /row -->
+          </div><!-- /span4 -->
+        </div><!-- /row -->
 
-    <div class="row">
-      <div class="span6">
-        {% set img_url= url_for('get_image', profile=profile.name, image=img.name) %}
-        <div class="block block-1">
-          <div class="block-title"><i class="icon-tag"></i>&nbsp;&nbsp;Resize image</div>
-          Link to <a href='{{img_url}}'>original image</a> | At a different size:
-          <input id='img_width' placeholder="w" />X<input id='img_height' placeholder="h" />
-          <a href='{{img_url}}' id='img_link'> here</a>.
-
-          <!--  add style to it and uncomment
-           {% for tn in img.thumbnails %}
-             <a href="{{url_for('get_thumbnail', profile=profile.name, image=tn.name)}}">{{tn.size}}</a> <br />
-          {% endfor %} -->
-
-          <br/>
-        </div>
-      </div><!-- /span6 -->
-      <div class="span3">
-        {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
-        <div class="block block-2">
-          <div class="block-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div>
-          <div>
-            <form action='{{action_url}}' method='POST'>
-              {{form.csrf_token()}}
-              {{form.stored_file_id()}}
-              {{form.labels(value=','.join(labels))}}
-              {{rendersubmit([(None, "Submit", 'btn-primary')])}}
-            </form>
-          </div>
-        </div>
-      </div><!-- /span3 -->
-    </div><!-- /row -->
-  </section><!-- /view-image -->
+      </p>
+    </div>
+  </div>
 {% endblock %}
 
 {% block footerscripts %}
@@ -129,8 +169,8 @@
 <script> var profile = '{{profile.name}}';</script>
 <script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
 <script>
-  $('input#img_width').width(100);
-  $('input#img_height').width(100);
+  $('input#img_width').width(30);
+  $('input#img_height').width(30);
   $('input#img_link').width(420);
 
   function set_resize_url(a){
@@ -154,5 +194,32 @@
   $('#labels').select2({
       tags: existing_labels
   });
+
+  $("#resize li button").click(function () {
+    var text = $(this).text();
+    var current_direct_link = $("input:text[name='direct-link']").val();
+
+    if((current_direct_link.search('size')) != '-1' ){
+      current_direct_link = current_direct_link.split('?size=')[0];
+    }  
+    var new_link = current_direct_link+'?size='+text;
+
+    $("input:text[name='direct-link']").val(new_link);
+    $("input:text[name='html-code']").val('<a href="'+new_link+'"><img src="'+new_link+'" /></a>');
+  });
+
+  $("#resize li#img-size-original button").click(function () {
+    var current_direct_link = $("input:text[name='direct-link']").val();
+
+    if((current_direct_link.search('size')) != '-1' ){
+      current_direct_link = current_direct_link.split('?size=')[0];
+    }  
+    var new_link = current_direct_link;
+
+    $("input:text[name='direct-link']").val(new_link);
+    $("input:text[name='html-code']").val('<a href="'+new_link+'"><img src="'+new_link+'" /></a>');
+  });
+
+
 </script>
 {% endblock %}
