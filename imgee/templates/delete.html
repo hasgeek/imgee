@@ -10,7 +10,7 @@
 		<h5><i class="icon-trash"></i>&nbsp;&nbsp;Confirm delete</h5><hr />
 		<p>Are you sure you want to delete "<strong>{{file.title}}</strong>"?</p>
 		<p id="warning">
-			<i class="icon-warning-sign"></i>&nbsp;<strong>Warning: If you delete it, you will lose all the links wherever this image appears.</strong>
+			<i class="icon-warning-sign"></i>&nbsp;<strong>Warning: If you delete it, you will loose all the links wherever this image appears.</strong>
 		</p>
 		<img src="{{url_for('get_thumbnail', profile=profile.name, image=file.name)}}"/>
 		{% set cancel_url=url_for('view_image', profile=profile.name, image=file.name) %}
