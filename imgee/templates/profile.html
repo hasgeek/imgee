@@ -11,100 +11,111 @@
         {{ uf_form.hidden_tag() }}
         <i class="icon-cloud-upload"></i>
         <h4>Drop files to upload<br /></h4>
-          (<em>or click here</em>)
-        {% if upload_flag == True %}
-          <div id="reload-page" style="display: none"><a class="btn push-right">Finish Upload</a></div>
-        {% endif %}
+          <p>(<em>or click here</em>)</p>        
       </form>
+      <div class="span9"><a id="reload-page" class="btn btn-primary">Finish Upload</a></div>
     </div>
-    {% if files %}
-      <div class="row">
-        <div class="span7">
-          <div class="list-grid-selector btn-group">
-            <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i><span class="hide-mob">&nbsp;Grid</span></a>
-            <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i><span class="hide-mob">&nbsp;List</span></a>
+
+    <div class="gallery">
+      {% if files %}
+        <div class="row">
+          <div class="span7">
+            <h4 class="selected-profile"><a href="{{ url_for('profile_view',profile=profile.name) }}">{{ profile.title }}</a>'s Gallery</h4>
+            <em>
+              {% if profile.stored_files.count() == 1 %}
+                1 image
+              {% else %}
+                {{ profile.stored_files.count() | safe }} images
+              {% endif %}
+            </em>
           </div>
-        </div>
-        <div class="span2">
-        <!-- POPUP DEMO -->
-        <!--<div class="row">
-          <a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
-          <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-body">
-              <iframe src="{{ url_for('pop_up_gallery', profile=profile.name)}}" width="980px" height="405px"></iframe>
-            </div>
-            <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          
+          <div class="span2">
+            <div class="list-grid-selector btn-group pull-right">
+              <a href="#" id="gridview" class="btn switcher active"><i class="icon-th-large"></i><span class="hide-mob">&nbsp;Grid</span></a>
+              <a href="#" id="listview" class="btn switcher"><i class="icon-list"></i><span class="hide-mob">&nbsp;List</span></a>
             </div>
           </div>
-        </div>-->
-        <!-- /POPUP DEMO -->
+          <!-- POPUP DEMO -->
+          <!--<div class="row">
+            <a href="#myModal" role="button" class="btn span2" data-toggle="modal">Demo Popup</a>
+            <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-body">
+                <iframe src="{{ url_for('pop_up_gallery', profile=profile.name)}}" width="980px" height="405px"></iframe>
+              </div>
+              <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+              </div>
+            </div>
+          </div>-->
+          <!-- /POPUP DEMO -->
         </div>
-      </div>
-    {% endif %}
-        
-    {% if unlabelled %}
-      {% if profile.labels %}
-        <div class="heading note">Unlabeled-image Archive</div>
-      {% else %}
-        <div class="heading note">Archived Images</div>
+        <hr>
       {% endif %}
-      <br />
-    {% endif %}
-
-    <div class="row">
-      <div class="spann9">
-        {% if files %}
-          <div class="gallery" id="expandable3">
-            <ul id="showcase" class="grid">
-              <div id="row-ctrl">
-                <section class="top">
-                  <div class="span1 top1">Image</div>
-                  <div class="span3 top2">Title</div>
-                  <div class="span2 top3">Uploaded at</div>
-                  <div class="span1 top4">Size</div>
-                  <div class="span2 top5">Aspect ratio</div>
-                </section>
-
-                {% for img in files %}
-                  <li class="image">
-                    <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
-                      <section class="left">
-                        <div class="image-thumb">    
-                          <img src="{{url_for('get_thumbnail', profile=profile.name, image=img.name)}}"/>
-                        </div>
-                      </section>
-                    </a>
-                    
-                    <section class="right span8">
-                      <div class="row">   
-                        <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">                                 
-                          <div class="title editable_title span3 list2" id="{{img.name}}">{{img.title}}</div>
-                          <div class="span2 date list3">{{ img.created_at.strftime('%B %d, %Y') }}</div>
-                          <div class="span1 date list4">{{ (img.size/1024) | round(2) }} KB</div>
-                          <div class="span2 date list5">{{ img.width }} x {{ img.height }} px</div>
-                        </a>
-                      </div>
-                    </section> 
-                  </li><!-- /image -->
-                {% endfor %}  
-              </div><!-- /row-ctrl -->
-            </ul><!-- showcase -->
-          </div><!-- gallery-->
-          <a href="#" id="more3" style="display: none"><i class="icon-caret-down"></i></a>
+          
+      {% if unlabelled %}
+        {% if profile.labels %}
+          <div class="heading note">Unlabeled-image Archive</div>
         {% else %}
-          <div class="well">
-            <div class="span8">
-            {% if unlabelled %}
-              Hurray! Not a single image is without a label.
-            {% else %}
-              There are no images uploaded yet. <a href="{{url_for('upload_file', profile=profile.name)}}">Upload them.</a>
-            {% endif %}
-            </div>
-          </div>
+          <div class="heading note">Archived Images</div>
         {% endif %}
-      </div><!-- /span9 -->
-    </div><!-- /row -->
+        <br />
+      {% endif %}
+
+      <div class="row">
+        <div class="span9">
+          {% if files %}
+            <div class="gallery" id="expandable3">
+              <ul id="showcase" class="grid">
+                <div id="row-ctrl">
+                  <section class="top">
+                    <div class="span1 top1">Image</div>
+                    <div class="span3 top2">Title</div>
+                    <div class="span2 top3">Uploaded at</div>
+                    <div class="span1 top4">File size</div>
+                    <div class="span2 top5">Image size</div>
+                  </section>
+
+                  {% for img in files %}
+                    <li class="image">
+                      <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
+                        <section class="left">
+                          <div class="image-thumb">    
+                            <img src="{{url_for('get_thumbnail', profile=profile.name, image=img.name)}}"/>
+                          </div>
+                        </section>
+                      </a>
+                      
+                      <section class="right span8">
+                        <div class="row">   
+                          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">                                 
+                            <div class="title editable_title span3 list2" id="{{img.name}}">{{img.title}}</div>
+                            <div class="span2 date list3">{{ img.created_at.strftime('%B %d, %Y') }}</div>
+                            <div class="span1 date list4">{{ (img.size/1024) | round(2) }} KB</div>
+                            <div class="span2 date list5">{{ img.width }} x {{ img.height }} px</div>
+                          </a>
+                        </div>
+                      </section> 
+                    </li><!-- /image -->
+                  {% endfor %}  
+                </div><!-- /row-ctrl -->
+              </ul><!-- showcase -->
+            </div><!-- gallery-->
+            <a href="#" id="more3" style="display: none"><i class="icon-caret-down"></i></a>
+          {% else %}
+            <div class="well">
+              <div>
+              {% if unlabelled %}
+                Hurray! Not a single image is without a label.
+              {% else %}
+                There are no images uploaded yet. <a href="{{url_for('upload_file', profile=profile.name)}}">Upload them.</a>
+              {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </div><!-- /span9 -->
+      </div><!-- /row -->
+    </div><!-- gallery -->
   </section><!-- /profile -->
 {% endblock %}
 
@@ -141,14 +152,18 @@
   });  
 </script>
 <script type="text/javascript">
-  $('.reload-page').click(function(){
+  $('#reload-page').hide();
+  $('.dropzone').click(function(){
+    $('#reload-page').show();
+  })  
+  $('#reload-page').click(function(){
+
     location.reload();
   });
 </script>
 
-
 <script type="text/javascript">
-  var gallerylimit = 315;
+  var gallerylimit = 321;
   var expheight = $('#expandable3').height(); 
   $('#more3').css('display', 'block');     
   

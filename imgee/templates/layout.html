@@ -11,14 +11,7 @@
       <div class="span3 sidebar">
         {% block sidebar %}
           <div class="well">
-            <h4 class="selected-profile"><a href="{{ url_for('profile_view',profile=profile.name) }}">{{ profile.title }}</a></h4>
-            <em>
-              {% if profile.stored_files.count() == 1 %}
-                1 image
-              {% else %}
-                {{ profile.stored_files.count() | safe }} images
-              {% endif %}
-            </em>
+            {% block sidebar_labels %}
             <ul class="nav nav-list" id="expandable1">
               <li class="nav-header">Labels</li> 
               <!-- List labels -->
@@ -67,12 +60,13 @@
               <a class="" title="Create new label" href="{{url_for('create_label', profile=profile.name )}}"><i class="icon-plus"></i>&nbsp;&nbsp;Add label</a>
             </noscript>
             <a class="hide-desktop" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-plus"></i>&nbsp;New label</a>
+            {% endblock %}
             <hr>
-            <ul class="nav nav-list" id="expandable2">
+            <ul class="nav nav-list org-list" id="expandable2">
               <li class="nav-header">Profile And Organizations</li> 
-              <li><a title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
+              <li><a class="{% if g.user.username == profile.name %}active{% endif %}" title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
               {%- for org in g.user.organizations_owned() %}
-                <li><a href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
+                <li><a class="{% if org.name == profile.name %}active{% endif %}" href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
               {%- endfor %}
             </ul>
             <a href="#" id="more2"><i class="icon-ellipsis-horizontal"></i></a>
