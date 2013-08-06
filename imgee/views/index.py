@@ -51,11 +51,7 @@ def upload_file(profile):
         filename = secure_filename(file_.filename)
         save(file_, profile=profile)
         flash('"%s" uploaded successfully.' % filename)
-        print "uploaded successfully"
         return redirect(_redirect_url_frm_upload(profile.name))
-    else: 
-        print "Upload failed!"
-
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form, profile=profile)
 
