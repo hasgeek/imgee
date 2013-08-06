@@ -111,18 +111,14 @@
 
                 <div id="share-links">
                   <div class="row">
-                    <div class="span2"><label for="">Direct Link</label></div>
+                    <div class="span2"><label for=""><strong>Direct Link</strong></label></div>
                     <div class="span5"><input type="text" name="direct-link" value="{{img_url}}" onClick="this.select();"/></div>
                   </div>
                   <div class="row">
-                    <div class="span2"><label for="">Embed HTML</label></div>
+                    <div class="span2"><label for=""><strong>Embed HTML</strong></label></div>
                     <div class="span5"><input type="text" name="html-code" value='<a href="{{img_url}}"><img src="{{img_url}}" /></a>' onClick="this.select();"></div>
                   </div>
-                  <!-- <div class="row">
-                    <div class="span2"><label for="">Responsive image code <sup>*</sup></label></div>
-                    <div class="span5"><input type="text" name="responsive-code" value='<div data-picture data-alt="{{ img.title }}"><div data-src="{{ img_url }}"></div><div data-src="{{ img_url }}?size={% if img.width < 250 %}{{img.width}}{% else %}250{% endif %}" data-media="(min-width: 480px)"></div><div data-src="{{ img_url }}?size={% if img.width < 400 %}{{img.width}}{% else %}400{% endif %}" data-media="(min-width: 768px)"></div><div data-src="{{ img_url }}?size={% if img.width < 521 %}{{img.width}}{% else %}521{% endif %}" data-media="(min-width: 980px)"></div><div data-src="{{ img_url }}?size={% if img.width < 650 %}{{img.width}}{% else %}650{% endif %}" data-media="(min-width: 1200px)"></div></div>' onClick="this.select();"><div class="alert alert-info">* You need to include picturefill jQuery plugin in your webpage to use this snippet, unless you are embedding it on any of the HasGeek sites.</div></div>
-                  </div>
-     -->            </div>
+                </div>
                 <!--  add style to it and uncomment
                  {% for tn in img.thumbnails %}
                    <a href="{{url_for('get_thumbnail', profile=profile.name, image=tn.name)}}">{{tn.size}}</a> <br />

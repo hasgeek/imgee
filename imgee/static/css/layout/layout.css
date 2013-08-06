@@ -932,6 +932,21 @@ input[type="file"] {
   top: -37px;
 }
 
+@media (min-width: 980px) and (max-width: 1200px) {
+  .dropzone .dz-default.dz-message {
+    width: 699px;
+  }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .dropzone .dz-default.dz-message {
+    width: 536px;
+  }
+}
+@media screen and (max-width: 767px) {
+  .dropzone .dz-default.dz-message {
+    width: auto;
+  }
+}
 .tucked-corners-top {
   background-attachment: scroll, scroll, scroll, scroll;
   background-clip: border-box, border-box, border-box, border-box;
