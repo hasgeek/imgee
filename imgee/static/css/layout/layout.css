@@ -1607,6 +1607,16 @@ ul#resize li#img-size-custom input {
     margin-left: -530px;
   }
 }
+.index {
+  margin-top: 80px;
+}
+
+.index-img {
+  opacity: 0.3;
+  margin-right: 80px;
+  width: 300px;
+}
+
 .hide-sidebar {
   display: none;
 }
@@ -1681,6 +1691,16 @@ ul#resize li#img-size-custom input {
     background-repeat: repeat-x;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.075);
+  }
+
+  .index {
+    margin-top: 30px;
+    margin-bottom: 50px;
+    text-align: center;
+  }
+
+  .index-img {
+    display: none;
   }
 }
 @media screen and (max-width: 480px) {
