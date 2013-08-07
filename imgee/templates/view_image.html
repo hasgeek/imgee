@@ -125,7 +125,7 @@
                   </div>
                   <div class="row">
                     <div class="span2"><label for=""><strong>Embed HTML</strong></label></div>
-                    <div class="span5"><input type="text" name="html-code" value='<a href="{{img_url}}"><img src="{{img_url}}" /></a>' onClick="this.select();"></div>
+                    <div class="span5"><input type="text" name="html-code" value="<img src=&quot;{{img_url}}&quot; /></a>" onClick="this.select();"></div>
                   </div>
                 </div>
                 <!--  add style to it and uncomment
@@ -226,7 +226,7 @@
     var new_link = current_direct_link;
 
     $("input:text[name='direct-link']").val(new_link);
-    $("input:text[name='html-code']").val('<a href="'+new_link+'"><img src="'+new_link+'" /></a>');
+    $("input:text[name='html-code']").val('<img src="'+new_link+'" />');
   });
 
 
