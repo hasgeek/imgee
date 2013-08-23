@@ -2,7 +2,8 @@
 
 import os.path
 from coaster import make_name
-from flask.ext.wtf import Form, Required, ValidationError, Length
+from flask.ext.wtf import Form
+from wtforms.validators import Required, ValidationError, Length
 from wtforms import (FileField, TextField, HiddenField,
         SelectMultipleField, SelectField)
 
