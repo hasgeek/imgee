@@ -128,7 +128,6 @@ def view_image(profile, img):
     next = get_next_images(profile, img)
     form = forms.AddLabelForm(stored_file_id=img.name)
     media_domain = get_media_domain()
-    print media_domain
     return render_template('view_image.html', profile=profile, form=form, img=img,
                     prev=prev, next=next, domain=media_domain)
 
