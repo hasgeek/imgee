@@ -2,8 +2,9 @@
 
 import os.path
 from coaster import make_name
-from flask.ext.wtf import (Form, FileField, Required, ValidationError,
-    TextField, HiddenField, Length, SelectMultipleField, SelectField)
+from flask.ext.wtf import Form, Required, ValidationError, Length
+from wtforms import (FileField, TextField, HiddenField,
+        SelectMultipleField, SelectField)
 
 from imgee import app
 from imgee.models import Label
