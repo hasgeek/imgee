@@ -15,19 +15,19 @@
       {% for n in next %}
         <div class="image-thumb">
           <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" title="view image">
-            <img src="{{url_for('get_thumbnail', profile=profile.name, image=n.name)}}"/>
+            <img src="{{url_for('get_thumbnail', image=n.name)}}"/>
           </a>
         </div>
       {% endfor %}
       <div class="image-thumb">
         <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
-          <img class="active" src="{{url_for('get_thumbnail', profile=profile.name, image=img.name)}}"/>
+          <img class="active" src="{{url_for('get_thumbnail', image=img.name)}}"/>
         </a>
       </div>
       {% for p in prev %}
         <div class="image-thumb">
           <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" title="view image">
-            <img src="{{url_for('get_thumbnail', profile=profile.name, image=p.name)}}"/>
+            <img src="{{url_for('get_thumbnail', image=p.name)}}"/>
           </a>
         </div>
       {% endfor %}
@@ -40,7 +40,7 @@
     <div class="tucked-corners-bottom"> 
       <p>
         <div class="row">
-          {% set img_url= url_for('get_image', profile=profile.name, image=img.name, _external=True) %}
+          {% set img_url= url_for('get_image', image=img.name, _external=True) %}
           <div class="span8">
             
             <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
@@ -130,7 +130,7 @@
                 </div>
                 <!--  add style to it and uncomment
                  {% for tn in img.thumbnails %}
-                   <a href="{{url_for('get_thumbnail', profile=profile.name, image=tn.name)}}">{{tn.size}}</a> <br />
+                   <a href="{{url_for('get_thumbnail', image=tn.name)}}">{{tn.size}}</a> <br />
                 {% endfor %} -->
 
               </div>
@@ -183,7 +183,7 @@
   $('input#img_link').width(420);
 
   function set_resize_url(a){
-      var file_url = "{{url_for('get_image', profile=profile.name, image=img.name)}}";
+      var file_url = "{{url_for('get_image', image=img.name)}}";
       var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
       a.attr('href', url_with_size);
   }

@@ -133,7 +133,7 @@ def view_image(profile, img):
                     prev=prev, next=next, domain=media_domain)
 
 
-@app.route('/<profile>/file/<image>')
+@app.route('/embed/file/<image>')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image(image):
     extn = image.extn
@@ -147,7 +147,7 @@ def get_image(image):
     return redirect(urljoin(media_domain, img_name), code=301)
 
 
-@app.route('/<profile>/thumbnail/<image>')
+@app.route('/embed/thumbnail/<image>')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_thumbnail(image):
     extn = image.extn
