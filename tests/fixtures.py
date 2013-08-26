@@ -3,8 +3,8 @@ import random
 import string
 
 from flask import g
-from imgee import init_for, app
-from imgee.models import db, User, Profile
+from imgee import init_for, app, storage
+from imgee.models import db, User, Profile, StoredFile
 
 
 def get_test_user(name, id=1):
@@ -35,6 +35,8 @@ class ImgeeTestCase(unittest.TestCase):
             db.session.commit()
 
     def tearDown(self):
+        for s in StoredFile.query.all():
+            storage.delete_on_s3(s)
         db.drop_all()
 
 

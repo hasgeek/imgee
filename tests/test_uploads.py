@@ -3,15 +3,14 @@ import unittest
 import requests
 from PIL import Image
 
-from imgee import storage
-from imgee.models import StoredFile
+from imgee.models import StoredFile, Thumbnail
 from fixtures import ImgeeTestCase, app
 import test_utils
 
 
-class UploadTestCase(ImgeeTestCase):
+class ImgeeBaseTest(ImgeeTestCase):
     def setUp(self):
-        super(UploadTestCase, self).setUp()
+        super(ImgeeBaseTest, self).setUp()
         self.img_id = None
         self.test_file = '../imgee/static/img/imgee.jpeg'
 
@@ -28,41 +27,39 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(r.status_code, 301)
         return requests.get(r.location).ok
 
-    def get_image_size(self, img_path=None):
-        return test_utils.get_image_size(img_path or self.test_file)
 
+class TestEmpty(ImgeeBaseTest):
     def test_empty(self):
         r = self.client.get('/%s' % self.test_user_name)
         self.assertEquals(r.status_code, 200)
-        self.assertTrue('no images uploaded yet.' in r.data)
-        self.assertTrue('No Labels yet.' in r.data)
+        self.assertEquals(len(StoredFile.query.all()), 0)
+
+class TestUpload(ImgeeBaseTest):
+    def setUp(self):
+        super(TestUpload, self).setUp()
+        self.filetitle, self.r = self.upload()
+        self.img_id = test_utils.get_img_id(self.filetitle)
 
     def test_upload(self):
-        filename, r = self.upload()
-        self.assertEquals(r.status_code, 200)
-        self.assertTrue(filename in r.data)
-        self.assertTrue("uploaded successfully." in r.data)
+        self.assertEquals(self.r.status_code, 200)
+        self.assertEquals(len(StoredFile.query.filter_by(title=self.filetitle).all()), 1)
 
     def test_view_image(self):
-        filename, r = self.upload()
-        self.img_id = test_utils.get_img_id(filename)
         view_url = '/%s/view/%s' % (self.test_user_name, self.img_id)
         r = self.client.get(view_url)
         self.assertEquals(r.status_code, 200)
 
     def test_file(self):
-        filename, r = self.upload()
-        self.img_id = test_utils.get_img_id(filename)
         self.assertTrue(self.exists_on_media_domain(self.img_id))
 
     def test_thumbnail(self):
-        filename, r = self.upload()
-        self.img_id = test_utils.get_img_id(filename)
         self.assertTrue(self.thumbnails_exists_on_media_domain(self.img_id))
+        img = StoredFile.query.get(self.img_id)
+        self.assertEquals(len(img.thumbnails), 1)
 
     def test_delete(self):
-        filename, r = self.upload()
-        self.img_id = test_utils.get_img_id(filename)
+        filetitle, r = self.upload()
+        self.img_id = test_utils.get_img_id(filetitle)
 
         # check if the file and thumbnail exists
         self.assertTrue(self.exists_on_media_domain(self.img_id))
@@ -79,13 +76,11 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(r.status_code, 404)
 
     def test_file_count(self):
-        filename1, r1 = self.upload()
-
         # if the same file is uploaded twice, imgee should treat them as different
-        filename2, r2 = self.upload()
-        self.assertEquals(filename1, filename2)
+        filetitle2, r2 = self.upload()
+        self.assertEquals(self.filetitle, filetitle2)
 
-        imgs = StoredFile.query.filter_by(title=filename1).all()
+        imgs = StoredFile.query.filter_by(title=self.filetitle).all()
         self.assertEquals(len(imgs), 2)
 
     def test_thumbnail_size(self):
@@ -97,6 +92,17 @@ class UploadTestCase(ImgeeTestCase):
         imgio = test_utils.download_image(r.location)
         img = Image.open(imgio)
         self.assertEquals(img.size, app.config['THUMBNAIL_SIZE'])
+
+    def test_non_image_file(self):
+        file_name, r = self.upload('../imgee/static/css/app.css')
+        self.assertEquals(r.status_code, 200)
+        self.assertTrue('Sorry, unknown image format' in r.data)
+
+
+class TestResize(ImgeeBaseTest):
+    def get_image_size(self, img_path=None):
+        self.test_file = '../imgee/static/img/imgee.jpeg'
+        return test_utils.get_image_size(img_path or self.test_file)
 
     def test_resize(self):
         img_name, r = self.upload()
@@ -128,11 +134,6 @@ class UploadTestCase(ImgeeTestCase):
         else:
             self.assertEquals(int(resized_w/img_w), int(resized_h/img_h))
 
-    def test_non_image_file(self):
-        file_name, r = self.upload('../imgee/static/css/app.css')
-        self.assertEquals(r.status_code, 200)
-        self.assertTrue('Sorry, unknown image format' in r.data)
-
     def test_resize3_file(self):
         # non resizable images
         file_name, r = self.upload('../imgee/static/img/imgee.svg')
@@ -156,11 +157,6 @@ class UploadTestCase(ImgeeTestCase):
         self.assertEquals(resized_w, 100)
         # check aspect ratio
         self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
-
-    def tearDown(self):
-        for s in StoredFile.query.all():
-            storage.delete_on_s3(s)
-        super(UploadTestCase, self).tearDown()
 
 
 if __name__ == '__main__':
