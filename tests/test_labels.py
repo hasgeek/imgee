@@ -1,7 +1,7 @@
 import unittest
 
 from imgee import storage
-from imgee.models import StoredFile
+from imgee.models import StoredFile, Label, db
 from fixtures import ImgeeTestCase
 import test_utils
 
@@ -24,39 +24,38 @@ class LabelTestCase(ImgeeTestCase):
     def test_empty(self):
         r = self.client.get('/%s' % self.test_user_name)
         self.assertEquals(r.status_code, 200)
-        self.assertTrue('No Labels yet.' in r.data)
+        self.assertEquals(len(Label.query.all()), 0)
 
     def test_create_label(self):
         label = self.test_labels[0]
         r = self.create_label(label)
         self.assertEquals(r.status_code, 200)
-        self.assertTrue(('The label %s was created.' % label) in r.data.replace('&#34;', ''))
-        r = self.client.get('/%s' % self.test_user_name)
-        self.assertTrue(label in r.data)
+        self.assertEquals(len(Label.query.filter_by(title=label).all()), 1)
 
     def test_add_remove_label(self):
         # upload image
-        img_name, r = self.upload()
-        img_id = test_utils.get_img_id(img_name)
+        img_title, r = self.upload()
+        img = StoredFile.query.filter_by(title=img_title).one()
+        img_id, img_name = img.id, img.name
+        self.assertFalse(img.labels)
+
         # create label
         label = self.test_labels[0]
         self.create_label(label)
         # attach label to image
-        save_label_url = '/%s/save_labels/%s' % (self.test_user_name, img_id)
+        save_label_url = '/%s/save_labels/%s' % (self.test_user_name, img_name)
         r = self.client.post(save_label_url, data={'labels': label})
-        self.assertEquals(r.status_code, 302)
-        # check if the image is in the label page
+
+        img = StoredFile.query.get(img_id)
+        self.assertEquals(len(img.labels), 1)
+
         r = self.client.get('/%s/%s' % (self.test_user_name, label))
         self.assertEquals(r.status_code, 200)
-        self.assertTrue(img_name in r.data)
+
         # remove the label from image
         r = self.client.post(save_label_url, data={'labels': ''})
-        self.assertEquals(r.status_code, 302)
-        # check that the image is NOT in the label page
-        r = self.client.get('/%s/%s' % (self.test_user_name, label))
-        self.assertEquals(r.status_code, 200)
-        self.assertTrue('There are no images with label' in r.data)
-        self.assertTrue('Removed label' in r.data)
+        img = StoredFile.query.get(img_id)
+        self.assertEquals(len(img.labels), 0)
 
     def test_delete_label(self):
         label = self.test_labels[0]
@@ -70,11 +69,6 @@ class LabelTestCase(ImgeeTestCase):
         self.assertEquals(r.status_code, 404)
 
 
-    def tearDown(self):
-        s = StoredFile.query.filter_by(name=self.img_id).first()
-        if s:
-            storage.delete_on_s3(s)
-        super(LabelTestCase, self).tearDown()
 
 
 if __name__ == '__main__':
