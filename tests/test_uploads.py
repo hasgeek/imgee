@@ -54,7 +54,7 @@ class TestUpload(ImgeeBaseTest):
 
     def test_thumbnail(self):
         self.assertTrue(self.thumbnails_exists_on_media_domain(self.img_id))
-        img = StoredFile.query.get(self.img_id)
+        img = StoredFile.query.filter_by(name=self.img_id).first()
         self.assertEquals(len(img.thumbnails), 1)
 
     def test_delete(self):
