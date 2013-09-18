@@ -145,7 +145,7 @@
                 <form action='{{action_url}}' method='POST'>
                   {{form.csrf_token()}}
                   {{form.stored_file_id()}}
-                  {{form.labels(value=','.join(labels))}}
+                  {{form.labels(value=img.labels|join(',', attribute='name'))}}
                   {{rendersubmit([(None, "Submit", 'btn-primary')])}}
                 </form>
               </div>
