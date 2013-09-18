@@ -28,7 +28,7 @@ def create_label(profile):
         label = form.label.data
         utils_save_label(label, profile)
         flash('The label "%s" was created.' % label)
-        return redirect(g.user.profile_url)
+        return redirect(url_for('profile_view', profile=profile.name))
     return render_template('create_label.html', form=form, profile=profile)
 
 
@@ -87,7 +87,7 @@ def manage_labels(profile, img):
             status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
             plural = 's' if len(saved) > 1 else ''
             flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.title for l in saved), status[s][1], img.title))
-        return redirect(url_for('view_image', profile=g.user.profile_name, image=img.name))
+        return redirect(url_for('view_image', profile=profile.name, image=img.name))
     return render_template('view_image.html', form=form, img=img)
 
 
