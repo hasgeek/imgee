@@ -116,7 +116,7 @@ def get_prev_images(profile, img, limit=2):
 
 def get_next_images(profile, img, limit=2):
     imgs = profile.stored_files.filter(StoredFile.created_at > img.created_at)
-    return imgs.order_by('created_at asc').limit(limit).all()[::1]
+    return imgs.order_by('created_at asc').limit(limit).all()[::-1]
 
 @app.route('/<profile>/view/<image>')
 @load_models(
