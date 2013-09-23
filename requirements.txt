@@ -5,6 +5,6 @@ Flask-SQLAlchemy
 https://github.com/hasgeek/flask-lastuser/zipball/master
 Flask-Admin
 boto
-Pillow
+Pillow==2.1.0
 redis
 Flask-RQ
