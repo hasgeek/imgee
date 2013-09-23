@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /embed/file/
+Allow: /embed/thumbnail/
+Disallow: /
