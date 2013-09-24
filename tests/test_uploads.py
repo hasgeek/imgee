@@ -127,7 +127,7 @@ class TestResize(ImgeeBaseTest):
         resized_img = test_utils.download_image(r.location)
         resized_w, resized_h = self.get_image_size(resized_img)
 
-        self.assertEquals(resized_h, 150)
+        self.assertEquals(resized_w, 100)
         # check aspect ratio
         if resized_w < img_w:
             self.assertEquals(int(img_w/resized_w), int(img_h/resized_h))
