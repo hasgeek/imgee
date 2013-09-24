@@ -148,7 +148,7 @@ def get_size((orig_w, orig_h), (w, h)):
     # fit the image to the box along the smaller side and preserve aspect ratio.
     # w or h being 0 means preserve aspect ratio with that height or width
 
-    if (h == 0) or (orig_w <= orig_h):
+    if (h == 0) or (w <= h):
         size = (w, w*orig_h/orig_w)
     else:
         size = (h*orig_w/orig_h, h)
