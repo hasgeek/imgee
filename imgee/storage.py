@@ -44,7 +44,7 @@ def save(fp, profile, img_name=None):
 
     save_img_in_db(name=id_, title=fp.filename, local_path=local_path,
                     profile=profile, mimetype=content_type)
-    queueit('save_on_s3', local_path, img_name, content_type=content_type)
+    queueit('save_on_s3', img_name, content_type=content_type)
 
 
 
@@ -66,21 +66,24 @@ def save_tn_in_db(img, tn_name, size_t):
     """
     Save thumbnail info in db.
     """
+    name, extn = os.path.splitext(tn_name)
     size_s = "%sx%s" % size_t
-    tn = Thumbnail(name=tn_name, size=size_s, stored_file=img)
+    tn = Thumbnail(name=name, size=size_s, stored_file=img)
     db.session.add(tn)
     db.session.commit()
-    return tn_name
+    return name
 
 
-def save_on_s3(file_path, remotename='', content_type='', bucket='', folder=''):
+def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
     """
     Save contents from `file_path` to `remotename` on S3.
     """
+    filepath = path_for(filename)
     b = bucket or get_s3_bucket()
     folder = get_s3_folder(folder)
-    with open(file_path) as fp:
-        filename = remotename or fp.name
+
+    with open(filepath) as fp:
+        filename = remotename or filename
         k = b.new_key(folder+filename)
         content_type = content_type or get_file_type(filename)
         headers = {
@@ -146,28 +149,28 @@ def resize_and_save(img, size, is_thumbnail=False):
     Resize the image and save resized image on S3 and size details in db.
     """
     src_path = download_frm_s3(img.name + img.extn)
-    scaled_img_name = get_resized_name(img, size)
-    content_type = img.mimetype
-    format = guess_extension(content_type).lstrip('.')
 
-    scaled_path = resize_img(src_path, size, format, is_thumbnail=is_thumbnail)
+    format = guess_extension(img.mimetype).lstrip('.')
+    resized_name = '%s%s' % (get_resized_name(img, size), img.extn)
+    resize_img(src_path, path_for(resized_name), size, format, is_thumbnail=is_thumbnail)
 
     # separate queue for thumbnails so that we can give high priority to save them on S3
     queue = app.config.get('THUMBNAIL_QUEUE')
-    queueit('save_on_s3', scaled_path, scaled_img_name+img.extn, content_type, queue=queue)
-
-    return save_tn_in_db(img, scaled_img_name, size)
-
+    queueit('save_on_s3', resized_name, content_type=img.mimetype, queue=queue)
+    return save_tn_in_db(img, resized_name, size)
 
 
-def resize_img(src, size, format, is_thumbnail):
+def resize_img(src, dest, size, format, is_thumbnail):
     """
     Resize image using PIL.
     `size` is a tuple (width, height)
     resize the image at `src` to the specified `size` and return the path to the resized img.
     """
-    if (not size) or (not os.path.exists(src)):
+    if not os.path.exists(src):
         return
+    if not size:
+        return src
+
     img = Image.open(src)
     img.load()
 
@@ -181,10 +184,7 @@ def resize_img(src, size, format, is_thumbnail):
         left, top = int((w-tw)/2), int((h-th)/2)
         resized = resized.crop((left, top, left+tw, top+th))
 
-    name, extn = os.path.splitext(src)
-    resized_path = '%s_%sx%s%s' % (name, size[0], size[1], extn)
-    resized.save(resized_path, format=format, quality=100)
-    return resized_path
+    resized.save(dest, format=format, quality=100)
 
 
 def delete_on_s3(stored_file):
