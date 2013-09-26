@@ -9,8 +9,8 @@ from sqlalchemy import and_, not_
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
-from imgee.storage import delete_on_s3, save, get_resized_image, get_s3_folder
-from imgee.utils import newid, get_media_domain
+from imgee.storage import delete_on_s3, save, get_resized_image
+from imgee.utils import newid, get_media_domain, get_s3_folder
 
 image_formats = '.jpg .jpe .jpeg .png .gif .bmp'.split()
 
