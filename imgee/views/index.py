@@ -138,7 +138,10 @@ def get_image(image):
     extn = image.extn
     if extn in image_formats:
         size = request.args.get('size', '')
-        img_name = get_resized_image(image, size)
+        if not size:
+            img_name = image.name
+        else:
+            img_name = get_resized_image(image, size)
     else:
         img_name = image.name
     img_name = get_s3_folder() + img_name + extn
