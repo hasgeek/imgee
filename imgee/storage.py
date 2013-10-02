@@ -17,7 +17,9 @@ from imgee.utils import (newid, guess_extension, get_file_type,
 # -- functions used in views --
 
 def get_resized_image(img, size, is_thumbnail=False):
-    """Check if `img` is available with `size` if not resize and give it"""
+    """
+    Check if `img` is available with `size` if not make a one. Return the name of it.
+    """
     img_name = img.name
     size_t = parse_size(size)
     if size_t and size_t[0] != img.width and size_t[1] != img.height:
@@ -76,7 +78,7 @@ def save_tn_in_db(img, tn_name, size_t):
 
 def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
     """
-    Save contents from `file_path` to `remotename` on S3.
+    Save contents from file named `filename` to `remotename` on S3.
     """
     filepath = path_for(filename)
     b = bucket or get_s3_bucket()
