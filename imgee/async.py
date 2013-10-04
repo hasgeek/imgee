@@ -1,8 +1,10 @@
 import redis
 import celery.states
 from celery.result import AsyncResult, EagerResult
+from flask import url_for, redirect
 
-from imgee import app, imgeecelery
+import imgee
+from imgee import app
 import storage, utils
 
 
@@ -37,11 +39,10 @@ def queueit(funcname, *args, **kwargs):
     taskid = kwargs.pop('taskid')
     if app.config.get('CELERY_ALWAYS_EAGER'):
         return func(*args, **kwargs)
-        # return func.apply(*args, **kwargs).get()
     else:
         # check it in the registry.
         if taskid in registry:
-            job = AsyncResult(taskid, app=imgeecelery)
+            job = AsyncResult(taskid, app=imgee.celery)
             if job.status == celery.states.SUCCESS:
                 return job.result
         else:
@@ -50,3 +51,13 @@ def queueit(funcname, *args, **kwargs):
             job = func.apply_async(args=args, kwargs=kwargs, task_id=taskid)
         return job
 
+
+def get_async_result(job):
+    """
+    If the result is not yet ready, return that else return None.
+    """
+    if isinstance(job, AsyncResult):
+        if job.status == celery.states.SUCCESS:
+            return job.result
+    elif isinstance(job, (str, unicode)):
+        return job
