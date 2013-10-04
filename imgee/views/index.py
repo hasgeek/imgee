@@ -92,6 +92,7 @@ def profile_view(profile):
     upload_form = forms.UploadImageForm()
     return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form)
 
+
 @app.route('/<profile>/view')
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
@@ -100,6 +101,7 @@ def view_all(profile):
     files = profile.stored_files.order_by('created_at desc').all()
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form)
+
 
 @app.route('/<profile>/archive')
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -110,13 +112,16 @@ def unlabelled_images(profile):
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
+
 def get_prev_images(profile, img, limit=2):
     imgs = profile.stored_files.filter(StoredFile.created_at < img.created_at)
     return imgs.order_by('created_at desc').limit(limit).all()[::1]
 
+
 def get_next_images(profile, img, limit=2):
     imgs = profile.stored_files.filter(StoredFile.created_at > img.created_at)
     return imgs.order_by('created_at asc').limit(limit).all()[::-1]
+
 
 @app.route('/<profile>/view/<image>')
 @load_models(
