@@ -1,7 +1,8 @@
 import redis
+from celery import Task
 import celery.states
 from celery.result import AsyncResult, EagerResult
-from flask import url_for, redirect
+from flask import url_for, redirect, current_app
 
 import imgee
 from imgee import app
@@ -10,10 +11,12 @@ import storage, utils
 
 class TaskRegistry(object):
     def __init__(self, name='default', connection=None):
-        # @@ TODO: take redis url from app.config
-        self.connection = connection or redis.from_url("redis://localhost:6379/0")
+        self.connection = connection
         self.name = name
         self.key = 'rq:registry:%s' % name
+
+    def set_connection(self, connection):
+        self.connection = connection
 
     def add(self, imgname):
         self.connection.sadd(self.key, imgname)
@@ -25,8 +28,6 @@ class TaskRegistry(object):
         return self.connection.sismember(self.key, imgname)
 
 
-
-# @@ TODO: find a better place to init TaskRegistry
 registry = TaskRegistry()
 
 
@@ -35,6 +36,9 @@ def queueit(funcname, *args, **kwargs):
     Execute `funcname` function with `args` and `kwargs` if CELERY_ALWAYS_EAGER is True.
     Otherwise, check if it's queued already in `TaskRegistry`. If not, add it to `TaskRegistry` and queue it.
     """
+    if not registry.connection:
+        registry.set_connection(redis.from_url(app.config.get('REDIS_URL')))
+
     func = getattr(storage, funcname)
     taskid = kwargs.pop('taskid')
     if app.config.get('CELERY_ALWAYS_EAGER'):

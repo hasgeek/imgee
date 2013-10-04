@@ -45,8 +45,9 @@ THUMBNAIL_SIZE = (75, 75)   # (w, h) in px
 UNKNOWN_FILE_THUMBNAIL = 'set path to unknown file thumbnail on media_domain'
 
 #: Celery settings
-BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+REDIS_URL = 'redis://localhost:6379/0'
+BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 
 #: Path to loading image in static folder
 LOADING_IMG = 'img/spinner.gif'
