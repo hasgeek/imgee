@@ -6,7 +6,7 @@ import mimetypes
 from StringIO import StringIO
 from PIL import Image
 
-from imgee import app
+from imgee import app, imgeecelery
 from imgee.models import db, Thumbnail, StoredFile
 from imgee.async import queueit
 from imgee.utils import (newid, guess_extension, get_file_type,
@@ -28,7 +28,8 @@ def get_resized_image(img, size, is_thumbnail=False):
         if scaled:
             img_name = scaled.name
         else:
-            img_name = resize_and_save(img, size_t, is_thumbnail=is_thumbnail)
+            resized_name = '%s%s' % (get_resized_name(img, size_t), img.extn)
+            img_name = queueit('resize_and_save', img, size_t, is_thumbnail=is_thumbnail, taskid=resized_name)
     return img_name
 
 
@@ -46,8 +47,8 @@ def save(fp, profile, img_name=None):
 
     save_img_in_db(name=id_, title=fp.filename, local_path=local_path,
                     profile=profile, mimetype=content_type)
-    queueit('save_on_s3', img_name, content_type=content_type)
-
+    queueit('save_on_s3', img_name, content_type=content_type, taskid=img_name)
+    return img_name
 
 
 # -- actual saving of image/thumbnail and data in the db and on S3.
@@ -76,6 +77,7 @@ def save_tn_in_db(img, tn_name, size_t):
     return name
 
 
+@imgeecelery.task(name='imgee.storage.s3-upload')
 def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
     """
     Save contents from file named `filename` to `remotename` on S3.
@@ -93,7 +95,7 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
             'Content-Type': content_type,
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
-    return k
+    return remotename
 
 
 
@@ -146,8 +148,9 @@ def get_resized_name(img, size):
     return name
 
 
+@imgeecelery.task(name='imgee.storage.resize-and-s3-upload')
 def resize_and_save(img, size, is_thumbnail=False):
-    """ Get the original image from cache, download it from S3 if it misses.
+    """ Get the original image from local disk cache, download it from S3 if it misses.
     Resize the image and save resized image on S3 and size details in db.
     """
     src_path = download_frm_s3(img.name + img.extn)
@@ -156,9 +159,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     resized_name = '%s%s' % (get_resized_name(img, size), img.extn)
     resize_img(src_path, path_for(resized_name), size, format, is_thumbnail=is_thumbnail)
 
-    # separate queue for thumbnails so that we can give high priority to save them on S3
-    queue = app.config.get('THUMBNAIL_QUEUE')
-    queueit('save_on_s3', resized_name, content_type=img.mimetype, queue=queue)
+    save_on_s3(resized_name, content_type=img.mimetype)
     return save_tn_in_db(img, resized_name, size)
 
 
