@@ -14,7 +14,7 @@ from ._version import __version__
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
 lastuser = LastUser()
-imgeecelery = Celery()
+celery = Celery()
 
 assets['imgee.css'][version] = 'css/app.css'
 
@@ -48,4 +48,4 @@ def init_for(env):
             app.config['MEDIA_DOMAIN'].startswith('https:')):
         app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
     mkdir_p(app.config['UPLOADED_FILES_DEST'])
-    imgeecelery.conf.add_defaults(app.config)
+    celery.conf.add_defaults(app.config)
