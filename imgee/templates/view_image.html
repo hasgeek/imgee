@@ -15,19 +15,19 @@
       {% for n in next %}
         <div class="image-thumb">
           <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" title="view image">
-            <img src="{{url_for('get_thumbnail', image=n.name)}}"/>
+            <img src="{{url_for('get_image', image=n.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
           </a>
         </div>
       {% endfor %}
       <div class="image-thumb">
         <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
-          <img class="active" src="{{url_for('get_thumbnail', image=img.name)}}"/>
+          <img class="active" src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
         </a>
       </div>
       {% for p in prev %}
         <div class="image-thumb">
           <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" title="view image">
-            <img src="{{url_for('get_thumbnail', image=p.name)}}"/>
+            <img src="{{url_for('get_image', image=p.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
           </a>
         </div>
       {% endfor %}
@@ -130,7 +130,7 @@
                 </div>
                 <!--  add style to it and uncomment
                  {% for tn in img.thumbnails %}
-                   <a href="{{url_for('get_thumbnail', image=tn.name)}}">{{tn.size}}</a> <br />
+                   <a href="{{url_for('get_image', image=image.name, config.get('THUMBNAIL_SIZE'), image=tn.name)}}">{{tn.size}}</a> <br />
                 {% endfor %} -->
 
               </div>

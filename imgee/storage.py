@@ -115,8 +115,8 @@ def parse_size(size):
             w, h = matched.group(1, 2)
             h = int(h.lstrip('x')) if h is not None else 0
             return int(w), h
-    elif isinstance(size, tuple) and len(size) == 2:
-        return size
+    elif isinstance(size, (tuple, list)) and len(size) == 2:
+        return tuple(map(int, size))
 
 
 def get_fitting_size((orig_w, orig_h), size):
