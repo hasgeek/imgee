@@ -119,18 +119,22 @@ def parse_size(size):
         return size
 
 
-def get_fitting_size((orig_w, orig_h), (w, h)):
+def get_fitting_size((orig_w, orig_h), size):
     # return the size to fit the image to the box
     # along the smaller side and preserve aspect ratio.
     # w or h being 0 means preserve aspect ratio with that height or width
 
-    if (h == 0) or (w <= h):
-        size = (w, w*orig_h/orig_w)
-    else:
-        size = (h*orig_w/orig_h, h)
+    size = size[0] or orig_w, size[1] or orig_h
+    w, h = orig_w, orig_h
 
+    if w > size[0]:
+        w, h = size[0], h*size[0]/float(w)
+    if h > size[1]:
+        w, h = w*size[1]/float(h), size[1]
+
+    size = int(w), int(h)
     size = map(lambda x: max(x, 1), size)   # let the width or height be atleast 1px.
-    return map(int, size)
+    return size
 
 
 def get_resized_name(img, size):
