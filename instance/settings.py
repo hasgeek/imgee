@@ -48,5 +48,5 @@ REDIS_URL = 'redis://localhost:6379/0'
 BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 
-#: Path to loading image in static folder
-LOADING_IMG = 'img/spinner.gif'
+#: Path to loading image relative to the root imgee folder
+LOADING_IMG = 'imgee/static/img/spinner.gif'
