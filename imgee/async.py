@@ -2,7 +2,7 @@ import redis
 from celery import Task
 import celery.states
 from celery.result import AsyncResult, EagerResult
-from flask import url_for, redirect, current_app
+from flask import url_for, redirect, current_app, make_response
 
 import imgee
 from imgee import app
@@ -56,12 +56,23 @@ def queueit(funcname, *args, **kwargs):
         return job
 
 
+def loading():
+    loading_img_path = app.config.get('LOADING_IMG')
+    with open(loading_img_path) as loading_img:
+        response = make_response(loading_img.read())
+        response.headers['Content-Type'] = utils.get_file_type(loading_img_path)
+        return response
+
+
 def get_async_result(job):
     """
-    If the result is not yet ready, return that else return None.
+    If the result of the `job` is not yet ready, return that else return loading().
+    If the input is `str` instead, return that.
     """
     if isinstance(job, AsyncResult):
         if job.status == celery.states.SUCCESS:
             return job.result
+        else:
+            return loading()
     elif isinstance(job, (str, unicode)):
         return job
