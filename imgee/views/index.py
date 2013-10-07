@@ -2,7 +2,7 @@
 import os.path
 from werkzeug import secure_filename
 from flask import (render_template, request, g, url_for,
-    redirect, flash)
+    redirect, flash, Response)
 from urlparse import urljoin
 from sqlalchemy import and_, not_
 
@@ -150,10 +150,11 @@ def get_image(image):
             img_name = image.name
         else:
             img_name = get_async_result(get_resized_image(image, size))
+            if isinstance(img_name, Response):
+                return img_name
     else:
         img_name = image.name
-    img_name = (img_name + extn) if img_name else app.config.get('LOADING_IMG')
-    img_name = get_s3_folder() + img_name
+    img_name = get_s3_folder() + img_name + extn
     media_domain = get_media_domain()
     return redirect(urljoin(media_domain, img_name), code=301)
 
@@ -165,8 +166,9 @@ def get_thumbnail(image):
     if extn in image_formats:
         tn_size = app.config.get('THUMBNAIL_SIZE')
         thumbnail = get_async_result(get_resized_image(image, tn_size, is_thumbnail=True))
-        thumbnail = (thumbnail + extn) if thumbnail else app.config.get('LOADING_IMG')
-        thumbnail = get_s3_folder() + thumbnail
+        if isinstance(thumbnail, Response):
+            return thumbnail
+        thumbnail = get_s3_folder() + thumbnail + extn
     else:
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
     media_domain = get_media_domain()
