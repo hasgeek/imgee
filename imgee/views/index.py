@@ -87,8 +87,7 @@ def edit_title(profile):
 
 
 @app.route('/<profile>')
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+@load_model(Profile, {'name': 'profile'}, 'profile')
 def profile_view(profile):
     files = profile.stored_files.order_by('created_at desc').all()
     title_form = forms.EditTitleForm()
