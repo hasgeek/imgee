@@ -96,16 +96,6 @@ def profile_view(profile):
     return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form)
 
 
-@app.route('/<profile>/view')
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
-def view_all(profile):
-    """View all images owned by profile."""
-    files = profile.stored_files.order_by('created_at desc').all()
-    title_form = forms.EditTitleForm()
-    return render_template('profile.html', profile=profile, files=files, title_form=title_form)
-
-
 @app.route('/<profile>/archive')
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
