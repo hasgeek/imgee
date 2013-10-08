@@ -29,6 +29,9 @@ class DeleteImageForm(Form):
     pass
 
 
+class PurgeCacheForm(Form):
+    pass
+
 def reserved_words():
     """get all words which can't be used as labels"""
     words = []
