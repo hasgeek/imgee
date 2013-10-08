@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import time
 import os.path
+from glob import glob
 import re
 import mimetypes
 from StringIO import StringIO
@@ -193,6 +195,23 @@ def resize_img(src, dest, size, format, is_thumbnail):
         resized = resized.crop((left, top, left+tw, top+th))
 
     resized.save(dest, format=format, quality=100)
+
+
+def clean_local_cache(expiry=24):
+    """
+    Remove files from local cache which are NOT accessed in the last `expiry` hours.
+    """
+    cache_path = app.config.get('UPLOADED_FILES_DEST')
+    cache_path = os.path.join(cache_path, '*')
+    min_atime = time.time() - expiry*60*60
+
+    n = 0
+    for f in glob(cache_path):
+        print os.path.getatime(f), min_atime
+        if os.path.getatime(f) < min_atime:
+            os.remove(f)
+            n = n + 1
+    return n
 
 
 def delete_on_s3(stored_file):
