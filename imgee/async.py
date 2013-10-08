@@ -3,29 +3,41 @@ from celery import Task
 import celery.states
 from celery.result import AsyncResult, EagerResult
 from flask import url_for, redirect, current_app, make_response
+import time
 
 import imgee
 from imgee import app
 import storage, utils
+
+def now_in_secs():
+    return int(time.time())
 
 
 class TaskRegistry(object):
     def __init__(self, name='default', connection=None):
         self.connection = connection
         self.name = name
-        self.key = 'rq:registry:%s' % name
+        self.key = 'imgee:registry:%s' % name
 
     def set_connection(self, connection):
         self.connection = connection
 
     def add(self, imgname):
-        self.connection.sadd(self.key, imgname)
+        # add with a `score` of `expiry_in_secs` + `now`
+        # expiry is set to an hour and can be customized in settings.py
+        score = app.config.get('REDIS_KEY_EXPIRY', 3600) + now_in_secs()
+        self.connection.zadd(self.key, imgname, score)
 
     def remove(self, imgname):
-        self.connection.delete(self.key, imgname)
+        self.connection.zrem(self.key, imgname)
+
+    def remove_expired(self):
+        # remove expired keys i.e., keys with score less than now_in_secs
+        max_score = now_in_secs()
+        self.connection.zremrangebyscore(self.key, 0, max_score)
 
     def __contains__(self, imgname):
-        return self.connection.sismember(self.key, imgname)
+        return bool(self.connection.zrank(self.key, imgname))
 
 
 registry = TaskRegistry()
@@ -36,14 +48,14 @@ def queueit(funcname, *args, **kwargs):
     Execute `funcname` function with `args` and `kwargs` if CELERY_ALWAYS_EAGER is True.
     Otherwise, check if it's queued already in `TaskRegistry`. If not, add it to `TaskRegistry` and queue it.
     """
-    if not registry.connection:
-        registry.set_connection(redis.from_url(app.config.get('REDIS_URL')))
 
     func = getattr(storage, funcname)
     taskid = kwargs.pop('taskid')
     if app.config.get('CELERY_ALWAYS_EAGER'):
         return func(*args, **kwargs)
     else:
+        if not registry.connection:
+            registry.set_connection(redis.from_url(app.config.get('REDIS_URL')))
         # check it in the registry.
         if taskid in registry:
             job = AsyncResult(taskid, app=imgee.celery)
@@ -53,6 +65,9 @@ def queueit(funcname, *args, **kwargs):
             # add in the registry and enqueue the job
             registry.add(taskid)
             job = func.apply_async(args=args, kwargs=kwargs, task_id=taskid)
+
+        # remove all the expired jobs
+        registry.remove_expired()
         return job
 
 
