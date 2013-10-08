@@ -9,7 +9,7 @@ from sqlalchemy import and_, not_
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
-from imgee.storage import delete_on_s3, save, get_resized_image
+from imgee.storage import delete_on_s3, save, get_resized_image, clean_local_cache
 from imgee.utils import newid, get_media_domain, get_s3_folder
 from imgee.async import get_async_result
 
@@ -179,3 +179,13 @@ def delete_file(profile, img):
     else:
         return render_template('delete.html', form=form, file=img, profile=profile)
     return redirect(url_for('profile_view', profile=profile.name))
+
+
+@app.route('/_admin/purge-cache', methods=['GET', 'POST'])
+@lastuser.requires_permission('siteadmin')
+def purge_cache():
+    form = forms.PurgeCacheForm()
+    if form.is_submitted():
+        removed = clean_local_cache(app.config.get('CACHE_PURGE_PERIOD', 24))
+        flash('%s files are deleted from the cache.' % removed)
+    return render_template('purge_cache.html', form=form)

@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% from 'baseframe/forms.html' import renderform %}
+
+
+{% block basecontent %}
+	{% block sidebar %}
+	{% endblock %}
+	{% block maincontent %}
+	{% endblock %}
+	<div class="alert alert-error">
+		<div class="form-title"><i class="icon-trash"></i>&nbsp;&nbsp;Confirm purging cache</div><hr />
+		<p>Are you sure you want to delete all files which are NOT accessed in the last {{config.get('CACHE_PURGE_PERIOD', 24)}} hours?<br /></p>
+		<div class="form-submit">{{ renderform(form, "delete", "Yes, Purge now")}}</div>
+	</div>
+{% endblock %}
+
