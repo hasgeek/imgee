@@ -130,7 +130,7 @@
                 </div>
                 <!--  add style to it and uncomment
                  {% for tn in img.thumbnails %}
-                   <a href="{{url_for('get_image', image=image.name, config.get('THUMBNAIL_SIZE'), image=tn.name)}}">{{tn.size}}</a> <br />
+                   <a href="{{url_for('get_image', size=config.get('THUMBNAIL_SIZE'), image=tn.name)}}">{{tn.size}}</a> <br />
                 {% endfor %} -->
 
               </div>
