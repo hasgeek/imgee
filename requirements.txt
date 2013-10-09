@@ -7,4 +7,4 @@ Flask-Admin
 boto
 Pillow==2.1.0
 redis
-Flask-RQ
+celery
