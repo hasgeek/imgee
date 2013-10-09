@@ -27,6 +27,9 @@
     var to = query_dict['from'] || '';
     to = decodeURIComponent(to);
     var img_id = $(this).attr('id');
+    if (!img_id){
+        console.error('image id is missing in div.image-thumb');
+    }
     $.postMessage(img_id, to, window.opener);
     console.log('sent img_id '+ img_id + ' ' + to);
     window.close();
@@ -150,11 +153,11 @@
                                   {% for img in files %}
                                     <li class="image">
                                       <section class="left">
-                                        <div class="image-thumb">
-                                          <a class="img" title="{{img.tite}}" href=""><img src="{{url_for('get_image', image=image.name, config.get('THUMBNAIL_SIZE'), image=img.name)}}"/></a>
+                                        <div class="image-thumb" id="{{img.name}}">
+                                          <a class="img" title="{{img.tite}}" href=""><img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}"/></a>
                                         </div>
                                         <div class="select-options">
-                                          <button class="select-img btn btn-warning" name="" value="{{url_for('get_image', image=image.name, config.get('THUMBNAIL_SIZE'), image=img.name)}}`{{img.title}}`{{ img.created_at.strftime('%B %d, %Y') }}">Select</button><br />
+                                          <button class="select-img btn btn-warning" name="" value="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}`{{img.title}}`{{ img.created_at.strftime('%B %d, %Y') }}">Select</button><br />
                                           <a class="zoom-btn" href="{{ url_for('get_image', image=img.name) }}" target="_blank"><i class="icon-zoom-in"></i></a>
                                           <a class="delete-btn" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i></a>
                                         </div> 
