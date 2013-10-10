@@ -2,10 +2,11 @@
 Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js)
 */
 
+
 (function($) {
     $.fn.imgee = function(options){
         $.fn.imgee.defaults = {
-            imgee_url: 'http://imgee.hasgeek.com/gallery',
+            imgee_url: 'http://images.hasgeek.com/popup',
             button_desc: 'Select or Upload Image',
             callback: alert,
             debug: false,
@@ -37,7 +38,7 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
         var imgee_block = $("<div class='imgee-container' />")
             .prepend("<div class='image-holder' />")
             .append("<div class='button-holder' />")
-            .prepend('<button id="select_imgee" type="submit">' + options.button_desc + '</button>');
+            .prepend('<button id="select_imgee" type="button">' + options.button_desc + '</button>');
         $(this).prepend(imgee_block);
         $(this).find('button#select_imgee').click(function(){
             openPopupWindow(options);
