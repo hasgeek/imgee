@@ -1,20 +1,33 @@
-<html>
-<head>
-<title>Client App</title>
+{% from 'baseframe/forms.html' import renderform %}
 
+{% block maincontent %}
+<title>Client App</title>
+{{renderform(form)}}
+{% endblock %}
+
+{% block footerscripts %}
 <script type="text/javascript" src="static/jquery.min.js"></script>
 <script type="text/javascript" src="static/jquery.ba-postmessage.js"></script>
 <script type="text/javascript" src="static/imgee.js"></script>
 <script>
-$(function(){
-    var imgee_url = $('#imgee_url').val() || "{{imgee_url or ''}}";
-    $(".imgee_holder").imgee({'imgee_url': imgee_url + '/popup' , debug:true});
+$(function (){
+    var imgee_url = "{{config.get('IMGEE_ENDPOINT', 'http://0.0.0.0:4500')}}/";
+    var profile = $('.imgee-url-holder').attr('profile');
+    var size = $('.imgee-url-holder').attr('img_size');
+    var imgee_popup_url = imgee_url + profile + '/popup';
+    var image_url;
+
+    $('.imgee-url-holder')
+    .after("<div class='holder'></div>").parent().find('.holder')
+    .imgee({'imgee_url': imgee_popup_url,
+            'callback': function(imgname){
+                image_url = imgee_url + 'embed/file/' + imgname;
+                if (size){
+                    image_url += '?size=' + size;
+                }
+                $('.imgee-url-holder').val(image_url);
+            },
+            debug:true});
 });
 </script>
-</head>
-
-<body>
-    Imgee Profile URL<input type='text' name="imgee_url" id="imgee_url" placeholder="http://0.0.0.0:4500/profilename"/></br></br>
-    <div class='imgee_holder'></div>
-</body>
-</html>
+{% endblock %}
