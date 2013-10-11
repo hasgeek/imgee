@@ -17,27 +17,28 @@ class TaskRegistry(object):
     def __init__(self, name='default', connection=None):
         self.connection = connection
         self.name = name
-        self.key = 'imgee:registry:%s' % name
+        self.prefix = 'imgee:registry:%s' % name
 
     def set_connection(self, connection):
         self.connection = connection
 
+    def fullname(self, imgname):
+        return "{p}:{n}".format(p=self.prefix, n=imgname)
+
     def add(self, imgname):
-        # add with a `score` of `expiry_in_secs` + `now`
-        # expiry is set to an hour and can be customized in settings.py
-        score = app.config.get('REDIS_KEY_EXPIRY', 3600) + now_in_secs()
-        self.connection.zadd(self.key, imgname, score)
+        # add `imgname` to redis with an expiry of one hour(default)
+        # expiry can be customized in settings.py with `REDIS_KEY_EXPIRY`.
+        key = self.fullname(imgname)
+        expiry = app.config.get('REDIS_KEY_EXPIRY', 3600)
+        self.connection.setex(key, 1, expiry)
 
     def remove(self, imgname):
-        self.connection.zrem(self.key, imgname)
-
-    def remove_expired(self):
-        # remove expired keys i.e., keys with score less than now_in_secs
-        max_score = now_in_secs()
-        self.connection.zremrangebyscore(self.key, 0, max_score)
+        key = self.fullname(imgname)
+        self.connection.delete(key)
 
     def __contains__(self, imgname):
-        return bool(self.connection.zrank(self.key, imgname))
+        key = self.fullname(imgname)
+        return bool(self.connection.exists(key))
 
 
 registry = TaskRegistry()
@@ -66,8 +67,6 @@ def queueit(funcname, *args, **kwargs):
             registry.add(taskid)
             job = func.apply_async(args=args, kwargs=kwargs, task_id=taskid)
 
-        # remove all the expired jobs
-        registry.remove_expired()
         return job
 
 
