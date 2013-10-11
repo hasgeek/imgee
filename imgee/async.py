@@ -22,13 +22,13 @@ class TaskRegistry(object):
     def set_connection(self, connection):
         self.connection = connection
 
-    def fullname(self, imgname):
-        return "{p}:{n}".format(p=self.prefix, n=imgname)
+    def makename(self, funcname, imgname):
+        return "{p}:{f}:{n}".format(p=self.prefix, f=funcname, n=imgname)
 
-    def add(self, imgname):
+    def add(self, funcname, imgname):
         # add `imgname` to redis with an expiry of one hour(default)
         # expiry can be customized in settings.py with `REDIS_KEY_EXPIRY`.
-        key = self.fullname(imgname)
+        key = self.makename(funcname, imgname)
         expiry = app.config.get('REDIS_KEY_EXPIRY', 3600)
         self.connection.setex(key, 1, expiry)
 
@@ -36,8 +36,8 @@ class TaskRegistry(object):
         key = self.fullname(imgname)
         self.connection.delete(key)
 
-    def __contains__(self, imgname):
-        key = self.fullname(imgname)
+    def __contains__(self, (funcname, imgname)):
+        key = self.makename(funcname, imgname)
         return bool(self.connection.exists(key))
 
 
@@ -58,15 +58,14 @@ def queueit(funcname, *args, **kwargs):
         if not registry.connection:
             registry.set_connection(redis.from_url(app.config.get('REDIS_URL')))
         # check it in the registry.
-        if taskid in registry:
+        if (funcname, taskid) in registry:
             job = AsyncResult(taskid, app=imgee.celery)
             if job.status == celery.states.SUCCESS:
                 return job.result
         else:
             # add in the registry and enqueue the job
-            registry.add(taskid)
+            registry.add(funcname, taskid)
             job = func.apply_async(args=args, kwargs=kwargs, task_id=taskid)
-
         return job
 
 
