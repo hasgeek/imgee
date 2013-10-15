@@ -190,7 +190,7 @@ def resize_img(src, dest, size, format, is_thumbnail):
     if is_thumbnail:
         # and crop the rest, keeping the center.
         w, h = resized.size
-        tw, th = app.config.get('THUMBNAIL_SIZE')
+        tw, th = map(int, app.config.get('THUMBNAIL_SIZE').split('x'))
         left, top = int((w-tw)/2), int((h-th)/2)
         resized = resized.crop((left, top, left+tw, top+th))
 
