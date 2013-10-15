@@ -91,7 +91,7 @@ class TestUpload(ImgeeBaseTest):
         self.assertEquals(r.status_code, 301)
         imgio = test_utils.download_image(r.location)
         img = Image.open(imgio)
-        self.assertEquals(img.size, app.config['THUMBNAIL_SIZE'])
+        self.assertEquals('%sx%s' % img.size, app.config.get('THUMBNAIL_SIZE'))
 
     def test_non_image_file(self):
         file_name, r = self.upload('../imgee/static/css/app.css')
