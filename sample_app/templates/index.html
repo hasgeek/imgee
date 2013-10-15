@@ -12,8 +12,8 @@
 <script>
 $(function (){
     var imgee_url = "{{config.get('IMGEE_ENDPOINT', 'http://0.0.0.0:4500')}}/";
-    var profile = $('.imgee-url-holder').attr('profile');
-    var size = $('.imgee-url-holder').attr('img_size');
+    var profile = $('.imgee-url-holder').data('profile');
+    var size = $('.imgee-url-holder').data('img-size');
     var imgee_popup_url = imgee_url + profile + '/popup';
     var image_url;
 
