@@ -129,8 +129,7 @@ def get_fitting_size((orig_w, orig_h), size):
     size = size[0] or orig_w, size[1] or orig_h
     w, h = orig_w, orig_h
 
-    if w > size[0]:
-        w, h = size[0], h*size[0]/float(w)
+    w, h = size[0], h*size[0]/float(w)
     if h > size[1]:
         w, h = w*size[1]/float(h), size[1]
 
