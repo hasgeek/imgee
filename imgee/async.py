@@ -60,13 +60,13 @@ def queueit(funcname, *args, **kwargs):
             registry.set_connection(redis.from_url(app.config.get('REDIS_URL')))
 
         # check it in the registry.
-        if (funcname, taskid) in registry:
+        if taskid in registry:
             job = AsyncResult(taskid, app=imgee.celery)
             if job.status == celery.states.SUCCESS:
                 return job.result
         else:
             # add in the registry and enqueue the job
-            registry.add(funcname, taskid)
+            registry.add(taskid)
             job = func.apply_async(args=args, kwargs=kwargs, task_id=taskid)
         return job
 
