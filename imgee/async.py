@@ -20,17 +20,18 @@ class BaseTask(celery.Task):
     abstract = True
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
         if status == celery.states.SUCCESS:
-            registry.remove(task_id)
+            imgee.registry.remove(task_id)
 
 
 class TaskRegistry(object):
     def __init__(self, name='default', connection=None):
-        self.connection = connection
+        self.connection = redis.from_url(connection) if connection else None
         self.name = name
         self.key = 'imgee:registry:%s' % name
 
-    def set_connection(self, connection):
-        self.connection = connection
+    def set_connection(self, connection=None):
+        connection = connection or app.config.get('REDIS_URL')
+        self.connection = redis.from_url(connection)
 
     def add(self, taskid):
         self.connection.sadd(self.key, taskid)
@@ -41,8 +42,9 @@ class TaskRegistry(object):
     def __contains__(self, taskid):
         return self.connection.sismember(self.key, taskid)
 
+    def keys_starting_with(self, exp):
+        return [k for k in self.connection.smembers(self.key) if k.startswith(exp)]
 
-registry = TaskRegistry()
 
 
 def queueit(funcname, *args, **kwargs):
@@ -56,17 +58,14 @@ def queueit(funcname, *args, **kwargs):
     if app.config.get('CELERY_ALWAYS_EAGER'):
         return func(*args, **kwargs)
     else:
-        if not registry.connection:
-            registry.set_connection(redis.from_url(app.config.get('REDIS_URL')))
-
         # check it in the registry.
-        if taskid in registry:
+        if taskid in imgee.registry:
             job = AsyncResult(taskid, app=imgee.celery)
             if job.status == celery.states.SUCCESS:
                 return job.result
         else:
             # add in the registry and enqueue the job
-            registry.add(taskid)
+            imgee.registry.add(taskid)
             job = func.apply_async(args=args, kwargs=kwargs, task_id=taskid)
         return job
 
