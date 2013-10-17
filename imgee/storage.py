@@ -10,7 +10,7 @@ from PIL import Image
 
 from imgee import app, celery
 from imgee.models import db, Thumbnail, StoredFile
-from imgee.async import queueit
+from imgee.async import queueit, registry, get_taskid, BaseTask
 from imgee.utils import (newid, guess_extension, get_file_type,
                         path_for, get_s3_folder, get_s3_bucket,
                         download_frm_s3, get_width_height)
@@ -31,7 +31,8 @@ def get_resized_image(img, size, is_thumbnail=False):
             img_name = scaled.name
         else:
             resized_name = '%s%s' % (get_resized_name(img, size_t), img.extn)
-            job = queueit('resize_and_save', img, size_t, is_thumbnail=is_thumbnail, taskid=resized_name)
+            taskid = get_taskid('resize_and_save', resized_name)
+            job = queueit('resize_and_save', img, size_t, is_thumbnail=is_thumbnail, taskid=taskid)
             return job
     return img_name
 
@@ -50,7 +51,8 @@ def save(fp, profile, img_name=None):
 
     save_img_in_db(name=id_, title=fp.filename, local_path=local_path,
                     profile=profile, mimetype=content_type)
-    job = queueit('save_on_s3', img_name, content_type=content_type, taskid=img_name)
+    taskid = get_taskid('save_on_s3', img_name)
+    job = queueit('save_on_s3', img_name, content_type=content_type, taskid=taskid)
     return job
 
 
@@ -80,7 +82,7 @@ def save_tn_in_db(img, tn_name, size_t):
     return name
 
 
-@celery.task(name='imgee.storage.s3-upload')
+@celery.task(name='imgee.storage.s3-upload', base=BaseTask)
 def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
     """
     Save contents from file named `filename` to `remotename` on S3.
@@ -154,9 +156,10 @@ def get_resized_name(img, size):
     return name
 
 
-@celery.task(name='imgee.storage.resize-and-s3-upload')
+@celery.task(name='imgee.storage.resize-and-s3-upload', base=BaseTask)
 def resize_and_save(img, size, is_thumbnail=False):
-    """ Get the original image from local disk cache, download it from S3 if it misses.
+    """
+    Get the original image from local disk cache, download it from S3 if it misses.
     Resize the image and save resized image on S3 and size details in db.
     """
     src_path = download_frm_s3(img.name + img.extn)
