@@ -8,9 +8,11 @@ import mimetypes
 from StringIO import StringIO
 from PIL import Image
 
+from celery.result import AsyncResult
+import imgee
 from imgee import app, celery
 from imgee.models import db, Thumbnail, StoredFile
-from imgee.async import queueit, registry, get_taskid, BaseTask
+from imgee.async import queueit, get_taskid, BaseTask
 from imgee.utils import (newid, guess_extension, get_file_type,
                         path_for, get_s3_folder, get_s3_bucket,
                         download_frm_s3, get_width_height)
@@ -31,8 +33,9 @@ def get_resized_image(img, size, is_thumbnail=False):
             img_name = scaled.name
         else:
             resized_name = '%s%s' % (get_resized_name(img, size_t), img.extn)
-            taskid = get_taskid('resize_and_save', resized_name)
-            job = queueit('resize_and_save', img, size_t, is_thumbnail=is_thumbnail, taskid=taskid)
+            save_tn_in_db(img, resized_name, size)
+            img.extn # @@ugly - bring back img into the session after commit in save_tn_in_db
+            job = queueit('resize_and_save', img, size_t, is_thumbnail=is_thumbnail, taskid=resized_name)
             return job
     return img_name
 
@@ -51,8 +54,7 @@ def save(fp, profile, img_name=None):
 
     save_img_in_db(name=id_, title=fp.filename, local_path=local_path,
                     profile=profile, mimetype=content_type)
-    taskid = get_taskid('save_on_s3', img_name)
-    job = queueit('save_on_s3', img_name, content_type=content_type, taskid=taskid)
+    job = queueit('save_on_s3', img_name, content_type=content_type, taskid=img_name)
     return job
 
 
@@ -70,16 +72,14 @@ def save_img_in_db(name, title, local_path, profile, mimetype):
     db.session.commit()
 
 
-def save_tn_in_db(img, tn_name, size_t):
+def save_tn_in_db(img, tn_name, size_s):
     """
     Save thumbnail info in db.
     """
     name, extn = os.path.splitext(tn_name)
-    size_s = "%sx%s" % size_t
     tn = Thumbnail(name=name, size=size_s, stored_file=img)
     db.session.add(tn)
     db.session.commit()
-    return name
 
 
 @celery.task(name='imgee.storage.s3-upload', base=BaseTask)
@@ -191,7 +191,8 @@ def resize_and_save(img, size, is_thumbnail=False):
     resize_img(src_path, path_for(resized_name), size, format, is_thumbnail=is_thumbnail)
 
     save_on_s3(resized_name, content_type=img.mimetype)
-    return save_tn_in_db(img, resized_name, size)
+    name, extn = os.path.splitext(resized_name)
+    return name
 
 
 def resize_img(src, dest, size, format, is_thumbnail):
@@ -238,12 +239,41 @@ def clean_local_cache(expiry=24):
     return n
 
 
-def delete_on_s3(stored_file):
+def wait_for_asynctasks(stored_file):
+    registry = imgee.registry
+
+    if not registry.connection:
+        return
+
+    # wait for upload to be complete, if any.
+    taskid = get_taskid('save_on_s3', stored_file.name)
+    if taskid in registry:
+        AsyncResult(taskid).get()
+
+    # wait for all resizes to be complete, if any.
+    s = get_taskid('resize_and_save', stored_file.name)
+    for taskid in registry.keys_starting_with(s):
+        AsyncResult(taskid).get()
+
+
+@celery.task(name='imgee.storage.delete', base=BaseTask)
+def delete(stored_file, thumbnails=None):
     """
-    Delete all the thumbnails and images associated with a file
+    Delete all the thumbnails and images associated with a file, from local cache and S3.
+    Wait for the upload/resize to complete if queued for the same image.
     """
+    wait_for_asynctasks(stored_file)
+
+    # remove locally
+    cache_path = app.config.get('UPLOADED_FILES_DEST')
+    cached_img_path = os.path.join(cache_path, '%s*' % stored_file.name)
+    for f in glob(cached_img_path):
+        os.remove(f)
+
+    # remove on s3
     extn = stored_file.extn
-    keys = [(get_s3_folder() + thumbnail.name + extn) for thumbnail in stored_file.thumbnails]
+    thumbnails = thumbnails or stored_file.thumbnails
+    keys = [(get_s3_folder() + thumbnail.name + extn) for thumbnail in thumbnails]
     keys.append(get_s3_folder() + stored_file.name + extn)
     bucket = get_s3_bucket()
     bucket.delete_keys(keys)

@@ -54,7 +54,7 @@ def queueit(funcname, *args, **kwargs):
     """
 
     func = getattr(storage, funcname)
-    taskid = kwargs.pop('taskid')
+    taskid = get_taskid(funcname, kwargs.pop('taskid'))
     if app.config.get('CELERY_ALWAYS_EAGER'):
         return func(*args, **kwargs)
     else:
