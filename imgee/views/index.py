@@ -9,9 +9,9 @@ from sqlalchemy import and_, not_
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
-from imgee.storage import delete_on_s3, save, get_resized_image, clean_local_cache
+from imgee.storage import delete, save, get_resized_image, clean_local_cache
 from imgee.utils import newid, get_media_domain, get_s3_folder
-from imgee.async import get_async_result
+from imgee.async import get_async_result, queueit
 
 image_formats = '.jpg .jpe .jpeg .png .gif .bmp'.split()
 
@@ -172,7 +172,8 @@ def get_thumbnail(image):
 def delete_file(profile, img):
     form = forms.DeleteImageForm()
     if form.is_submitted():
-        delete_on_s3(img)
+        # fetch thumbnails so that they are in session before deletion of img.
+        queueit('delete', img, thumbnails=img.thumbnails, taskid=img.name + img.extn)
         db.session.delete(img)
         db.session.commit()
         flash("%s is deleted" % img.title)
