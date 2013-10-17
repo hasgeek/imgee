@@ -12,33 +12,34 @@ import storage, utils
 def now_in_secs():
     return int(time.time())
 
+def get_taskid(funcname, imgname):
+    return "{f}:{n}".format(f=funcname, n=imgname)
+
+
+class BaseTask(celery.Task):
+    abstract = True
+    def after_return(self, status, retval, task_id, args, kwargs, einfo):
+        if status == celery.states.SUCCESS:
+            registry.remove(task_id)
+
 
 class TaskRegistry(object):
     def __init__(self, name='default', connection=None):
         self.connection = connection
         self.name = name
-        self.prefix = 'imgee:registry:%s' % name
+        self.key = 'imgee:registry:%s' % name
 
     def set_connection(self, connection):
         self.connection = connection
 
-    def makename(self, funcname, imgname):
-        return "{p}:{f}:{n}".format(p=self.prefix, f=funcname, n=imgname)
+    def add(self, taskid):
+        self.connection.sadd(self.key, taskid)
 
-    def add(self, funcname, imgname):
-        # add `imgname` to redis with an expiry of one hour(default)
-        # expiry can be customized in settings.py with `REDIS_KEY_EXPIRY`.
-        key = self.makename(funcname, imgname)
-        expiry = app.config.get('REDIS_KEY_EXPIRY', 3600)
-        self.connection.setex(key, 1, expiry)
+    def remove(self, taskid):
+        self.connection.srem(self.key, taskid)
 
-    def remove(self, imgname):
-        key = self.fullname(imgname)
-        self.connection.delete(key)
-
-    def __contains__(self, (funcname, imgname)):
-        key = self.makename(funcname, imgname)
-        return bool(self.connection.exists(key))
+    def __contains__(self, taskid):
+        return self.connection.sismember(self.key, taskid)
 
 
 registry = TaskRegistry()
@@ -57,6 +58,7 @@ def queueit(funcname, *args, **kwargs):
     else:
         if not registry.connection:
             registry.set_connection(redis.from_url(app.config.get('REDIS_URL')))
+
         # check it in the registry.
         if (funcname, taskid) in registry:
             job = AsyncResult(taskid, app=imgee.celery)
