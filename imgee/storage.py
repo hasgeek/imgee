@@ -124,16 +124,38 @@ def parse_size(size):
 
 
 def get_fitting_size((orig_w, orig_h), size):
-    # return the size to fit the image to the box
-    # along the smaller side and preserve aspect ratio.
-    # w or h being 0 means preserve aspect ratio with that height or width
+    """
+     Return the size to fit the image to the box
+     along the smaller side and preserve aspect ratio.
+     w or h being 0 means preserve aspect ratio with that height or width
 
-    size = size[0] or orig_w, size[1] or orig_h
-    w, h = orig_w, orig_h
-
-    w, h = size[0], h*size[0]/float(w)
-    if h > size[1]:
-        w, h = w*size[1]/float(h), size[1]
+    >>> get_fitting_size((200, 500), (0, 0))
+    [200, 500]
+    >>> get_fitting_size((200, 500), (400, 0))
+    [400, 1000]
+    >>> get_fitting_size((200, 500), (0, 100))
+    [40, 100]
+    >>> get_fitting_size((200, 500), (50, 50))
+    [20, 50]
+    >>> get_fitting_size((200, 500), (1000, 400))
+    [160, 400]
+    >>> get_fitting_size((200, 500), (1000, 1000))
+    [400, 1000]
+    >>> get_fitting_size((200, 500), (300, 500))
+    [200, 500]
+    >>> get_fitting_size((200, 500), (400, 600))
+    [240, 600]
+    """
+    if size[0] == 0 and size[1] == 0:
+        w, h = orig_w, orig_h
+    elif size[0] == 0:
+        w, h = orig_w*size[1]/float(orig_h), size[1]
+    elif size[1] == 0:
+        w, h = size[0], orig_h*size[0]/float(orig_w)
+    else:
+        w, h = size[0], orig_h*size[0]/float(orig_w)
+        if h > size[1]:
+            w, h = w*size[1]/float(h), size[1]
 
     size = int(w), int(h)
     size = map(lambda x: max(x, 1), size)   # let the width or height be atleast 1px.
@@ -225,3 +247,8 @@ def delete_on_s3(stored_file):
     keys.append(get_s3_folder() + stored_file.name + extn)
     bucket = get_s3_bucket()
     bucket.delete_keys(keys)
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
