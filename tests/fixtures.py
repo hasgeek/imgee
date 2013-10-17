@@ -36,7 +36,7 @@ class ImgeeTestCase(unittest.TestCase):
 
     def tearDown(self):
         for s in StoredFile.query.all():
-            storage.delete_on_s3(s)
+            storage.delete(s)
         db.drop_all()
 
 
