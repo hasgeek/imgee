@@ -11,6 +11,7 @@ from baseframe import baseframe, assets, Version
 import coaster.app
 from ._version import __version__
 
+
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
 lastuser = LastUser()
@@ -22,6 +23,7 @@ import imgee.models
 import imgee.views
 from imgee.models import db
 
+registry = imgee.async.TaskRegistry()
 
 def mkdir_p(dirname):
     if not os.path.exists(dirname):
@@ -49,3 +51,4 @@ def init_for(env):
         app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
     mkdir_p(app.config['UPLOADED_FILES_DEST'])
     celery.conf.add_defaults(app.config)
+    registry.set_connection()
