@@ -45,6 +45,9 @@ class TaskRegistry(object):
     def keys_starting_with(self, exp):
         return [k for k in self.connection.smembers(self.key) if k.startswith(exp)]
 
+    def is_queued_for_deletion(self, imgname):
+        taskid = get_taskid('delete', imgname)
+        return taskid in self
 
 
 def queueit(funcname, *args, **kwargs):
