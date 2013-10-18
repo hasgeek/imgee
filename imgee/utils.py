@@ -62,6 +62,11 @@ def download_frm_s3(img_name):
     return local_path
 
 
+def not_in_deleteQ(imgs):
+    # filters out the images which are queued for deletion and returns the remaining
+    return [i for i in imgs if not i.is_queued_for_deletion()]
+
+
 # -- image details --
 
 def get_width_height(img_path):

@@ -33,8 +33,6 @@ def get_resized_image(img, size, is_thumbnail=False):
             img_name = scaled.name
         else:
             resized_name = '%s%s' % (get_resized_name(img, size_t), img.extn)
-            save_tn_in_db(img, resized_name, size)
-            img.extn # @@ugly - bring back img into the session after commit in save_tn_in_db
             job = queueit('resize_and_save', img, size_t, is_thumbnail=is_thumbnail, taskid=resized_name)
             return job
     return img_name
@@ -72,14 +70,16 @@ def save_img_in_db(name, title, local_path, profile, mimetype):
     db.session.commit()
 
 
-def save_tn_in_db(img, tn_name, size_s):
+def save_tn_in_db(img, tn_name, size_t):
     """
     Save thumbnail info in db.
     """
     name, extn = os.path.splitext(tn_name)
+    size_s = "%sx%s" % size_t
     tn = Thumbnail(name=name, size=size_s, stored_file=img)
     db.session.add(tn)
     db.session.commit()
+    return name
 
 
 @celery.task(name='imgee.storage.s3-upload', base=BaseTask)
@@ -191,8 +191,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     resize_img(src_path, path_for(resized_name), size, format, is_thumbnail=is_thumbnail)
 
     save_on_s3(resized_name, content_type=img.mimetype)
-    name, extn = os.path.splitext(resized_name)
-    return name
+    return save_tn_in_db(img, resized_name, size)
 
 
 def resize_img(src, dest, size, format, is_thumbnail):
@@ -277,6 +276,10 @@ def delete(stored_file, thumbnails=None):
     keys.append(get_s3_folder() + stored_file.name + extn)
     bucket = get_s3_bucket()
     bucket.delete_keys(keys)
+
+    # remove from the db
+    db.session.delete(stored_file)
+    db.session.commit()
 
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
 from imgee.storage import delete, save, get_resized_image, clean_local_cache
-from imgee.utils import newid, get_media_domain, get_s3_folder
+from imgee.utils import newid, get_media_domain, get_s3_folder, not_in_deleteQ
 from imgee.async import get_async_result, queueit
 
 image_formats = '.jpg .jpe .jpeg .png .gif .bmp'.split()
@@ -64,6 +64,7 @@ def upload_file(profile):
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def pop_up_gallery(profile):
     files = profile.stored_files.order_by('created_at desc').all()
+    files = not_in_deleteQ(files)
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
@@ -90,6 +91,7 @@ def edit_title(profile):
 @load_model(Profile, {'name': 'profile'}, 'profile')
 def profile_view(profile):
     files = profile.stored_files.order_by('created_at desc').all()
+    files = not_in_deleteQ(files)
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
     return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form)
@@ -101,18 +103,20 @@ def profile_view(profile):
 def unlabelled_images(profile):
     """Get all unlabelled images owned by profile"""
     files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by('created_at desc').all()
+    files = not_in_deleteQ(files)
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
 
 def get_prev_images(profile, img, limit=2):
     imgs = profile.stored_files.filter(StoredFile.created_at < img.created_at)
-    return imgs.order_by('created_at desc').limit(limit).all()[::1]
-
+    imgs = not_in_deleteQ(imgs.order_by('created_at desc').all())
+    return imgs[:limit]
 
 def get_next_images(profile, img, limit=2):
     imgs = profile.stored_files.filter(StoredFile.created_at > img.created_at)
-    return imgs.order_by('created_at asc').limit(limit).all()[::-1]
+    imgs = not_in_deleteQ(imgs.order_by('created_at asc').all())
+    return imgs[:limit][::-1]
 
 
 @app.route('/<profile>/view/<image>')
@@ -172,10 +176,8 @@ def get_thumbnail(image):
 def delete_file(profile, img):
     form = forms.DeleteImageForm()
     if form.is_submitted():
-        # fetch thumbnails so that they are in session before deletion of img.
+        # fetch thumbnails so that they are loaded before hand for the async task.
         queueit('delete', img, thumbnails=img.thumbnails, taskid=img.name + img.extn)
-        db.session.delete(img)
-        db.session.commit()
         flash("%s is deleted" % img.title)
     else:
         return render_template('delete.html', form=form, file=img, profile=profile)
