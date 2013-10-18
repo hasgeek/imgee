@@ -15,7 +15,8 @@ class Thumbnail(BaseMixin, db.Model):
     __tablename__ = 'thumbnail'
 
     name = db.Column(db.Unicode(64), nullable=False, unique=True, index=True)
-    size = db.Column(db.Unicode(100), nullable=False, index=True)
+    width = db.Column(db.Integer, default=0, index=True)
+    height = db.Column(db.Integer, default=0, index=True)
     stored_file_id = db.Column(None, db.ForeignKey('stored_file.id'), nullable=False)
 
     def __init__(self, **kwargs):
