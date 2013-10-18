@@ -22,10 +22,10 @@
           <div class="span7">
             <h4 class="selected-profile"><a href="{{ url_for('profile_view',profile=profile.name) }}">{{ profile.title }}</a>'s Gallery</h4>
             <em>
-              {% if profile.stored_files.count() == 1 %}
+              {% if files|count == 1 %}
                 1 image
               {% else %}
-                {{ profile.stored_files.count() | safe }} images
+                {{ files | count }} images
               {% endif %}
             </em>
           </div>
