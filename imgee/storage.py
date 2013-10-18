@@ -27,8 +27,7 @@ def get_resized_image(img, size, is_thumbnail=False):
     img_name = img.name
     size_t = parse_size(size)
     if size_t and size_t[0] != img.width and size_t[1] != img.height:
-        size = '%sx%s' % size_t
-        scaled = Thumbnail.query.filter_by(size=size, stored_file=img).first()
+        scaled = Thumbnail.query.filter_by(width=size_t[0], height=size_t[1], stored_file=img).first()
         if scaled:
             img_name = scaled.name
         else:
@@ -70,13 +69,12 @@ def save_img_in_db(name, title, local_path, profile, mimetype):
     db.session.commit()
 
 
-def save_tn_in_db(img, tn_name, size_t):
+def save_tn_in_db(img, tn_name, (tn_w, tn_h)):
     """
     Save thumbnail info in db.
     """
     name, extn = os.path.splitext(tn_name)
-    size_s = "%sx%s" % size_t
-    tn = Thumbnail(name=name, size=size_s, stored_file=img)
+    tn = Thumbnail(name=name, width=tn_w, height=tn_h, stored_file=img)
     db.session.add(tn)
     db.session.commit()
     return name
