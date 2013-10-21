@@ -7,6 +7,7 @@ import time
 
 import imgee
 from imgee import app
+from imgee.models import db
 import storage, utils
 
 def now_in_secs():
@@ -21,6 +22,10 @@ class BaseTask(celery.Task):
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
         if status == celery.states.SUCCESS:
             imgee.registry.remove(task_id)
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        ## @TO-DO: send an email? or log separately?
+        db.session.rollback()
 
 
 class TaskRegistry(object):
