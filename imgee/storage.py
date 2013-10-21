@@ -7,8 +7,9 @@ import re
 import mimetypes
 from StringIO import StringIO
 from PIL import Image
-
 from celery.result import AsyncResult
+from sqlalchemy import or_
+
 import imgee
 from imgee import app, celery
 from imgee.models import db, Thumbnail, StoredFile
@@ -27,7 +28,8 @@ def get_resized_image(img, size, is_thumbnail=False):
     img_name = img.name
     size_t = parse_size(size)
     if size_t and size_t[0] != img.width and size_t[1] != img.height:
-        scaled = Thumbnail.query.filter_by(width=size_t[0], height=size_t[1], stored_file=img).first()
+        w_or_h = or_(Thumbnail.width == size_t[0], Thumbnail.height == size_t[1])
+        scaled = Thumbnail.query.filter(w_or_h, Thumbnail.stored_file == img).first()
         if scaled:
             img_name = scaled.name
         else:
