@@ -243,7 +243,7 @@ def wait_for_asynctasks(stored_file):
         return
 
     # wait for upload to be complete, if any.
-    taskid = get_taskid('save_on_s3', stored_file.name)
+    taskid = get_taskid('save_on_s3', stored_file.name+stored_file.extn)
     if taskid in registry:
         AsyncResult(taskid).get()
 
@@ -277,6 +277,10 @@ def delete(stored_file, thumbnails=None):
     bucket.delete_keys(keys)
 
     # remove from the db
+
+    # remove thumbnails explicitly.
+    # cascade rules don't work as lazy loads don't work in async mode
+    Thumbnail.query.filter_by(stored_file=stored_file).delete()
     db.session.delete(stored_file)
     db.session.commit()
 
