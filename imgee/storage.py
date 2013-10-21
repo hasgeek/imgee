@@ -259,7 +259,8 @@ def delete(stored_file, thumbnails=None):
     Delete all the thumbnails and images associated with a file, from local cache and S3.
     Wait for the upload/resize to complete if queued for the same image.
     """
-    wait_for_asynctasks(stored_file)
+    if not app.config.get('CELERY_ALWAYS_EAGER'):
+        wait_for_asynctasks(stored_file)
 
     # remove locally
     cache_path = app.config.get('UPLOADED_FILES_DEST')
