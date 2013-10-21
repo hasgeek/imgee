@@ -33,8 +33,9 @@ def get_resized_image(img, size, is_thumbnail=False):
         if scaled:
             img_name = scaled.name
         else:
-            resized_name = '%s%s' % (get_resized_name(img, size_t), img.extn)
-            job = queueit('resize_and_save', img, size_t, is_thumbnail=is_thumbnail, taskid=resized_name)
+            size = get_fitting_size((img.width, img.height), size_t)
+            resized_name = '%s%s' % (get_resized_name(img, size), img.extn)
+            job = queueit('resize_and_save', img, size, is_thumbnail=is_thumbnail, taskid=resized_name)
             return job
     return img_name
 
@@ -208,7 +209,6 @@ def resize_img(src, dest, size, format, is_thumbnail):
     img = Image.open(src)
     img.load()
 
-    size = get_fitting_size(img.size, size)
     resized = img.resize(size, Image.ANTIALIAS)
 
     if is_thumbnail:
