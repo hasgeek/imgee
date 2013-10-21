@@ -9,6 +9,7 @@ from StringIO import StringIO
 from PIL import Image
 from celery.result import AsyncResult
 from sqlalchemy import or_
+from werkzeug import secure_filename
 
 import imgee
 from imgee import app, celery
@@ -45,17 +46,18 @@ def save(fp, profile, img_name=None):
     Attaches the image to the profile and uploads it to S3.
     """
     id_ = img_name or newid()
-    content_type = get_file_type(fp.filename)
+    title = secure_filename(fp.filename)
+    content_type = get_file_type(title)
     img_name = "%s%s" % (id_, guess_extension(content_type))
     local_path = path_for(img_name)
 
     with open(local_path, 'w') as img:
         img.write(fp.read())
 
-    save_img_in_db(name=id_, title=fp.filename, local_path=local_path,
+    save_img_in_db(name=id_, title=title, local_path=local_path,
                     profile=profile, mimetype=content_type)
     job = queueit('save_on_s3', img_name, content_type=content_type, taskid=img_name)
-    return job
+    return title, job
 
 
 # -- actual saving of image/thumbnail and data in the db and on S3.
