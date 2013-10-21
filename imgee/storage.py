@@ -254,7 +254,7 @@ def wait_for_asynctasks(stored_file):
 
 
 @celery.task(name='imgee.storage.delete', base=BaseTask)
-def delete(stored_file, thumbnails=None):
+def delete(stored_file):
     """
     Delete all the thumbnails and images associated with a file, from local cache and S3.
     Wait for the upload/resize to complete if queued for the same image.
@@ -270,7 +270,8 @@ def delete(stored_file, thumbnails=None):
 
     # remove on s3
     extn = stored_file.extn
-    thumbnails = thumbnails or stored_file.thumbnails
+    # lazy loads don't work - so, no `stored_file.thumbnails`
+    thumbnails = Thumbnail.query.filter_by(stored_file=stored_file).all()
     keys = [(get_s3_folder() + thumbnail.name + extn) for thumbnail in thumbnails]
     keys.append(get_s3_folder() + stored_file.name + extn)
     bucket = get_s3_bucket()
