@@ -176,8 +176,7 @@ def get_thumbnail(image):
 def delete_file(profile, img):
     form = forms.DeleteImageForm()
     if form.is_submitted():
-        # fetch thumbnails so that they are loaded before hand for the async task.
-        queueit('delete', img, thumbnails=img.thumbnails, taskid=img.name + img.extn)
+        queueit('delete', img, taskid=img.name + img.extn)
         flash("%s is deleted" % img.title)
     else:
         return render_template('delete.html', form=form, file=img, profile=profile)
