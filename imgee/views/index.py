@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os.path
-from werkzeug import secure_filename
 from flask import (render_template, request, g, url_for,
     redirect, flash, Response)
 from urlparse import urljoin
@@ -51,9 +50,8 @@ def upload_file(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        filename = secure_filename(file_.filename)
-        save(file_, profile=profile)
-        flash('"%s" uploaded successfully.' % filename)
+        title, job = save(file_, profile=profile)
+        flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
     # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form, profile=profile)
