@@ -21,6 +21,7 @@ assets['imgee.css'][version] = 'css/app.css'
 
 import imgee.models
 import imgee.views
+import imgee.api
 from imgee.models import db
 
 registry = imgee.async.TaskRegistry()

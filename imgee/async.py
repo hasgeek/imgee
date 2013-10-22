@@ -79,6 +79,9 @@ def queueit(funcname, *args, **kwargs):
 
 
 def loading():
+    """
+    Returns the `LOADING_IMG` as the content of the response.
+    """
     loading_img_path = app.config.get('LOADING_IMG')
     with open(loading_img_path) as loading_img:
         response = make_response(loading_img.read())
@@ -86,15 +89,20 @@ def loading():
         return response
 
 
+class StillProcessingException(Exception):
+    pass
+
+
 def get_async_result(job):
     """
-    If the result of the `job` is not yet ready, return that else return loading().
+    If the result of the `job` is not yet ready, return that else raise StillProcessingException.
     If the input is `str` instead, return that.
     """
     if isinstance(job, AsyncResult):
         if job.status == celery.states.SUCCESS:
             return job.result
         else:
-            return loading()
+            img_name = job.task_id.split(':')[1]
+            raise StillProcessingException(img_name)
     elif isinstance(job, (str, unicode)):
         return job
