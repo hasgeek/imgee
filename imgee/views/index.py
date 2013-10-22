@@ -82,7 +82,7 @@ def edit_title(profile):
         db.session.commit()
         return f.title
     else:
-        return form.file_title.errors[0], 400
+        return form.file_title.errors and form.file_title.errors[0], 400
 
 
 @app.route('/<profile>')
@@ -105,17 +105,13 @@ def unlabelled_images(profile):
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
-
-def get_prev_images(profile, img, limit=2):
-    imgs = profile.stored_files.filter(StoredFile.created_at < img.created_at)
-    imgs = not_in_deleteQ(imgs.order_by('created_at desc').all())
-    return imgs[:limit]
-
-def get_next_images(profile, img, limit=2):
-    imgs = profile.stored_files.filter(StoredFile.created_at > img.created_at)
-    imgs = not_in_deleteQ(imgs.order_by('created_at asc').all())
-    return imgs[:limit][::-1]
-
+def get_prev_next_images(profile, img, limit=2):
+    # query for "all" images though we need just the `limit`
+    # bcoz we don't know how many are there in deleteQ.
+    imgs = profile.stored_files.order_by('created_at desc').all()
+    imgs = not_in_deleteQ(imgs)
+    pos = imgs.index(img)
+    return imgs[pos+1 : pos+1+limit], imgs[pos-limit : pos]
 
 @app.route('/<profile>/view/<image>')
 @load_models(
@@ -123,8 +119,7 @@ def get_next_images(profile, img, limit=2):
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def view_image(profile, img):
-    prev = get_prev_images(profile, img)
-    next = get_next_images(profile, img)
+    prev, next = get_prev_next_images(profile, img)
     form = forms.AddLabelForm(stored_file_id=img.name)
     media_domain = get_media_domain()
     return render_template('view_image.html', profile=profile, form=form, img=img,
