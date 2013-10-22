@@ -2,17 +2,16 @@
 import os.path
 from flask import (render_template, request, g, url_for,
     redirect, flash, Response)
-from urlparse import urljoin
 from sqlalchemy import and_, not_
 
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile
-from imgee.storage import delete, save, get_resized_image, clean_local_cache
-from imgee.utils import newid, get_media_domain, get_s3_folder, not_in_deleteQ
-from imgee.async import get_async_result, queueit
-
-image_formats = '.jpg .jpe .jpeg .png .gif .bmp'.split()
+from imgee.storage import delete, save, clean_local_cache
+from imgee.utils import newid, get_media_domain, not_in_deleteQ
+from imgee.async import queueit
+import imgee.async as async
+import imgee.utils as utils
 
 
 @app.context_processor
@@ -129,36 +128,24 @@ def view_image(profile, img):
 @app.route('/embed/file/<image>')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image(image):
-    extn = image.extn
-    if extn in image_formats:
-        size = request.args.get('size', '')
-        if not size:
-            img_name = image.name
-        else:
-            img_name = get_async_result(get_resized_image(image, size))
-            if isinstance(img_name, Response):
-                return img_name
+    size = request.args.get('size')
+    try:
+        image_url = utils.get_image_url(image, size)
+    except async.StillProcessingException:
+        return async.loading()
     else:
-        img_name = image.name
-    img_name = get_s3_folder() + img_name + extn
-    media_domain = get_media_domain()
-    return redirect(urljoin(media_domain, img_name), code=301)
+        return redirect(image_url, code=301)
 
 
 @app.route('/embed/thumbnail/<image>')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_thumbnail(image):
-    extn = image.extn
-    if extn in image_formats:
-        tn_size = app.config.get('THUMBNAIL_SIZE')
-        thumbnail = get_async_result(get_resized_image(image, tn_size, is_thumbnail=True))
-        if isinstance(thumbnail, Response):
-            return thumbnail
-        thumbnail = get_s3_folder() + thumbnail + extn
+    try:
+        tn_url = utils.get_thumbnail_url(image, size)
+    except async.StillProcessingException:
+        return async.loading()
     else:
-        thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
-    media_domain = get_media_domain()
-    return redirect(urljoin(media_domain, thumbnail), code=301)
+        return redirect(tn_url, code=301)
 
 
 @app.route('/<profile>/delete/<image>', methods=['GET', 'POST'])
