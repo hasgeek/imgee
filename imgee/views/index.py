@@ -52,7 +52,6 @@ def upload_file(profile):
         title, job = save(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
-    # form invalid or request.method == 'GET'
     return render_template('form.html', form=upload_form, profile=profile)
 
 
