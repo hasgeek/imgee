@@ -23,6 +23,7 @@ import imgee.models
 import imgee.views
 import imgee.api
 from imgee.models import db
+from imgee.api import api
 
 registry = imgee.async.TaskRegistry()
 
@@ -53,3 +54,4 @@ def init_for(env):
     mkdir_p(app.config['UPLOADED_FILES_DEST'])
     celery.conf.add_defaults(app.config)
     registry.set_connection()
+    app.register_blueprint(api, url_prefix='/api')
