@@ -65,9 +65,11 @@
             <ul class="nav nav-list org-list" id="expandable2">
               <li class="nav-header">Profile And Organizations</li> 
               <li><a class="{% if g.user.username == profile.name %}active{% endif %}" title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
-              {%- for org in g.user.organizations_owned() %}
-                <li><a class="{% if org.name == profile.name %}active{% endif %}" href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
-              {%- endfor %}
+              {% if g.user %}
+                  {%- for org in g.user.organizations_owned() %}
+                    <li><a class="{% if org.name == profile.name %}active{% endif %}" href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
+                  {%- endfor %}
+              {% endif %}
             </ul>
             <a href="#" id="more2"><i class="icon-ellipsis-horizontal"></i></a>
           </div><!-- /sidebar well-->
