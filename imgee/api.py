@@ -1,5 +1,7 @@
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint, url_for
 from coaster.views import load_model, load_models
+import os
+from urlparse import urljoin
 
 from imgee import app, lastuser
 from imgee.models import db, StoredFile, Profile
@@ -24,13 +26,14 @@ def get_image_json(image):
         status = Status.in_process
     else:
         status = Status.ok
-    d = dict(url=url, status=status)
+
+    imgee_url = urljoin(request.host_url, url_for('get_image', image=image.name))
+    d = dict(url=url, status=status, imgee_url=imgee_url)
     return jsonify(d)
 
 
 @api.route('/<profile>/new.json', methods=['POST'])
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-file', 'siteadmin']), addlperms=lastuser.permissions)
+@load_model(Profile, {'name': 'profile'}, 'profile')
 def upload_file_json(profile):
     file_ = request.files['file']
     title, job = storage.save(file_, profile=profile)
@@ -43,6 +46,8 @@ def upload_file_json(profile):
         status = Status.ok
 
     url = utils.get_url(imgname)
-    d = dict(url=url, status=status)
+    imgname = os.path.splitext(imgname)[0]
+    imgee_url = url_for('get_image', imgname)
+    d = dict(url=url, status=status, imgee_url=imgee_url)
     return jsonify(d)
 
