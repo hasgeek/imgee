@@ -2,16 +2,25 @@
 Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js)
 */
 
+function putURL(imgee_holder, imgname, settings){
+    var image_url = settings['imgee_url'] + settings['file_endpoint'] + imgname;
+    if (settings['size']){
+        image_url += '?size=' + settings['size'];
+    }
+    $(imgee_holder).val(image_url);
+}
 
 (function($) {
     $.fn.imgee = function(options){
         $.fn.imgee.defaults = {
             imgee_url: 'http://images.hasgeek.com/',
             button_desc: 'Select or Upload Image',
-            label: '',
-            profile: '',
+            label: $(this).data('img-label'),
+            profile: $(this).data('profile'),
+            size: $(this).data('img-size'),
             popup_endpoint: '/popup', // enpoint for pop_up_gallery in Imgee
-            callback: alert,
+            file_endpoint: '/embed/file/',
+            callback: putURL,
             debug: false,
             // pop-up window attributes
             window_name: 'imgee',
@@ -24,16 +33,16 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
         var settings = $.extend({}, $.fn.imgee.defaults, options);
         settings['imgee_host'] = settings.imgee_url.match('.*://.*')[0];
         setup.apply(this, [settings]);
-        recv_messages_from(settings.imgee_host, settings);
+        recv_messages_from(this, settings.imgee_host, settings);
     };
 
-    function recv_messages_from(from, options){
+    function recv_messages_from(imgee_holder, from, options){
         $.receiveMessage(
             function(e){
                 if (options.debug){
                     debug('Recieved from ' + options.imgee_host + ' :' + e.data);
                 }
-                options.callback.apply(this, [e.data, options]);
+                options.callback.apply(this, [imgee_holder, e.data, options]);
         }, from);
     }
 
