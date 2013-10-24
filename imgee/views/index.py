@@ -6,7 +6,7 @@ from sqlalchemy import and_, not_
 
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
-from imgee.models import StoredFile, db, Profile
+from imgee.models import StoredFile, db, Profile, Label
 from imgee.storage import delete, save, clean_local_cache
 from imgee.utils import newid, get_media_domain, not_in_deleteQ
 from imgee.async import queueit
@@ -58,12 +58,17 @@ def upload_file(profile):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def pop_up_gallery(profile):
-    files = profile.stored_files.order_by('created_at desc').all()
+    label = request.args.get('label')
+    files = profile.stored_files
+    if label:
+        files = files.join(StoredFile.labels).filter(Label.name==label)
+    files = files.order_by('stored_file.created_at desc').all()
     files = not_in_deleteQ(files)
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
-    return render_template('pop_up_gallery.html', files=files, profile=profile, uploadform=form, cp_form=cp_form)
+    return render_template('pop_up_gallery.html', files=files, label=label,
+                profile=profile, uploadform=form, cp_form=cp_form)
 
 
 @app.route('/<profile>/edit_title', methods=['POST'])

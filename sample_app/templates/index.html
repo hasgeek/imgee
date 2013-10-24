@@ -14,12 +14,14 @@ $(function (){
     var imgee_url = "{{config.get('IMGEE_ENDPOINT', 'http://0.0.0.0:4500')}}/";
     var profile = $('.imgee-url-holder').data('profile');
     var size = $('.imgee-url-holder').data('img-size');
+    var label = $('.imgee-url-holder').data('img-label');
     var imgee_popup_url = imgee_url + profile + '/popup';
     var image_url;
 
     $('.imgee-url-holder')
     .after("<div class='holder'></div>").parent().find('.holder')
     .imgee({'imgee_url': imgee_popup_url,
+            'label': label,
             'callback': function(imgname){
                 image_url = imgee_url + 'embed/file/' + imgname;
                 if (size){
