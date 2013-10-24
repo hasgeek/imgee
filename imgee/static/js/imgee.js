@@ -9,6 +9,8 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
             imgee_url: 'http://images.hasgeek.com/popup',
             button_desc: 'Select or Upload Image',
             label: '',
+            profile: '',
+            popup_endpoint: '/popup', // enpoint for pop_up_gallery in Imgee
             callback: alert,
             debug: false,
             // pop-up window attributes
@@ -47,13 +49,21 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
     }
 
     function openPopupWindow(options){
+        // remove trailing slash in imgee_url, if exists
+        var url = options.imgee_url.replace(/\/$/, '');
+
         var props = 'width=' + options.window_width;
             props += ',height=' + options.window_height;
         if (options.window_resizable)
             props += ',resizable'
         if (options.window_scrollbars)
             props += ',scrollbars'
-        url = options.imgee_url + '?from=' + window.location.href
+        if (options.profile){
+            url += '/' + options.profile + options.popup_endpoint;
+        }else{
+            url+= options.popup_endpoint;
+        }
+        url += '?from=' + window.location.href;
         if (options.label){
             url += '&label=' + options.label;
         }
