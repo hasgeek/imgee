@@ -8,6 +8,7 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
         $.fn.imgee.defaults = {
             imgee_url: 'http://images.hasgeek.com/popup',
             button_desc: 'Select or Upload Image',
+            label: '',
             callback: alert,
             debug: false,
             // pop-up window attributes
@@ -53,6 +54,9 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
         if (options.window_scrollbars)
             props += ',scrollbars'
         url = options.imgee_url + '?from=' + window.location.href
+        if (options.label){
+            url += '&label=' + options.label;
+        }
         win = window.open(url, options.window_name, props);
         return win;
     }
