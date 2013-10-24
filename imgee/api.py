@@ -27,7 +27,7 @@ def get_image_json(image):
     else:
         status = Status.ok
 
-    imgee_url = urljoin(request.host_url, url_for('get_image', image=image.name))
+    imgee_url = urljoin(request.host_url, url_for('get_image', image=image.name, size=size))
     d = dict(url=url, status=status, imgee_url=imgee_url)
     return jsonify(d)
 
@@ -47,7 +47,7 @@ def upload_file_json(profile):
 
     url = utils.get_url(imgname)
     imgname = os.path.splitext(imgname)[0]
-    imgee_url = url_for('get_image', imgname)
+    imgee_url = urljoin(request.host_url, url_for('get_image', image=imgname))
     d = dict(url=url, status=status, imgee_url=imgee_url)
     return jsonify(d)
 
