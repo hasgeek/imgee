@@ -13,14 +13,14 @@ app.config['SECRET_KEY'] = 'not set'
 class ImgeeForm(Form):
     image = ImgeeField(label='Logo', description='Your company logo here',
            validators=[Required()],
-           profile='asldevi', img_label='logos', img_size='100x75'
+           profile='asldevi', img_label='', img_size='100x75'
     )
 
 
 @app.route('/')
 def index():
     form = ImgeeForm()
-    return render_template('index.html', form=form)
+    return render_template('index.html', form=form, imgee_url=imgee_url)
 
 
 def init_for(env):
