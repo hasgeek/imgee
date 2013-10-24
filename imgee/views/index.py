@@ -144,7 +144,7 @@ def get_image(image):
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_thumbnail(image):
     try:
-        tn_url = utils.get_thumbnail_url(image, size)
+        tn_url = utils.get_thumbnail_url(image)
     except async.StillProcessingException:
         return async.loading()
     else:
