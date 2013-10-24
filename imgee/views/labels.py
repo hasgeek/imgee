@@ -24,6 +24,9 @@ def show_label(profile, label):
     permission=['new-label', 'siteadmin'], addlperms=lastuser.permissions)
 def create_label(profile):
     form = forms.CreateLabelForm(profile_id=profile.id)
+    # profile_id is not filled in modal form, fill it here.
+    if not form.profile_id.data:
+        form.profile_id.data = profile.id
     if form.validate_on_submit():
         label = form.label.data
         utils_save_label(label, profile)
