@@ -16,8 +16,7 @@ import imgee.utils as utils
 
 @app.context_processor
 def global_vars():
-    profile_id = g.user and (g.user.profile and g.user.profile.id) or None
-    cl_form = forms.CreateLabelForm(profile_id=profile_id)
+    cl_form = forms.CreateLabelForm()
     return {'cl_form': cl_form, 'uf_form': forms.UploadImageForm()}
 
 
