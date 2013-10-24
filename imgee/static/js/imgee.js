@@ -6,7 +6,7 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
 (function($) {
     $.fn.imgee = function(options){
         $.fn.imgee.defaults = {
-            imgee_url: 'http://images.hasgeek.com/popup',
+            imgee_url: 'http://images.hasgeek.com/',
             button_desc: 'Select or Upload Image',
             label: '',
             profile: '',
@@ -22,7 +22,7 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
         };
 
         var settings = $.extend({}, $.fn.imgee.defaults, options);
-        settings['imgee_host'] = settings.imgee_url.match('.*://.*/');
+        settings['imgee_host'] = settings.imgee_url.match('.*://.*')[0];
         setup.apply(this, [settings]);
         recv_messages_from(settings.imgee_host, settings);
     };
@@ -38,12 +38,15 @@ Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js
     }
 
     function setup(options){
-        var imgee_block = $("<div class='imgee-container' />")
+        var imgee_block = $("<div class='imgee-block' />")
+            .prepend("<div class='imgee-container' />")
             .prepend("<div class='image-holder' />")
             .append("<div class='button-holder' />")
             .prepend('<button id="select_imgee" type="button">' + options.button_desc + '</button>');
-        $(this).prepend(imgee_block);
-        $(this).find('button#select_imgee').click(function(){
+        $(this).after(imgee_block);
+        $(this).siblings('div.imgee-block')
+                .find('button#select_imgee')
+                .click(function(){
             openPopupWindow(options);
         });
     }
