@@ -76,7 +76,7 @@
                 <ul>
                   <li>Uploaded on: <em>{{ img.created_at.strftime('%B %d, %Y') }}</em></li>
                   <li>Type: <em>{{(img.extn)[1:]}}</em></li>
-                  <li>File size: <em>{% if img.size >= 1099511627776 %}{{ (img.size/1099511627776) | round(2) }} TB{% elif img.size >= 1073741824 %}{{ (img.size/1073741824) | round(2) }} GB{% elif img.size >= 1048576 %}{{ (img.size/1048576) | round(2) }} MB{% elif img.size >= 1024 %}{{ (img.size/1024) | round(2) }} KB{% else %}{{ img.size | round(2) }} bytes{% endif %}</em></li>
+                  <li>File size: <em> {{img.size | filesizeformat}}</em></li>
                   <li>Image size: <em>
                     {% if img.extn != ".svg" %}
                       {% if (img.width==0 and img.height==0) %}unknown
