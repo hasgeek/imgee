@@ -1,5 +1,4 @@
 from flask import jsonify, request, Blueprint, url_for
-from werkzeug.exceptions import HTTPException
 from coaster.views import load_model, load_models
 import os
 from urlparse import urljoin
@@ -15,15 +14,14 @@ class Status(object):
     in_process = 'PROCESSING'
     notfound = 'NOT FOUND'
 
+@api.errorhandler(404)
+def error404(error):
+    return jsonify({"status": Status.notfound, "status_code": 404})
 
-@api.route('/file/<imgname>.json')
-def get_image_json(imgname):
-    try:
-        image = StoredFile.query.filter_by(name=imgname).first_or_404()
-    except HTTPException:
-        return jsonify({"status": Status.notfound, "status_code": 404,
-                            "error": "Image with name '%s' doesn't exist." % imgname})
 
+@api.route('/file/<image>.json')
+@load_model(StoredFile, {'name': 'image'}, 'image')
+def get_image_json(image):
     size = request.args.get('size')
     try:
         url = utils.get_image_url(image, size)
@@ -39,14 +37,9 @@ def get_image_json(imgname):
     return jsonify(d)
 
 
-@api.route('/<profilename>/new.json', methods=['POST'])
-def upload_file_json(profilename):
-    try:
-        profile = Profile.query.filter_by(name=profilename).first_or_404()
-    except HTTPException:
-        return jsonify({"status": Status.notfound, "status_code": 404,
-                        "error": "Profile with name '%s' doesn't exist." % profilename})
-
+@api.route('/<profile>/new.json', methods=['POST'])
+@load_model(Profile, {'name': 'profile'}, 'profile')
+def upload_file_json(profile):
     file_ = request.files['file']
     title, job = storage.save(file_, profile=profile)
     try:
