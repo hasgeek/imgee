@@ -107,4 +107,4 @@ def get_thumbnail_url(image):
         thumbnail = imgee.async.get_async_result(r)
     else:
         thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
-    return get_url(img_name, extn)
+    return get_url(image.name, extn)
