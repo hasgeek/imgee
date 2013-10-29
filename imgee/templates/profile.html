@@ -81,7 +81,10 @@
                       <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
                         <section class="left">
                           <div class="image-thumb">    
+                            <img class="toload" data-src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}} "/>
+                            <noscript>
                             <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
+                            </noscript>
                           </div>
                         </section>
                       </a>
@@ -91,7 +94,7 @@
                           <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">                                 
                             <div class="title editable_title span3 list2" id="{{img.name}}">{{img.title}}</div>
                             <div class="span2 date list3">{{ img.created_at.strftime('%B %d, %Y') }}</div>
-                            <div class="span1 date list4">{{ (img.size/1024) | round(2) }} KB</div>
+                            <div class="span1 date list4">{{ img.size | filesizeformat }}</div>
                             <div class="span2 date list5">{{ img.width }} x {{ img.height }} px</div>
                           </a>
                         </div>
