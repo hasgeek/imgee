@@ -39,7 +39,8 @@ def get_image_json(image):
 
 @api.route('/<profile>/new.json', methods=['POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile')
-def upload_file_json(profile):
+@lastuser.resource_handler('imgee/new')
+def upload_file_json(callerinfo, profile):
     file_ = request.files['file']
     title, job = storage.save(file_, profile=profile)
     try:
