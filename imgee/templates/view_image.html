@@ -5,7 +5,7 @@
 {% block extendedsidebar %}
   <div class="sidebar row">
     <div class="span3 browse-img">
-      <h5><a href="{{ g.user.profile_url }}">Browse your gallery</a></h5>
+      <h5><a href="{{url_for('profile_view', profile=profile.name)}}">Browse your gallery</a></h5>
       {% if next|length == 0 %}
         <div class="img-thumb-placeholder-small"></div>
         <div class="img-thumb-placeholder-small"></div>
