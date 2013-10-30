@@ -42,7 +42,8 @@ def get_image_json(image):
 @lastuser.resource_handler('imgee/new')
 def upload_file_json(callerinfo, profile):
     file_ = request.files['file']
-    title, job = storage.save(file_, profile=profile)
+    title = request.form.get('title')
+    title, job = storage.save(file_, profile=profile, title=title)
     try:
         imgname = async.get_async_result(job)
     except async.StillProcessingException as e:

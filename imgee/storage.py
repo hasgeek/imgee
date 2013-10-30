@@ -41,13 +41,13 @@ def get_resized_image(img, size, is_thumbnail=False):
     return img_name
 
 
-def save(fp, profile, img_name=None):
+def save(fp, profile, title=None):
     """
     Attaches the image to the profile and uploads it to S3.
     """
-    id_ = img_name or newid()
-    title = secure_filename(fp.filename)
-    content_type = get_file_type(title)
+    id_ = newid()
+    title = title or secure_filename(fp.filename)
+    content_type = get_file_type(fp.filename)
     img_name = "%s%s" % (id_, guess_extension(content_type))
     local_path = path_for(img_name)
 
@@ -103,7 +103,7 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
             'Content-Type': content_type,
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
-    return remotename
+    return filename
 
 
 
@@ -233,7 +233,6 @@ def clean_local_cache(expiry=24):
 
     n = 0
     for f in glob(cache_path):
-        print os.path.getatime(f), min_atime
         if os.path.getatime(f) < min_atime:
             os.remove(f)
             n = n + 1
