@@ -15,7 +15,7 @@ import sqlalchemy as sa
 
 import sys
 sys.path.append('../../')
-from sqlalchemy.sql import select, bindparam
+from sqlalchemy.sql import select, bindparam, column
 from imgee.models import Thumbnail
 
 def upgrade():
@@ -24,8 +24,8 @@ def upgrade():
     
     connection = op.get_bind()
     tn = Thumbnail.__table__
-    result = connection.execute(select([tn.c.id, tn.c.size]))
-    w_h = [dict(tnid=r[0], w=int(r[1].split('x')[0]), h=int(r[1].split('x')[1])) for r in result]
+    result = connection.execute(select([column('id'), column('size')], from_obj=tn))
+    w_h = [dict(tnid=r.id, w=int(r.size.split('x')[0]), h=int(r.size.split('x')[1])) for r in result]
     updt_stmt = tn.update().where(tn.c.id == bindparam('tnid')).values(width=bindparam('w'), height=bindparam('h'))
     connection.execute(updt_stmt, w_h)
 

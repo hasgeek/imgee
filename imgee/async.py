@@ -24,7 +24,6 @@ class BaseTask(celery.Task):
             imgee.registry.remove(task_id)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        ## @TO-DO: send an email? or log separately?
         db.session.rollback()
 
 
