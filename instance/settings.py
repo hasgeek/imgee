@@ -48,6 +48,17 @@ UNKNOWN_FILE_THUMBNAIL = 'set name of unknown file thumbnail on media_domain'
 REDIS_URL = 'redis://localhost:6379/0'
 BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
+# Enables celery error emails
+CELERY_SEND_TASK_ERROR_EMAILS = True
+SERVER_EMAIL = DEFAULT_MAIL_SENDER
+EMAIL_HOST = MAIL_SERVER
+
+# ADMINS is list of tuples [(name, addr), ...] rather than a list of email addresses expected by flask-email.
+# both formats are supported by SMTPHandler.
+ADMINS = [(a.split('@')[0].title(), a) for a in ADMINS]
+
+# EMAIL_HOST_USER = MAIL_USERNAME
+# EMAIL_HOST_PASSWORD = MAIL_PASSWORD
 
 #: Path to loading image relative to the root imgee folder
 LOADING_IMG = 'imgee/static/img/spinner.gif'
