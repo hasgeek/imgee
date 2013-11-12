@@ -20,11 +20,12 @@ def get_taskid(funcname, imgname):
 class BaseTask(celery.Task):
     abstract = True
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
-        if status == celery.states.SUCCESS:
-            imgee.registry.remove(task_id)
+        # even if the task fails remove task_id so that on next request the task is executed.
+        imgee.registry.remove(task_id)
 
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
-        db.session.rollback()
+    # let this not mask the default celery failure behavior
+    # def on_failure(self, exc, task_id, args, kwargs, einfo):
+    #     db.session.rollback()
 
 
 class TaskRegistry(object):
