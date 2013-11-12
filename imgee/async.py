@@ -23,9 +23,9 @@ class BaseTask(celery.Task):
         # even if the task fails remove task_id so that on next request the task is executed.
         imgee.registry.remove(task_id)
 
-    # let this not mask the default celery failure behavior
-    # def on_failure(self, exc, task_id, args, kwargs, einfo):
-    #     db.session.rollback()
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        super(BaseTask, self).on_failure(exc, task_id, args, kwargs, einfo)
+        db.session.rollback()
 
 
 class TaskRegistry(object):
