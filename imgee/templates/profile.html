@@ -81,14 +81,15 @@
                       <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
                         <section class="left">
                           <div class="image-thumb">    
-                            <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
+                            <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}" style="margin-top:
+                            {{ (75 - img.height * 75/img.width)/2 if img.width > img.height else 0 }}px"/>
                           </div>
                         </section>
                       </a>
                       
                       <section class="right span8">
                         <div class="row">   
-                          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">                                 
+                          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
                             <div class="title editable_title span3 list2" id="{{img.name}}">{{img.title}}</div>
                             <div class="span2 date list3">{{ img.created_at.strftime('%B %d, %Y') }}</div>
                             <div class="span1 date list4">{{ img.size | filesizeformat }}</div>
@@ -96,7 +97,7 @@
                           </a>
                         </div>
                       </section> 
-                    </li><!-- /image -->
+                    </li>
                   {% endfor %}  
                 </div><!-- /row-ctrl -->
               </ul><!-- showcase -->
