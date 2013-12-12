@@ -113,7 +113,7 @@ def get_prev_next_images(profile, img, limit=2):
     imgs = profile.stored_files.order_by('created_at desc').all()
     imgs = not_in_deleteQ(imgs)
     pos = imgs.index(img)
-    return imgs[pos+1 : pos+1+limit], imgs[pos-limit : pos]
+    return imgs[pos+1 : pos+1+limit], imgs[:pos][-limit:]
 
 @app.route('/<profile>/view/<image>')
 @load_models(
