@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os.path
 from flask import (render_template, request, g, url_for,
-    redirect, flash, Response)
+    redirect, flash, Response, jsonify)
 from sqlalchemy import and_, not_
 
 from coaster.views import load_model, load_models
@@ -53,6 +53,17 @@ def upload_file(profile):
         return redirect(_redirect_url_frm_upload(profile.name))
     return render_template('form.html', form=upload_form, profile=profile)
 
+@app.route('/<profile>/new.json', methods=['POST'])
+@load_model(Profile, {'name': 'profile'}, 'profile',
+    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
+def upload_file_json(profile):
+    upload_form = forms.UploadImageForm()
+    if upload_form.validate_on_submit():
+        file_ = request.files['file']
+        title, job = save(file_, profile=profile)
+        return jsonify(status=True, message="%s uploaded successfully" % title)
+    else:
+        return jsonify(status=False, message=upload_form.errors['file'])
 
 @app.route('/<profile>/popup')
 @load_model(Profile, {'name': 'profile'}, 'profile',

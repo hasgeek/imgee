@@ -7,7 +7,7 @@
   <section class="profile">
     {{ title_form.hidden_tag() }}
     <div class="row">
-      <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone profile-dropzone span9" id="uploadimage" method="POST" enctype="multipart/form-data">
+      <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone span9" id="uploadimage" method="POST" enctype="multipart/form-data">
         {{ uf_form.hidden_tag() }}
         <i class="icon-cloud-upload"></i>
         <h4>Drop files to upload<br /></h4>
