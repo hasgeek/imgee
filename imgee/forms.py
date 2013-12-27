@@ -6,28 +6,14 @@ from flask.ext.wtf import Form
 from wtforms.validators import Required, ValidationError, Length
 from wtforms import (FileField, TextField, HiddenField,
         SelectMultipleField, SelectField)
-import magic
 
 from imgee import app
 from imgee.models import Label
-
-
-ALLOWED_MIMETYPES = [
-    'image/jpeg',
-    'image/pjpeg',
-    'image/png',
-    'image/gif',
-    'image/vnd.adobe.photoshop',
-    'application/pdf', # Illustrator
-    'application/postscript', #Illustrator/EPS
-    'image/svg+xml'
-]
+from imgee.utils import get_file_type, is_file_allowed
 
 
 def valid_file(form, field):
-    file_data = field.data.stream.read()
-    field.data.stream.seek(0)
-    if magic.from_buffer(file_data, mime=True) not in ALLOWED_MIMETYPES:
+    if not is_file_allowed(field.data.stream):
         raise ValidationError("Sorry, unknown image format. Please try uploading another file.")
 
 

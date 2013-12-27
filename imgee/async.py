@@ -82,10 +82,9 @@ def loading():
     """
     Returns the `LOADING_IMG` as the content of the response.
     """
-    loading_img_path = app.config.get('LOADING_IMG')
-    with open(loading_img_path) as loading_img:
+    with open(app.config.get('LOADING_IMG')) as loading_img:
         response = make_response(loading_img.read())
-        response.headers['Content-Type'] = utils.get_file_type(loading_img_path)
+        response.headers['Content-Type'] = utils.get_file_type(loading_img)
         return response
 
 

@@ -3,6 +3,7 @@
 import os.path
 from uuid import uuid4
 import mimetypes
+import magic
 from PIL import Image
 from urlparse import urljoin
 
@@ -14,6 +15,17 @@ from flask import request
 
 import imgee
 from imgee import app
+
+ALLOWED_MIMETYPES = [
+    'image/jpeg',
+    'image/pjpeg',
+    'image/png',
+    'image/gif',
+    'image/vnd.adobe.photoshop',
+    'application/pdf', # Illustrator
+    'application/postscript', #Illustrator/EPS
+    'image/svg+xml'
+]
 
 def newid():
     return unicode(uuid4().hex)
@@ -35,8 +47,15 @@ def guess_extension(mimetype):
     return mimetypes.guess_extension(mimetype)
 
 
-def get_file_type(filename):
-    return mimetypes.guess_type(filename)[0]
+def get_file_type(fp):
+    fp.seek(0)
+    data = fp.read()
+    fp.seek(0)
+    return magic.from_buffer(data, mime=True)
+
+
+def is_file_allowed(fp):
+    return get_file_type(fp) in ALLOWED_MIMETYPES
 
 # -- s3 related --
 

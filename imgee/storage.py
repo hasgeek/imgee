@@ -47,7 +47,7 @@ def save(fp, profile, title=None):
     """
     id_ = newid()
     title = title or secure_filename(fp.filename)
-    content_type = get_file_type(fp.filename)
+    content_type = get_file_type(fp)
     img_name = "%s%s" % (id_, guess_extension(content_type))
     local_path = path_for(img_name)
 
@@ -90,17 +90,15 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
     """
     Save contents from file named `filename` to `remotename` on S3.
     """
-    filepath = path_for(filename)
     b = bucket or get_s3_bucket()
     folder = get_s3_folder(folder)
 
-    with open(filepath) as fp:
+    with open(path_for(filename)) as fp:
         filename = remotename or filename
         k = b.new_key(folder+filename)
-        content_type = content_type or get_file_type(filename)
         headers = {
             'Cache-Control': 'max-age=31536000',  # 60*60*24*365
-            'Content-Type': content_type,
+            'Content-Type': content_type or get_file_type(fp),
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
     return filename
