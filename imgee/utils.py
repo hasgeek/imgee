@@ -17,6 +17,8 @@ import imgee
 from imgee import app
 
 ALLOWED_MIMETYPES = [
+    'image/jpg',
+    'image/jpe',
     'image/jpeg',
     'image/pjpeg',
     'image/png',
@@ -41,9 +43,12 @@ def path_for(img_name):
 
 # -- mimetypes and content types
 
-def guess_extension(mimetype):
-    if mimetype in ('image/jpg', 'image/jpe', 'image/jpeg'):
+def guess_extension(mimetype, orig_extn):
+    if mimetype in ('image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg'):
         return '.jpeg'    # guess_extension returns .jpe, which PIL doesn't like
+    if ((mimetype == 'application/pdf' and orig_extn in ['.pdf', '.ai'])
+        or (mimetype == 'application/postscript' and orig_extn in ['.ai', '.eps'])):
+        return orig_extn
     return mimetypes.guess_extension(mimetype)
 
 

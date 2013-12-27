@@ -48,27 +48,29 @@ def save(fp, profile, title=None):
     id_ = newid()
     title = title or secure_filename(fp.filename)
     content_type = get_file_type(fp)
-    img_name = "%s%s" % (id_, guess_extension(content_type))
+    name, extn = os.path.splitext(fp.filename)
+    extn = guess_extension(content_type, extn)
+    img_name = "%s%s" % (id_, extn)
     local_path = path_for(img_name)
 
     with open(local_path, 'w') as img:
         img.write(fp.read())
 
     save_img_in_db(name=id_, title=title, local_path=local_path,
-                    profile=profile, mimetype=content_type)
+                    profile=profile, mimetype=content_type, orig_extn=extn)
     job = queueit('save_on_s3', img_name, content_type=content_type, taskid=img_name)
     return title, job
 
 
 # -- actual saving of image/thumbnail and data in the db and on S3.
 
-def save_img_in_db(name, title, local_path, profile, mimetype):
+def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     """
     Save image info in db.
     """
     size_in_bytes = os.path.getsize(local_path)
     width, height = get_width_height(local_path)
-    stored_file = StoredFile(name=name, title=title, profile=profile,
+    stored_file = StoredFile(name=name, title=title, profile=profile, orig_extn=orig_extn,
                     size=size_in_bytes, width=width, height=height, mimetype=mimetype)
     db.session.add(stored_file)
     db.session.commit()
@@ -187,7 +189,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     """
     src_path = download_frm_s3(img.name + img.extn)
 
-    format = guess_extension(img.mimetype).lstrip('.')
+    format = img.extn.lstrip('.')
     resized_name = '%s%s' % (get_resized_name(img, size), img.extn)
     resize_img(src_path, path_for(resized_name), size, format, is_thumbnail=is_thumbnail)
 

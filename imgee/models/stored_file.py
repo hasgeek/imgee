@@ -55,7 +55,7 @@ class StoredFile(BaseNameMixin, db.Model):
 
     @property
     def extn(self):
-        return guess_extension(self.mimetype) or ''
+        return guess_extension(self.mimetype, self.orig_extn) or ''
 
     def is_queued_for_deletion(self):
         if imgee.app.config.get('CELERY_ALWAYS_EAGER'):
