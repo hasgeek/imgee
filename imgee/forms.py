@@ -25,7 +25,9 @@ ALLOWED_MIMETYPES = [
 
 
 def valid_file(form, field):
-    if magic.from_buffer(field.data.stream.read(), mime=True) not in ALLOWED_MIMETYPES:
+    file_data = field.data.stream.read()
+    field.data.stream.seek(0)
+    if magic.from_buffer(file_data, mime=True) not in ALLOWED_MIMETYPES:
         raise ValidationError("Sorry, unknown image format. Please try uploading another file.")
 
 
