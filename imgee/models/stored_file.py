@@ -39,6 +39,7 @@ class StoredFile(BaseNameMixin, db.Model):
     width = db.Column(db.Integer, default=0)
     height = db.Column(db.Integer, default=0)
     mimetype = db.Column(db.Unicode(32), nullable=False)
+    orig_extn = db.Column(db.Unicode(15), nullable=True)
     thumbnails = db.relationship('Thumbnail', backref='stored_file',
                                  cascade='all, delete-orphan')
     labels = db.relationship('Label', secondary='image_labels',
