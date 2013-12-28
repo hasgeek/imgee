@@ -2,7 +2,6 @@
 
 import os.path
 from uuid import uuid4
-import mimetypes
 import magic
 from PIL import Image
 from urlparse import urljoin
@@ -16,35 +15,48 @@ from flask import request
 import imgee
 from imgee import app
 
-ALLOWED_MIMETYPES = [
-    'image/jpg',
-    'image/jpe',
-    'image/jpeg',
-    'image/pjpeg',
-    'image/png',
-    'image/gif',
-    'image/vnd.adobe.photoshop',
-    'application/pdf', # Illustrator
-    'application/postscript', #Illustrator/EPS
-    'image/svg+xml',
-    'image/bmp',
-    'image/x-bmp',
-    'image/x-bitmap',
-    'image/x-xbitmap',
-    'image/x-win-bitmap',
-    'image/x-windows-bmp',
-    'image/ms-bmp',
-    'image/x-ms-bmp',
-    'application/bmp',
-    'application/x-bmp',
-    'application/x-win-bitmap',
-    'application/cdr',
-    'application/coreldraw',
-    'application/x-cdr',
-    'application/x-coreldraw',
-    'image/cdr',
-    'image/x-cdr'
-]
+ALLOWED_MIMETYPES = {
+    'image/jpg': {'allowed_extns':['.jpe', '.jpg', '.jpeg'], 'extn': '.jpeg'},
+    'image/jpe': {'allowed_extns':['.jpe', '.jpg', '.jpeg'], 'extn': '.jpeg'},
+    'image/jpeg': {'allowed_extns':['.jpe', '.jpg', '.jpeg'], 'extn': '.jpeg'},
+    'image/pjpeg': {'allowed_extns':['.jpe', '.jpg', '.jpeg'], 'extn': '.jpeg'},
+    'image/png': {'allowed_extns':['.png'], 'extn': '.png'},
+    'image/gif': {'allowed_extns':['.gif'], 'extn': '.gif'},
+    'image/vnd.adobe.photoshop': {'allowed_extns':['.psd'], 'extn': '.psd'},
+    'application/pdf': {'allowed_extns':['.pdf', '.ai'], 'extn': ['.pdf', '.ai']},
+    'application/illustrator': {'allowed_extns':['.ai'], 'extn': '.ai'},
+    'application/postscript': {'allowed_extns':['.eps', 'ai'], 'extn': ['.pdf', '.ai']},
+    'image/svg+xml': {'allowed_extns':['.svg'], 'extn': '.svg'},
+    'image/bmp': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'image/x-bmp': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'image/x-bitmap': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'image/x-xbitmap': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'image/x-win-bitmap': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'image/x-windows-bmp': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'image/ms-bmp': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'image/x-ms-bmp': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'application/bmp': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'application/x-bmp': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'application/x-win-bitmap': {'allowed_extns':['.bmp'], 'extn': '.bmp'},
+    'application/cdr': {'allowed_extns':['.cdr'], 'extn': '.cdr'},
+    'application/coreldraw': {'allowed_extns':['.cdr'], 'extn': '.cdr'},
+    'application/x-cdr': {'allowed_extns':['.cdr'], 'extn': '.cdr'},
+    'application/x-coreldraw': {'allowed_extns':['.cdr'], 'extn': '.cdr'},
+    'image/cdr': {'allowed_extns':['.cdr'], 'extn': '.cdr'},
+    'image/x-cdr': {'allowed_extns':['.cdr'], 'extn': '.cdr'},
+    'application/eps': {'allowed_extns':['.eps'], 'extn': '.eps'},
+    'application/x-eps': {'allowed_extns':['.eps'], 'extn': '.eps'},
+    'image/eps': {'allowed_extns':['.eps'], 'extn': '.eps'},
+    'image/x-eps': {'allowed_extns':['.eps'], 'extn': '.eps'},
+    'image/tif': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']},
+    'image/x-tif': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']},
+    'image/tiff': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']},
+    'image/x-tiff': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']},
+    'application/tif': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']},
+    'application/x-tif': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']},
+    'application/tiff': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']},
+    'application/x-tiff': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']}
+}
 
 def newid():
     return unicode(uuid4().hex)
@@ -61,12 +73,19 @@ def path_for(img_name):
 # -- mimetypes and content types
 
 def guess_extension(mimetype, orig_extn):
-    if mimetype in ('image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg'):
-        return '.jpeg'    # guess_extension returns .jpe, which PIL doesn't like
-    if ((mimetype == 'application/pdf' and orig_extn in ['.pdf', '.ai'])
-        or (mimetype == 'application/postscript' and orig_extn in ['.ai', '.eps'])):
-        return orig_extn
-    return mimetypes.guess_extension(mimetype)
+    if mimetype in ALLOWED_MIMETYPES:
+        if orig_extn not in ALLOWED_MIMETYPES[mimetype]['orig_extn']:
+            if type(ALLOWED_MIMETYPES[mimetype]['extn']) == str:
+                orig_extn = ALLOWED_MIMETYPES[mimetype]['extn']
+            else:
+                orig_extn = ALLOWED_MIMETYPES[mimetype]['extn'][0]
+        if type(ALLOWED_MIMETYPES[mimetype]['extn']) == list:
+            if orig_extn in ALLOWED_MIMETYPES[mimetype]['extn']:
+                return orig_extn
+            else:
+                return ALLOWED_MIMETYPES[mimetype]['extn'][0]
+        else:
+            return ALLOWED_MIMETYPES[mimetype]['extn']
 
 
 def get_file_type(fp):
