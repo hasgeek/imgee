@@ -58,6 +58,15 @@ ALLOWED_MIMETYPES = {
     'application/x-tiff': {'allowed_extns':['.tif', '.tiff'], 'extn': ['.tif', 'tiff']}
 }
 
+EXTNS = []
+for mimetype in ALLOWED_MIMETYPES.iteritems():
+    if type(mimetype.extn) == list:
+        for extn in mimetype.extn:
+            EXTNS.append(extn)
+    else:
+        EXTNS.append(mimetype.extn)
+EXTNS = list(set(EXTNS))
+
 def newid():
     return unicode(uuid4().hex)
 
@@ -139,10 +148,6 @@ def get_width_height(img_path):
         return img.size
 
 
-def image_formats():
-    return '.jpg .jpe .jpeg .png .gif .bmp'.split()
-
-
 def get_url(img_name, extn=''):
     img_name = get_s3_folder() + img_name + extn
     media_domain = get_media_domain()
@@ -151,7 +156,7 @@ def get_url(img_name, extn=''):
 
 def get_image_url(image, size=None):
     extn = image.extn
-    if size and (extn in image_formats()):
+    if size and (extn in EXTNS):
         r = imgee.storage.get_resized_image(image, size)
         img_name = imgee.async.get_async_result(r)
     else:
@@ -161,7 +166,7 @@ def get_image_url(image, size=None):
 
 def get_thumbnail_url(image):
     extn = image.extn
-    if extn in image_formats():
+    if extn in EXTNS:
         tn_size = app.config.get('THUMBNAIL_SIZE')
         r = imgee.storage.get_resized_image(image, tn_size, is_thumbnail=True)
         thumbnail = imgee.async.get_async_result(r)
