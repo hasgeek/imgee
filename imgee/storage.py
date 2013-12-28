@@ -70,8 +70,8 @@ def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     """
     size_in_bytes = os.path.getsize(local_path)
     width, height = get_width_height(local_path)
-    stored_file = StoredFile(name=name, title=title, profile=profile, orig_extn=orig_extn,
-                    size=size_in_bytes, width=width, height=height, mimetype=mimetype)
+    stored_file = StoredFile(name=name, title=unicode(title), profile=profile, orig_extn=unicode(orig_extn),
+                    size=size_in_bytes, width=width, height=height, mimetype=unicode(mimetype))
     db.session.add(stored_file)
     db.session.commit()
 
