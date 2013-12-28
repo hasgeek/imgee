@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os.path
+import xml4h
 from uuid import uuid4
 import magic
 from PIL import Image
@@ -140,6 +141,10 @@ def not_in_deleteQ(imgs):
 # -- image details --
 
 def get_width_height(img_path):
+    if img_path.split('.')[-1:][0] == 'svg':
+        svg = xml4h.parse(img_path)
+        svg = svg.children[0]
+        return (int(svg.attributes['width'].strip('px')), int(svg.attributes['height'].strip('px')))
     try:
         img = Image.open(img_path)
     except IOError:
@@ -156,7 +161,7 @@ def get_url(img_name, extn=''):
 
 def get_image_url(image, size=None):
     extn = image.extn
-    if size and (extn in EXTNS):
+    if size and extn in EXTNS and extn not in ['.svg']:
         r = imgee.storage.get_resized_image(image, size)
         img_name = imgee.async.get_async_result(r)
     else:
