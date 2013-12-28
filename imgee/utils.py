@@ -83,7 +83,7 @@ def path_for(img_name):
 
 def guess_extension(mimetype, orig_extn):
     if mimetype in ALLOWED_MIMETYPES:
-        if orig_extn not in ALLOWED_MIMETYPES[mimetype]['orig_extn']:
+        if orig_extn not in ALLOWED_MIMETYPES[mimetype]['allowed_extns']:
             if type(ALLOWED_MIMETYPES[mimetype]['extn']) == str:
                 orig_extn = ALLOWED_MIMETYPES[mimetype]['extn']
             else:
