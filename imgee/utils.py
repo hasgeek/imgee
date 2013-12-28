@@ -26,7 +26,18 @@ ALLOWED_MIMETYPES = [
     'image/vnd.adobe.photoshop',
     'application/pdf', # Illustrator
     'application/postscript', #Illustrator/EPS
-    'image/svg+xml'
+    'image/svg+xml',
+    'image/bmp',
+    'image/x-bmp',
+    'image/x-bitmap',
+    'image/x-xbitmap',
+    'image/x-win-bitmap',
+    'image/x-windows-bmp',
+    'image/ms-bmp',
+    'image/x-ms-bmp',
+    'application/bmp',
+    'application/x-bmp',
+    'application/x-win-bitmap'
 ]
 
 def newid():
