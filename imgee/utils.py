@@ -37,7 +37,13 @@ ALLOWED_MIMETYPES = [
     'image/x-ms-bmp',
     'application/bmp',
     'application/x-bmp',
-    'application/x-win-bitmap'
+    'application/x-win-bitmap',
+    'application/cdr',
+    'application/coreldraw',
+    'application/x-cdr',
+    'application/x-coreldraw',
+    'image/cdr',
+    'image/x-cdr'
 ]
 
 def newid():
