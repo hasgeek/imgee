@@ -59,12 +59,12 @@ ALLOWED_MIMETYPES = {
 }
 
 EXTNS = []
-for mimetype in ALLOWED_MIMETYPES.iteritems():
-    if type(mimetype.extn) == list:
-        for extn in mimetype.extn:
+for mimetype, data in ALLOWED_MIMETYPES.iteritems():
+    if type(data['extn']) == list:
+        for extn in data['extn']:
             EXTNS.append(extn)
     else:
-        EXTNS.append(mimetype.extn)
+        EXTNS.append(data['extn'])
 EXTNS = list(set(EXTNS))
 
 def newid():
