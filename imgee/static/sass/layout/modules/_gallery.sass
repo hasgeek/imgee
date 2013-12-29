@@ -39,7 +39,7 @@
 
 li.image
   .image-thumb > img
-    box-shadow: 1px 1px 2px #ccc
+    box-shadow: 0px 0px 4px #ccc
 
 .gallery
   margin-top: 0px
@@ -65,7 +65,8 @@ ul.list
     clear: both
     border-top: 1px solid #e5e5e5
     margin-left: 5px
-    padding-top: 6px
+    padding-top: 5px
+    padding-bottom: 5px
     float: left
     &:last-child
       border-bottom: 1px solid #E5E5E5
@@ -77,12 +78,18 @@ ul.list
     section.left
       display: block
       float: left
-      margin-left: 10px
       margin-right: -10px
       position: relative
+      height: 50px
+      text-align: center
       img
-        width: 35px
-        height: 35px
+        max-width: 100%
+        max-height: 100%
+        border: 5px solid white
+        margin-top: 0 !important
+        box-sizing: border-box
+        -moz-box-sizing: border-box
+        -webkit-box-sizing: border-box
     section.right
       display: block
       float: left
@@ -103,10 +110,22 @@ ul.grid
   li
     position: relative
     float: left
-    margin-right: 5px
+    margin-right: 15px
+    margin-top: 5px
     border-bottom: 0px
     padding-bottom: 0px
     padding-top: 0px
+
+    .image-thumb
+      height: 85px
+      width: 85px
+      text-align: center
+      opacity: 0.8
+      transition: 0.5s opacity
+      &:hover
+        opacity: 1
+    .image-thumb > img
+      border: 5px solid white
 
     section.left
       position: relative
@@ -136,6 +155,8 @@ ul.grid
       .left
         clear: both
         float: right
+        img
+          border-width: 2px
       .image-thumb
         margin-left: 5px
       .right
@@ -156,6 +177,11 @@ ul.grid
   .list3, .list4, .list5
     display: none
 
+@media (min-width: 1200px)
+  ul.list
+    li
+      section.left
+        margin-left: 2px
 
 @media (min-width: 768px) and (max-width: 979px)
   span#delete
@@ -166,7 +192,8 @@ ul.grid
   ul.list
     li
       section.left
-        margin-right: -20px
+        img
+          border-width: 3px
   ul.list
     section.top
       .top3 
@@ -176,4 +203,5 @@ ul.grid
   ul.list
     li
       section.left
-        margin-right: -20px
+        img
+          border-width: 3px
