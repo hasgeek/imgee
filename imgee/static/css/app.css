@@ -526,7 +526,7 @@ a:hover {
 }
 
 li.image .image-thumb > img {
-  box-shadow: 1px 1px 2px #cccccc;
+  box-shadow: 0px 0px 4px #cccccc;
 }
 
 .gallery {
@@ -558,7 +558,8 @@ ul.list li {
   clear: both;
   border-top: 1px solid #e5e5e5;
   margin-left: 5px;
-  padding-top: 6px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   float: left;
 }
 ul.list li:last-child {
@@ -573,13 +574,19 @@ ul.list li .span1 {
 ul.list li section.left {
   display: block;
   float: left;
-  margin-left: 10px;
   margin-right: -10px;
   position: relative;
+  height: 50px;
+  text-align: center;
 }
 ul.list li section.left img {
-  width: 35px;
-  height: 35px;
+  max-width: 100%;
+  max-height: 100%;
+  border: 5px solid white;
+  margin-top: 0 !important;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
 ul.list li section.right {
   display: block;
@@ -603,10 +610,24 @@ ul.grid section.top {
 ul.grid li {
   position: relative;
   float: left;
-  margin-right: 5px;
+  margin-right: 15px;
+  margin-top: 5px;
   border-bottom: 0px;
   padding-bottom: 0px;
   padding-top: 0px;
+}
+ul.grid li .image-thumb {
+  height: 85px;
+  width: 85px;
+  text-align: center;
+  opacity: 0.8;
+  transition: 0.5s opacity;
+}
+ul.grid li .image-thumb:hover {
+  opacity: 1;
+}
+ul.grid li .image-thumb > img {
+  border: 5px solid white;
 }
 ul.grid li section.left {
   position: relative;
@@ -644,6 +665,9 @@ ul.grid li section.right {
     clear: both;
     float: right;
   }
+  .gallery ul.list .left img {
+    border-width: 2px;
+  }
   .gallery ul.list .image-thumb {
     margin-left: 5px;
   }
@@ -673,6 +697,11 @@ ul.grid li section.right {
     display: none;
   }
 }
+@media (min-width: 1200px) {
+  ul.list li section.left {
+    margin-left: 2px;
+  }
+}
 @media (min-width: 768px) and (max-width: 979px) {
   span#delete {
     display: none;
@@ -682,8 +711,8 @@ ul.grid li section.right {
     display: none;
   }
 
-  ul.list li section.left {
-    margin-right: -20px;
+  ul.list li section.left img {
+    border-width: 3px;
   }
 
   ul.list section.top .top3 {
@@ -691,8 +720,8 @@ ul.grid li section.right {
   }
 }
 @media (min-width: 980px) and (max-width: 1200px) {
-  ul.list li section.left {
-    margin-right: -20px;
+  ul.list li section.left img {
+    border-width: 3px;
   }
 }
 .title {
