@@ -6,30 +6,15 @@
   <div class="sidebar row">
     <div class="span3 browse-img">
       <h5><a href="{{url_for('profile_view', profile=profile.name)}}">Browse your gallery</a></h5>
-      {% if next|length == 0 %}
-        <div class="img-thumb-placeholder-small"></div>
-        <div class="img-thumb-placeholder-small"></div>
-      {% elif next|length == 1 %}
-        <div class="img-thumb-placeholder-small"></div>
-      {% endif %}
-      {% for n in next %}
-        <div class="image-thumb">
-          <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" title="view image">
-            <img src="{{url_for('get_image', image=n.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
+      {% set images = [None] * (2 - next|length) + next + [img] + prev + [None] * (2 - prev|length) %}
+      {% for image in images %}
+        {% if image %}
+          <a class="image-thumb{{ ' active' if loop.index == 3 }}" href="{{url_for('view_image', profile=profile.name, image=image.name)}}" title="view image">
+            <img src="{{url_for('get_image', image=image.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
           </a>
-        </div>
-      {% endfor %}
-      <div class="image-thumb">
-        <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
-          <img class="active" src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
-        </a>
-      </div>
-      {% for p in prev %}
-        <div class="image-thumb">
-          <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" title="view image">
-            <img src="{{url_for('get_image', image=p.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
-          </a>
-        </div>
+        {% else %}
+          <div class="image-thumb"></div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
@@ -228,7 +213,16 @@
     $("input:text[name='direct-link']").val(new_link);
     $("input:text[name='html-code']").val('<img src="'+new_link+'" />');
   });
-
+  var images = $('.sidebar .image-thumb img');
+  function vertical_align() {
+    images.each(function(){
+      var image = $(this);
+      var border = Number(image.css('border-width').charAt(0));
+      image.css('margin-top', (image.parent().height() - image.height() - 2*border)/2);
+    });
+  };
+  vertical_align();
+  $(window).resize(vertical_align);
 
 </script>
 {% endblock %}
