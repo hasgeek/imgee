@@ -34,7 +34,7 @@ a:hover {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('../img/logo.png?1375185015');
+  background-image: url('../img/logo.png?1381326109');
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width: 150px;
@@ -47,7 +47,7 @@ a:hover {
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
   #logo {
-    background-image: url('../img/logo@2x.png?1375185015');
+    background-image: url('../img/logo@2x.png?1381326109');
     -webkit-background-size: 150px 75px;
   }
 }
@@ -926,14 +926,6 @@ input[type="file"] {
   margin-top: 0px;
   margin-bottom: 0px;
 }
-.sidebar a.image-thumb {
-  box-shadow: 0px 0px 3px #cccccc;
-  opacity: 0.8;
-  transition: 0.5s opacity;
-  -webkit-transition: 0.5s opacity;
-  -moz-transition: 0.5s opacity;
-  -o-transition: 0.5s opacity;
-}
 .sidebar .image-thumb img {
   max-width: 100%;
   max-height: 100%;
@@ -944,6 +936,14 @@ input[type="file"] {
 }
 .sidebar .image-thumb.active, .sidebar .image-thumb:hover {
   opacity: 1;
+}
+.sidebar a.image-thumb {
+  box-shadow: 0px 0px 3px #cccccc;
+  opacity: 0.8;
+  transition: 0.5s opacity;
+  -webkit-transition: 0.5s opacity;
+  -moz-transition: 0.5s opacity;
+  -o-transition: 0.5s opacity;
 }
 
 @media screen and (max-width: 767px) {
@@ -966,18 +966,16 @@ input[type="file"] {
   .btn-group .hide-mob {
     display: none;
   }
+
+  .sidebar .image-thumb {
+    margin-left: 2px;
+    margin-right: 2px;
+  }
   .sidebar .image-thumb img {
     border-width: 2px;
   }
   .sidebar .image-thumb.active {
     box-shadow: 0px 0px 2.5px #f0a40c;
-  }
-  .sidebar a.image-thumb {
-    box-shadow: 0px 0px 1px #cccccc;
-  }
-  .sidebar .image-thumb {
-    margin-left: 2px;
-    margin-right: 2px;
   }
   .sidebar .image-thumb:nth-child(4n + 2) {
     width: 25px;
@@ -994,6 +992,9 @@ input[type="file"] {
   .sidebar .image-thumb.active {
     width: 36px;
     height: 36px;
+  }
+  .sidebar a.image-thumb {
+    box-shadow: 0px 0px 1px #cccccc;
   }
 }
 @media (min-width: 980px) and (max-width: 1200px) {
@@ -1834,7 +1835,7 @@ ul#resize li#img-size-custom input {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('../img/logo.png?1375185015');
+  background-image: url('../img/logo.png?1381326109');
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width: 150px;
