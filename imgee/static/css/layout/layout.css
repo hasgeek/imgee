@@ -550,6 +550,7 @@ ul.list .list2 {
 /*grid view */
 ul.grid {
   list-style: none;
+  padding-left: 5px;
 }
 ul.grid section.top {
   display: none;
@@ -558,7 +559,7 @@ ul.grid li {
   position: relative;
   float: left;
   margin-right: 15px;
-  margin-top: 5px;
+  margin-top: 10px;
   border-bottom: 0px;
   padding-bottom: 0px;
   padding-top: 0px;
@@ -575,6 +576,8 @@ ul.grid li .image-thumb:hover {
 }
 ul.grid li .image-thumb > img {
   border: 5px solid white;
+  max-width: 75px;
+  max-height: 75px;
 }
 ul.grid li section.left {
   position: relative;
