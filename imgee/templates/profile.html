@@ -6,14 +6,26 @@
 {% block maincontent %}
   <section class="profile">
     {{ title_form.hidden_tag() }}
-    <div class="row">
-      <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone span9" id="uploadimage" method="POST" enctype="multipart/form-data">
-        {{ uf_form.hidden_tag() }}
-        <i class="icon-cloud-upload"></i>
-        <h4>Drop files to upload<br /></h4>
-          <p>(<em>or click here</em>)</p>        
-      </form>
-      <div class="span9"><a id="reload-page" class="btn btn-primary">Finish Upload</a></div>
+    <div class="span9">
+        <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone row" id="uploadimage" method="POST" enctype="multipart/form-data">
+          {{ uf_form.hidden_tag() }}
+          <i class="icon-cloud-upload"></i>
+          <h4>Drop files to upload<br /></h4>
+            <p>(<em>or click here</em>)</p>        
+        </form>
+        <div id="uploaded-files" class="row">
+          <div class="sample hidden">
+            <div class="alert">
+              <a href="javascript:void(0)" class="close" data-dismiss="alert">&times;</a>
+              <img class="thumb">
+              <div class="aligner">
+                <h4 class="heading"></h4>
+                <div class="form"></div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+        </div>
     </div>
 
     <div class="gallery">
@@ -128,39 +140,47 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
 <script type="text/javascript">
   $(function() {
-  Dropzone.options.uploadimage = {
-    paramName: "file"
+    var uploaded = $('#uploaded-files');
+    var sample_upload = uploaded.find('.sample').html();
+    Dropzone.options.uploadimage = {
+      paramName: "file",
+      acceptedFiles: {{ ','.join(mimetypes)|tojson }},
+      init: function() {
+        this.on('complete', function(file) {
+          response = $.parseJSON(file.xhr.response);
+          var img = $(file.previewElement).find('img').first();
+          var title = $(file.previewElement).find('.dz-filename>span').first().html();
+          this.removeFile(file);
+          uploaded.append(sample_upload);
+          var current = uploaded.find('.alert').last();
+          img.load(function(){
+            var src = $(this).attr('src');
+            var thumb = current.find('.thumb');
+            thumb.attr('src', src);
+            if(src) {
+              thumb.addClass('has-data');
+            }
+          });
+          if(response.status) {
+            current.find('.heading').html(response.message);
+            current.find('.form').html(response.form);
+            current.addClass('alert-info');
+          }
+          else {
+            current.find('.heading').html("Error uploading " + title);
+            current.find('.form').html(response.message);
+            current.addClass('alert-error');
+          }
+          current.slideDown();
+        });
+      }
     };
   });
 </script>
 <script type="text/javascript">
   $(function(){
     $('.dropzone').css('min-height', '30px');
-    $('.dropzone').droppable({
-      over: function(event, ui) {
-        $(this).css('height', '200px');
-        $('#reload-page').show();
-      },
-      out: function(event, ui) {
-        $(this).css('height', '30px');
-        $('#reload-page').show();
-      },
-      drop: function(event, ui) {
-        $(this).css('height', '30px');
-        $('#reload-page').show();
-      }
-    });
   });  
-</script>
-<script type="text/javascript">
-  $('#reload-page').hide();
-  $('.dropzone').click(function(){
-    $('#reload-page').show();
-  })  
-  $('#reload-page').click(function(){
-
-    location.reload();
-  });
 </script>
 
 <script type="text/javascript">

@@ -8,7 +8,7 @@ from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile, Label
 from imgee.storage import delete, save, clean_local_cache
-from imgee.utils import newid, get_media_domain, not_in_deleteQ
+from imgee.utils import newid, get_media_domain, not_in_deleteQ, ALLOWED_MIMETYPES
 from imgee.async import queueit
 import imgee.async as async
 import imgee.utils as utils
@@ -61,7 +61,7 @@ def upload_file_json(profile):
     if upload_form.validate_on_submit():
         file_ = request.files['file']
         title, job = save(file_, profile=profile)
-        return jsonify(status=True, message="%s uploaded successfully" % title)
+        return jsonify(status=True, message="%s uploaded successfully" % title, form="Update Form")
     else:
         response = jsonify(status=False, message=upload_form.errors['file'])
         response.status_code = 403
@@ -107,7 +107,7 @@ def profile_view(profile):
     files = not_in_deleteQ(files)
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
-    return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form)
+    return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form, mimetypes=ALLOWED_MIMETYPES.keys())
 
 
 @app.route('/<profile>/archive')
