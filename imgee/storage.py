@@ -2,7 +2,7 @@
 
 import time
 import os.path
-from subprocess import call
+from subprocess import check_call, CalledProcessError
 from glob import glob
 import re
 import mimetypes
@@ -29,7 +29,7 @@ def get_resized_image(img, size, is_thumbnail=False):
     """
     img_name = img.name
     size_t = parse_size(size)
-    if size_t and size_t[0] != img.width and size_t[1] != img.height:
+    if (size_t and size_t[0] != img.width and size_t[1] != img.height) or ('thumb_extn' in ALLOWED_MIMETYPES[img.mimetype] and ALLOWED_MIMETYPES[img.mimetype]['thumb_extn'] != img.extn):
         w_or_h = or_(Thumbnail.width == size_t[0], Thumbnail.height == size_t[1])
         scaled = Thumbnail.query.filter(w_or_h, Thumbnail.stored_file == img).first()
         if scaled:
@@ -194,9 +194,17 @@ def resize_and_save(img, size, is_thumbnail=False):
     """
     src_path = download_frm_s3(img.name + img.extn)
 
-    format = img.extn.lstrip('.')
+    if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:
+        format = ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
+    else:
+        format = img.extn
+    format = format.lstrip('.')
     resized_filename = get_resized_filename(img, size)
-    resize_img(src_path, path_for(resized_filename), size, img.mimetype, format, is_thumbnail=is_thumbnail)
+    if not resize_img(src_path, path_for(resized_filename), size, img.mimetype, format, is_thumbnail=is_thumbnail):
+        img.no_previews = True
+        db.session.add(img)
+        db.session.commit()
+        return False
 
     save_on_s3(resized_filename, content_type=img.mimetype)
     return save_tn_in_db(img, resized_filename, size)
@@ -217,8 +225,11 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     
     if 'processor' in ALLOWED_MIMETYPES[mimetype]:
         if ALLOWED_MIMETYPES[mimetype]['processor'] == 'rsvg-convert':
-            call('rsvg-convert --width=%s --height=%s --keep-aspect-ratio=TRUE --format=png %s > %s'
-                % (size[0], size[1], src, dest), cwd=os.getcwd())
+            try:
+                check_call('rsvg-convert --width=%s --height=%s --keep-aspect-ratio=TRUE --format=%s %s > %s'
+                    % (size[0], size[1], format, src, dest), shell=True)
+            except CalledProcessError as e:
+                return False
             processed = True
     if not processed:
         img = Image.open(src)
@@ -234,6 +245,7 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
             resized = resized.crop((left, top, left+tw, top+th))
 
         resized.save(dest, format=format, quality=100)
+    return True
 
 
 def clean_local_cache(expiry=24):
