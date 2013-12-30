@@ -27,7 +27,7 @@ ALLOWED_MIMETYPES = {
     'application/pdf': {'allowed_extns':[u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai']},
     'application/illustrator': {'allowed_extns':[u'.ai'], 'extn': u'.ai'},
     'application/postscript': {'allowed_extns':[u'.eps', 'ai'], 'extn': [u'.pdf', u'.ai']},
-    'image/svg+xml': {'allowed_extns':[u'.svg'], 'extn': u'.svg'},
+    'image/svg+xml': {'allowed_extns':[u'.svg'], 'extn': u'.svg', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
     'image/bmp': {'allowed_extns':[u'.bmp'], 'extn': u'.bmp'},
     'image/x-bmp': {'allowed_extns':[u'.bmp'], 'extn': u'.bmp'},
     'image/x-bitmap': {'allowed_extns':[u'.bmp'], 'extn': u'.bmp'},
@@ -161,11 +161,13 @@ def get_url(img_name, extn=''):
 
 def get_image_url(image, size=None):
     extn = image.extn
-    if size and extn in EXTNS and extn not in ['.svg']:
+    if size and extn in EXTNS:
         r = imgee.storage.get_resized_image(image, size)
         img_name = imgee.async.get_async_result(r)
     else:
         img_name = image.name
+    if size and 'thumb_extn' in ALLOWED_MIMETYPES[image.mimetype]:
+        extn = ALLOWED_MIMETYPES[image.mimetype]['thumb_extn']
     return get_url(img_name, extn)
 
 

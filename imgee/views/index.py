@@ -63,7 +63,7 @@ def upload_file_json(profile):
         title, job = save(file_, profile=profile)
         return jsonify(status=True, message="%s uploaded successfully" % title)
     else:
-        return jsonify(status=False, message=upload_form.errors['file'])
+        return jsonify(status=False, message=upload_form.errors)
 
 @app.route('/<profile>/popup')
 @load_model(Profile, {'name': 'profile'}, 'profile',
