@@ -3,7 +3,6 @@
   border-radius: 0
 .profile-dropzone
   text-align: center
-  margin-bottom: 20px
   h4
     color: #666
   i
@@ -24,12 +23,23 @@
   transition: opacity 0.3s ease-in-out 0s
   width: 869px
 
-      
-#reload-page
-  left: 46%
-  position: relative
-  right: 0
-  top: -37px
+#uploaded-files
+  box-sizing: border-box
+  padding: 10px
+  margin-bottom: 20px
+  .alert
+    display: none
+    .heading
+      color: inherit
+      font-size: inherit
+    .thumb
+      float: left
+      margin-right: 10px
+      &.has-data
+        border: 5px solid white
+        width: 50px
+        &+.aligner
+          margin-left: 60px
 
 @media (min-width: 980px) and (max-width: 1200px)
   .dropzone .dz-default.dz-message

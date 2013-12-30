@@ -1021,12 +1021,10 @@ input[type="file"] {
 .dropzone {
   border-bottom: 5px solid #efefef;
   border-radius: 0;
-  background-image: url("http://subtlepatterns.com/patterns/shinedotted.png");
 }
 
 .profile-dropzone {
   text-align: center;
-  margin-bottom: 20px;
 }
 .profile-dropzone h4 {
   color: #666666;
@@ -1051,11 +1049,28 @@ input[type="file"] {
   width: 869px;
 }
 
-#reload-page {
-  left: 46%;
-  position: relative;
-  right: 0;
-  top: -37px;
+#uploaded-files {
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+#uploaded-files .alert {
+  display: none;
+}
+#uploaded-files .alert .heading {
+  color: inherit;
+  font-size: inherit;
+}
+#uploaded-files .alert .thumb {
+  float: left;
+  margin-right: 10px;
+}
+#uploaded-files .alert .thumb.has-data {
+  border: 5px solid white;
+  width: 50px;
+}
+#uploaded-files .alert .thumb.has-data + .aligner {
+  margin-left: 60px;
 }
 
 @media (min-width: 980px) and (max-width: 1200px) {
