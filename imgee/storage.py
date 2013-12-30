@@ -17,7 +17,7 @@ from imgee.models import db, Thumbnail, StoredFile
 from imgee.async import queueit, get_taskid, BaseTask
 from imgee.utils import (newid, guess_extension, get_file_type,
                         path_for, get_s3_folder, get_s3_bucket,
-                        download_frm_s3, get_width_height)
+                        download_frm_s3, get_width_height, ALLOWED_MIMETYPES)
 
 
 # -- functions used in views --
@@ -35,8 +35,8 @@ def get_resized_image(img, size, is_thumbnail=False):
             img_name = scaled.name
         else:
             size = get_fitting_size((img.width, img.height), size_t)
-            resized_name = '%s%s' % (get_resized_name(img, size), img.extn)
-            job = queueit('resize_and_save', img, size, is_thumbnail=is_thumbnail, taskid=resized_name)
+            resized_filename = get_resized_filename(img, size)
+            job = queueit('resize_and_save', img, size, is_thumbnail=is_thumbnail, taskid=resized_filename)
             return job
     return img_name
 
@@ -165,7 +165,7 @@ def get_fitting_size((orig_w, orig_h), size):
     return size
 
 
-def get_resized_name(img, size):
+def get_resized_filename(img, size):
     """
     Return a name for the resized image.
     """
@@ -178,6 +178,10 @@ def get_resized_name(img, size):
         name = '%s_h%s' % (img.name, h)
     else:
         name = img.name
+    if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:
+        name = name + ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
+    else:
+        name = name + img.extn
     return name
 
 
@@ -190,14 +194,14 @@ def resize_and_save(img, size, is_thumbnail=False):
     src_path = download_frm_s3(img.name + img.extn)
 
     format = img.extn.lstrip('.')
-    resized_name = '%s%s' % (get_resized_name(img, size), img.extn)
-    resize_img(src_path, path_for(resized_name), size, format, is_thumbnail=is_thumbnail)
+    resized_filename = get_resized_filename(img, size)
+    resize_img(src_path, path_for(resized_filename), size, img.mimetype, format, is_thumbnail=is_thumbnail)
 
-    save_on_s3(resized_name, content_type=img.mimetype)
-    return save_tn_in_db(img, resized_name, size)
+    save_on_s3(resized_filename, content_type=img.mimetype)
+    return save_tn_in_db(img, resized_filename, size)
 
 
-def resize_img(src, dest, size, format, is_thumbnail):
+def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     """
     Resize image using PIL.
     `size` is a tuple (width, height)
@@ -207,20 +211,33 @@ def resize_img(src, dest, size, format, is_thumbnail):
         return
     if not size:
         return src
+    
+    processed = False
+    
+    if 'processor' in ALLOWED_MIMETYPES[mimetype]:
+        if ALLOWED_MIMETYPES[mimetype]['processor'] == 'rsvg-convert':
+            os.system(
+                'rsvg-convert --width=%s --height=%s --keep-aspect-ratio=TRUE --format=png %s > %s' %
+                (
+                    size[0],
+                    size[1],
+                    src,
+                    dest))
+            processed = True
+    if not processed:
+        img = Image.open(src)
+        img.load()
 
-    img = Image.open(src)
-    img.load()
+        resized = img.resize(size, Image.ANTIALIAS)
 
-    resized = img.resize(size, Image.ANTIALIAS)
+        if is_thumbnail:
+            # and crop the rest, keeping the center.
+            w, h = resized.size
+            tw, th = map(int, app.config.get('THUMBNAIL_SIZE').split('x'))
+            left, top = int((w-tw)/2), int((h-th)/2)
+            resized = resized.crop((left, top, left+tw, top+th))
 
-    if is_thumbnail:
-        # and crop the rest, keeping the center.
-        w, h = resized.size
-        tw, th = map(int, app.config.get('THUMBNAIL_SIZE').split('x'))
-        left, top = int((w-tw)/2), int((h-th)/2)
-        resized = resized.crop((left, top, left+tw, top+th))
-
-    resized.save(dest, format=format, quality=100)
+        resized.save(dest, format=format, quality=100)
 
 
 def clean_local_cache(expiry=24):
