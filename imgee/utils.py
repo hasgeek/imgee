@@ -144,7 +144,7 @@ def get_width_height(img_path):
     if img_path.split('.')[-1:][0] == 'svg':
         svg = xml4h.parse(img_path)
         svg = svg.children[0]
-        return (int(svg.attributes['width'].strip('px')), int(svg.attributes['height'].strip('px')))
+        return (int(round(float(svg.attributes['width'].strip('px')))), int(round(float(svg.attributes['height'].strip('px')))))
     try:
         img = Image.open(img_path)
     except IOError:
