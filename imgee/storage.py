@@ -2,6 +2,7 @@
 
 import time
 import os.path
+from subprocess import call
 from glob import glob
 import re
 import mimetypes
@@ -216,13 +217,8 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     
     if 'processor' in ALLOWED_MIMETYPES[mimetype]:
         if ALLOWED_MIMETYPES[mimetype]['processor'] == 'rsvg-convert':
-            os.system(
-                'rsvg-convert --width=%s --height=%s --keep-aspect-ratio=TRUE --format=png %s > %s' %
-                (
-                    size[0],
-                    size[1],
-                    src,
-                    dest))
+            call('rsvg-convert --width=%s --height=%s --keep-aspect-ratio=TRUE --format=png %s > %s'
+                % (size[0], size[1], src, dest), cwd=os.getcwd())
             processed = True
     if not processed:
         img = Image.open(src)
