@@ -165,8 +165,8 @@
         new_thumb.find('.imgsize').html(thumb_data.imgsize);
       }
     };
-    var upload_form_submit = function(current, formdata) {
-      current.find('.form').html(formdata);
+    var upload_form_submit = function(current, response) {
+      current.find('.form').html(response.form);
       current.find('.form form').submit(function(){
         d = current.find('.form form').serializeArray();
         $.ajax({
@@ -186,7 +186,7 @@
               });
             }
             else {
-              upload_form_submit(current, data.form);
+              upload_form_submit(current, data);
             }
           }
         });
@@ -194,14 +194,20 @@
     };
     var add_alert = function() {
       uploaded.append(sample_upload);
-      return uploaded.find('.alert').last();
+      var last = uploaded.find('.alert').last();
+      last.find('.close').click(function() {
+        $(this).parent().parent().children('.alert-success, .alert-error').slideUp(function(){
+          $(this).remove();
+        });
+      });
+      return last;
     };
     Dropzone.options.uploadimage = {
       paramName: "file",
       acceptedFiles: {{ ','.join(mimetypes)|tojson }},
       init: function() {
         this.on('complete', function(file) {
-          response = $.parseJSON(file.xhr.response);
+          var response = $.parseJSON(file.xhr.response);
           var img = $(file.previewElement).find('img').first();
           var title = $(file.previewElement).find('.dz-filename>span').first().html();
           this.removeFile(file);
@@ -216,7 +222,7 @@
           });
           if(response.status) {
             current.find('.heading').html(response.message);
-            upload_form_submit(current, response.form)
+            upload_form_submit(current, response)
             current.addClass('alert-info');
             current.find('.close').click(function() {
               add_thumb(response.image_data);
