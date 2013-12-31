@@ -158,15 +158,17 @@ def get_url(img_name, extn=''):
     media_domain = get_media_domain()
     return urljoin(media_domain, img_name)
 
+def get_no_previews_url(size):
+    if size == '75x75':
+        return '/static/img/no-preview-75.png'
+    else:
+        return '/static/img/no-preview-800.png'
 
 def get_image_url(image, size=None):
     extn = image.extn
     if size and extn in EXTNS:
         if image.no_previews:
-            if size == '75x75':
-                return '/static/img/no-preview-75.png'
-            else:
-                return '/static/img/no-preview-800.png'
+            return get_no_previews_url(size)
         r = imgee.storage.get_resized_image(image, size)
         img_name = imgee.async.get_async_result(r)
     else:
