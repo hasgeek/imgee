@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from flask import Response, redirect, flash, g
-from flask.ext.lastuser.sqlalchemy import UserManager
 from coaster.views import get_next_url
 
 from imgee import app, lastuser
-from imgee.models import db, User, Profile
-
-lastuser.init_usermanager(UserManager(db, User))
+from imgee.models import db, Profile
 
 
 @app.route('/login')
