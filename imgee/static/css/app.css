@@ -1072,6 +1072,9 @@ input[type="file"] {
 #uploaded-files .alert .thumb.has-data + .aligner {
   margin-left: 60px;
 }
+#uploaded-files .alert .form-actions button {
+  float: none;
+}
 
 @media (min-width: 980px) and (max-width: 1200px) {
   .dropzone .dz-default.dz-message {

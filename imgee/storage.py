@@ -57,10 +57,10 @@ def save(fp, profile, title=None):
     with open(local_path, 'w') as img:
         img.write(fp.read())
 
-    save_img_in_db(name=id_, title=title, local_path=local_path,
+    stored_file = save_img_in_db(name=id_, title=title, local_path=local_path,
                     profile=profile, mimetype=content_type, orig_extn=extn)
     job = queueit('save_on_s3', img_name, content_type=content_type, taskid=img_name)
-    return title, job
+    return title, job, stored_file
 
 
 # -- actual saving of image/thumbnail and data in the db and on S3.
@@ -75,6 +75,7 @@ def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
                     size=size_in_bytes, width=width, height=height, mimetype=unicode(mimetype))
     db.session.add(stored_file)
     db.session.commit()
+    return stored_file
 
 
 def save_tn_in_db(img, tn_name, (tn_w, tn_h)):
