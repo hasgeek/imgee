@@ -3,31 +3,34 @@
 
 {% block title %}{{ profile.title }}{% endblock %}
 
-{% block maincontent %}
-  <section class="profile">
-    {{ title_form.hidden_tag() }}
-    <div class="span9">
-        <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone row" id="uploadimage" method="POST" enctype="multipart/form-data">
-          {{ uf_form.hidden_tag() }}
-          <i class="icon-cloud-upload"></i>
-          <h4>Drop files to upload<br /></h4>
-            <p>(<em>or click here</em>)</p>        
-        </form>
-        <div id="uploaded-files" class="row">
-          <div class="sample hidden">
-            <div class="alert">
-              <a href="javascript:void(0)" class="close" data-dismiss="alert">&times;</a>
-              <img class="thumb">
-              <div class="aligner">
-                <h4 class="heading"></h4>
-                <div class="form"></div>
-              </div>
-              <div class="clearfix"></div>
-            </div>
+{% block extendedsidebar %}
+  {{ title_form.hidden_tag() }}
+<div class="row">
+  <div class="span3 sidebar">
+      <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
+        {{ uf_form.hidden_tag() }}
+        <i class="icon-cloud-upload"></i>
+        <h4>Drop files to upload<br /></h4>
+          <p>(<em>or click here</em>)</p>        
+      </form>
+      <div id="uploaded-files" class="">
+        <div class="sample hidden">
+          <div class="alert">
+            <a href="javascript:void(0)" class="close" data-dismiss="alert">&times;</a>
+            <div class="clearfix"></div>
+            <img class="thumb">
+            <h4 class="heading"></h4>
+            <div class="form"></div>
+            <div class="clearfix"></div>
           </div>
         </div>
-    </div>
+      </div>
+  </div>
+</div>
+{% endblock %} 
 
+{% block maincontent %}
+  <section class="profile">
     <div class="gallery">
       {% if files %}
         <div class="row">
