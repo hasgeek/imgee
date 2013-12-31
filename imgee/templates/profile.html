@@ -87,10 +87,10 @@
                     <div class="span1 top4">File size</div>
                     <div class="span2 top5">Image size</div>
                   </section>
-
+                  <section class="thumbs">
                   {% for img in files %}
                     <li class="image">
-                      <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
+                      <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
                         <section class="left">
                           <div class="image-thumb">    
                             <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}" style="margin-top:
@@ -101,16 +101,17 @@
                       
                       <section class="right span8">
                         <div class="row">   
-                          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
+                          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
                             <div class="title editable_title span3 list2" id="{{img.name}}">{{img.title}}</div>
-                            <div class="span2 date list3">{{ img.created_at.strftime('%B %d, %Y') }}</div>
-                            <div class="span1 date list4">{{ img.size | filesizeformat }}</div>
-                            <div class="span2 date list5">{{ img.width }} x {{ img.height }} px</div>
+                            <div class="uploaded span2 date list3">{{ img.created_at.strftime('%B %d, %Y') }}</div>
+                            <div class="filesize span1 date list4">{{ img.size | filesizeformat }}</div>
+                            <div class="imgsize span2 date list5">{{ img.width }} x {{ img.height }} px</div>
                           </a>
                         </div>
                       </section> 
                     </li>
-                  {% endfor %}  
+                  {% endfor %} 
+                  </section> 
                 </div><!-- /row-ctrl -->
               </ul><!-- showcase -->
             </div><!-- gallery-->
@@ -142,6 +143,56 @@
   $(function() {
     var uploaded = $('#uploaded-files');
     var sample_upload = uploaded.find('.sample').html();
+    var thumbs = $('.gallery .thumbs');
+
+    var add_thumb = function(thumb_data) {
+      var thumb_sample = thumbs.find('li.image').first().html();
+      if(!thumb_sample) location.reload();
+      else {
+        thumbs.prepend('<li class="image">' + thumb_sample + '</li>');
+        var new_thumb = thumbs.find('li.image').first();
+        new_thumb.find('a').attr('href', thumb_data.url);
+        new_thumb.find('a').attr('title', thumb_data.title);
+        new_thumb.find('.image-thumb img').load(function() {
+          $(this).css({'margin-top': thumb_data.top_margin + 'px'})
+        }).prop('src', thumb_data.thumb_url);
+        new_thumb.find('.title').html(thumb_data.title);
+        new_thumb.find('.uploaded').html(thumb_data.uploaded);
+        new_thumb.find('.filesize').html(thumb_data.filesize);
+        new_thumb.find('.imgsize').html(thumb_data.imgsize);
+      }
+    };
+    var upload_form_submit = function(current, formdata) {
+      current.find('.form').html(formdata);
+      current.find('.form form').submit(function(){
+        d = current.find('.form form').serializeArray();
+        $.ajax({
+          url: response.update_url,
+          type: 'POST',
+          data: d,
+          dataType: 'json',
+          success: function(data) {
+            if(data.status) {
+              current.slideUp(function() {
+                $(this).remove();
+                var success_alert = add_alert();
+                success_alert.find('.heading').html(data.message);
+                success_alert.addClass('alert-success');
+                success_alert.slideDown();
+                add_thumb(data.image_data);
+              });
+            }
+            else {
+              upload_form_submit(current, data.form);
+            }
+          }
+        });
+      });
+    };
+    var add_alert = function() {
+      uploaded.append(sample_upload);
+      return uploaded.find('.alert').last();
+    };
     Dropzone.options.uploadimage = {
       paramName: "file",
       acceptedFiles: {{ ','.join(mimetypes)|tojson }},
@@ -151,8 +202,7 @@
           var img = $(file.previewElement).find('img').first();
           var title = $(file.previewElement).find('.dz-filename>span').first().html();
           this.removeFile(file);
-          uploaded.append(sample_upload);
-          var current = uploaded.find('.alert').last();
+          var current = add_alert();
           img.load(function(){
             var src = $(this).attr('src');
             var thumb = current.find('.thumb');
@@ -163,8 +213,11 @@
           });
           if(response.status) {
             current.find('.heading').html(response.message);
-            current.find('.form').html(response.form);
+            upload_form_submit(current, response.form)
             current.addClass('alert-info');
+            current.find('.close').click(function() {
+              add_thumb(response.image_data);
+            });
           }
           else {
             current.find('.heading').html("Error uploading " + title);

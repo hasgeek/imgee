@@ -40,6 +40,15 @@ def _redirect_url_frm_upload(profile_name):
         url = url_for('profile_view', profile=profile_name)
     return url
 
+def stored_file_data(stored_file):
+    return dict(
+        title=stored_file.title,
+        uploaded=stored_file.created_at.strftime('%B %d, %Y'),
+        filesize=app.jinja_env.filters['filesizeformat'](stored_file.size),
+        imgsize='%s x %s' % (stored_file.width, stored_file.height),
+        url=url_for('view_image', profile=stored_file.profile.name, image=stored_file.name),
+        thumb_url=url_for('get_image', image=stored_file.name, size=app.config.get('THUMBNAIL_SIZE')),
+        top_margin=(75 - stored_file.height * 75/stored_file.width)/2 if stored_file.width > stored_file.height else 0)
 
 @app.route('/<profile>/new', methods=['GET', 'POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -48,7 +57,7 @@ def upload_file(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        title, job = save(file_, profile=profile)
+        title, job, stored_file = save(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
     return render_template('form.html', form=upload_form, profile=profile)
@@ -60,8 +69,14 @@ def upload_file_json(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        title, job = save(file_, profile=profile)
-        return jsonify(status=True, message="%s uploaded successfully" % title, form="Update Form")
+        title, job, stored_file = save(file_, profile=profile)
+        update_form = forms.UpdateTitle()
+        update_form.title.data = stored_file.title
+        form = render_template('edit_title_form.html', form=update_form, formid='edit_title_' + stored_file.name)
+        return jsonify(
+            status=True, message="%s uploaded successfully" % title, form=form,
+            update_url=url_for('update_title_json', profile=profile.name,file=stored_file.name),
+            image_data=stored_file_data(stored_file))
     else:
         response = jsonify(status=False, message=upload_form.errors['file'])
         response.status_code = 403
@@ -98,6 +113,22 @@ def edit_title(profile):
         return f.title
     else:
         return form.file_title.errors and form.file_title.errors[0], 400
+
+@app.route('/<profile>/<file>/edit_title.json', methods=['POST'])
+@load_models(
+    (Profile, {'name': 'profile'}, 'profile'),
+    (StoredFile, {'name': 'file'}, 'stored_file'),
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+def update_title_json(profile, stored_file):
+    form = forms.UpdateTitle()
+    if form.validate_on_submit():
+        old_title = stored_file.title
+        form.populate_obj(stored_file)
+        db.session.commit()
+        return jsonify(status=True, message="Title for %s has been updated to %s" % (old_title, stored_file.title), image_data=stored_file_data(stored_file))
+    else:
+        update_form = render_template('edit_title_form.html', form=form, formid='edit_title_' + stored_file.name)
+        return jsonify(status=False, form=update_form)
 
 
 @app.route('/<profile>')
