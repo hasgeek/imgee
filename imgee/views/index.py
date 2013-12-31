@@ -145,7 +145,7 @@ def update_title_json(profile, stored_file):
         return jsonify(status=True, message="Title for %s has been updated to %s" % (old_title, stored_file.title), image_data=stored_file_data(stored_file))
     else:
         update_form = render_template('edit_title_form.html', form=form, formid='edit_title_' + stored_file.name)
-        return jsonify(status=False, form=update_form)
+        return jsonify(status=False, form=update_form, update_url=url_for('update_title_json', profile=profile.name, file=stored_file.name))
 
 
 @app.route('/<profile>')
