@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
+import time
 from flask import (render_template, request, g, url_for,
     redirect, flash, Response, jsonify)
 from sqlalchemy import and_, not_
@@ -8,7 +9,7 @@ from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile, Label
 from imgee.storage import delete, save, clean_local_cache
-from imgee.utils import newid, get_media_domain, not_in_deleteQ, ALLOWED_MIMETYPES
+from imgee.utils import newid, get_media_domain, not_in_deleteQ, get_no_previews_url, ALLOWED_MIMETYPES
 from imgee.async import queueit
 import imgee.async as async
 import imgee.utils as utils
@@ -192,12 +193,20 @@ def view_image(profile, img):
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image(image):
     size = request.args.get('size')
-    try:
-        image_url = utils.get_image_url(image, size)
-    except async.StillProcessingException:
-        return async.loading()
-    else:
-        return redirect(image_url, code=301)
+    retries = 0
+    while retries < 15:
+        try:
+            image_url = utils.get_image_url(image, size)
+        except async.StillProcessingException:
+            time.sleep(1)
+            retries += 1
+        else:
+            if image_url == get_no_previews_url(size):
+                code = 302
+            else:
+                code = 301
+            return redirect(image_url, code=code)
+    return redirect(get_no_previews_url(size), code=302)
 
 
 @app.route('/embed/thumbnail/<image>')
