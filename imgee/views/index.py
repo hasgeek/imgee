@@ -48,8 +48,7 @@ def stored_file_data(stored_file):
         filesize=app.jinja_env.filters['filesizeformat'](stored_file.size),
         imgsize='%s x %s' % (stored_file.width, stored_file.height),
         url=url_for('view_image', profile=stored_file.profile.name, image=stored_file.name),
-        thumb_url=url_for('get_image', image=stored_file.name, size=app.config.get('THUMBNAIL_SIZE')),
-        top_margin=(75 - stored_file.height * 75/stored_file.width)/2 if stored_file.width > stored_file.height else 0)
+        thumb_url=url_for('get_image', image=stored_file.name, size=app.config.get('THUMBNAIL_SIZE')))
 
 def generate_thumbs(image):
     def generate_thumb(image, size):

@@ -96,8 +96,7 @@
                       <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
                         <section class="left">
                           <div class="image-thumb">    
-                            <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}" style="margin-top:
-                            {{ (75 - img.height * 75/img.width)/2 if img.width > img.height else 0 }}px"/>
+                            <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}">
                           </div>
                         </section>
                       </a>
@@ -148,6 +147,22 @@
     var sample_upload = uploaded.find('.sample').html();
     var thumbs = $('.gallery .thumbs');
 
+    var valign_thumb = function(thumb) {
+      var t = thumb.find('.image-thumb img');
+      var m = (75 - t.height() * 75/t.width())/2;
+      if(m < 0) m = 0;
+      t.css({'margin-top': m});
+      thumb.find('.image-thumb img').load(function() {
+        m = (75 - $(this).height() * 75/$(this).width())/2;
+        if(m < 0) m = 0;
+        $(this).css({'margin-top': m});
+      });
+    };
+
+    thumbs.find('li.image').each(function() {
+      valign_thumb($(this));
+    });
+
     var add_thumb = function(thumb_data) {
       var thumb_sample = thumbs.find('li.image').first().html();
       if(!thumb_sample) location.reload();
@@ -156,9 +171,8 @@
         var new_thumb = thumbs.find('li.image').first();
         new_thumb.find('a').attr('href', thumb_data.url);
         new_thumb.find('a').attr('title', thumb_data.title);
-        new_thumb.find('.image-thumb img').load(function() {
-          $(this).css({'margin-top': thumb_data.top_margin + 'px'})
-        }).prop('src', thumb_data.thumb_url);
+        valign_thumb(new_thumb);
+        new_thumb.find('.image-thumb img').attr('src', thumb_data.thumb_url);
         new_thumb.find('.title').html(thumb_data.title);
         new_thumb.find('.uploaded').html(thumb_data.uploaded);
         new_thumb.find('.filesize').html(thumb_data.filesize);
