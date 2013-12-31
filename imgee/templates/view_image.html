@@ -219,6 +219,9 @@
       var image = $(this);
       var border = Number(image.css('border-width').charAt(0));
       image.css('margin-top', (image.parent().height() - image.height() - 2*border)/2);
+      image.load(function() {
+        $(this).css('margin-top', ($(this).parent().height() - $(this).height() - 2*border)/2);
+      });
     });
   };
   vertical_align();
