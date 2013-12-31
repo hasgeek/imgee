@@ -900,6 +900,44 @@ input[type="file"] {
   display: none;
 }
 
+#uploaded-files {
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+#uploaded-files .alert {
+  display: none;
+  padding-right: 14px;
+}
+#uploaded-files .alert .close {
+  top: -6px;
+  right: -10px;
+}
+#uploaded-files .alert .heading {
+  color: inherit;
+  font-size: inherit;
+  word-break: break-all;
+  clear: none;
+  margin-right: 0px;
+}
+#uploaded-files .alert .thumb {
+  float: right;
+  margin-left: 5px;
+}
+#uploaded-files .alert .thumb.has-data {
+  border: 3px solid white;
+  width: 30px;
+}
+#uploaded-files .alert .thumb.has-data + .heading {
+  margin-right: 45px;
+}
+#uploaded-files .alert .form {
+  clear: both;
+}
+#uploaded-files .alert .form-actions button {
+  float: none;
+}
+
 .sidebar .browse-img > h5 {
   margin-bottom: 20px;
   margin-top: 5px;
@@ -1047,33 +1085,6 @@ input[type="file"] {
   top: 0;
   transition: opacity 0.3s ease-in-out 0s;
   width: 869px;
-}
-
-#uploaded-files {
-  box-sizing: border-box;
-  padding: 10px;
-  margin-bottom: 20px;
-}
-#uploaded-files .alert {
-  display: none;
-}
-#uploaded-files .alert .heading {
-  color: inherit;
-  font-size: inherit;
-}
-#uploaded-files .alert .thumb {
-  float: left;
-  margin-right: 10px;
-}
-#uploaded-files .alert .thumb.has-data {
-  border: 5px solid white;
-  width: 50px;
-}
-#uploaded-files .alert .thumb.has-data + .aligner {
-  margin-left: 60px;
-}
-#uploaded-files .alert .form-actions button {
-  float: none;
 }
 
 @media (min-width: 980px) and (max-width: 1200px) {
