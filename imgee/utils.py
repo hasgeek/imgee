@@ -26,7 +26,7 @@ ALLOWED_MIMETYPES = {
     'image/vnd.adobe.photoshop': {'allowed_extns':[u'.psd'], 'extn': u'.psd'},
     'application/pdf': {'allowed_extns':[u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai']},
     'application/illustrator': {'allowed_extns':[u'.ai'], 'extn': u'.ai'},
-    'application/postscript': {'allowed_extns':[u'.eps', 'ai'], 'extn': [u'.pdf', u'.ai']},
+    'application/postscript': {'allowed_extns':[u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/svg+xml': {'allowed_extns':[u'.svg'], 'extn': u'.svg', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
     'image/bmp': {'allowed_extns':[u'.bmp'], 'extn': u'.bmp'},
     'image/x-bmp': {'allowed_extns':[u'.bmp'], 'extn': u'.bmp'},
