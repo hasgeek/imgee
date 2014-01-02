@@ -233,19 +233,18 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
                 return False
             processed = True
     if not processed:
-        img = Image.open(src)
-        img.load()
+        try:
+            check_call('convert -resize %sx%s %s %s' % (size[0], size[1], src, dest), shell=True)
+        except CalledProcessError:
+            return False
 
-        resized = img.resize(size, Image.ANTIALIAS)
+        # if is_thumbnail:
+        #     # and crop the rest, keeping the center.
+        #     w, h = resized.size
+        #     tw, th = map(int, app.config.get('THUMBNAIL_SIZE').split('x'))
+        #     left, top = int((w-tw)/2), int((h-th)/2)
+        #     resized = resized.crop((left, top, left+tw, top+th))
 
-        if is_thumbnail:
-            # and crop the rest, keeping the center.
-            w, h = resized.size
-            tw, th = map(int, app.config.get('THUMBNAIL_SIZE').split('x'))
-            left, top = int((w-tw)/2), int((h-th)/2)
-            resized = resized.crop((left, top, left+tw, top+th))
-
-        resized.save(dest, format=format, quality=100)
     return True
 
 
