@@ -213,7 +213,7 @@ def resize_and_save(img, size, is_thumbnail=False):
 
 def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     """
-    Resize image using PIL.
+    Resize image using ImageMagick.
     `size` is a tuple (width, height)
     resize the image at `src` to the specified `size` and return the path to the resized img.
     """
@@ -222,7 +222,7 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     if not size:
         return src
     try:
-        check_call('convert -resize %sx%s %s %s' % (size[0], size[1], src, dest), shell=True)
+        check_call('convert -thumbnail %sx%s %s -colorspace sRGB %s' % (size[0], size[1], src, dest), shell=True)
     except CalledProcessError:
         return False
 
