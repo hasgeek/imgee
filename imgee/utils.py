@@ -4,8 +4,8 @@ import os.path
 import xml4h
 from uuid import uuid4
 import magic
-from PIL import Image
 from urlparse import urljoin
+from subprocess import check_output, CalledProcessError
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
@@ -142,16 +142,11 @@ def not_in_deleteQ(imgs):
 # -- image details --
 
 def get_width_height(img_path):
-    if img_path.split('.')[-1:][0] == 'svg':
-        svg = xml4h.parse(img_path)
-        svg = svg.children[0]
-        return (int(round(float(svg.attributes['width'].strip('px')))), int(round(float(svg.attributes['height'].strip('px')))))
     try:
-        img = Image.open(img_path)
-    except IOError:
+        o = check_output('identify -ping -format "%wx%h" {}'.format(img_path), shell=True)
+        return tuple(int(dim) for dim in o.split('x'))
+    except CalledProcessError:
         return (0, 0)
-    else:
-        return img.size
 
 
 def get_url(img_name, extn=''):
