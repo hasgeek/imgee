@@ -50,14 +50,14 @@ ALLOWED_MIMETYPES = {
     'application/x-eps': {'allowed_extns':[u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/eps': {'allowed_extns':[u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/x-eps': {'allowed_extns':[u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
-    'image/tif': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff']},
-    'image/x-tif': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff']},
-    'image/tiff': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff']},
-    'image/x-tiff': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff']},
-    'application/tif': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff']},
-    'application/x-tif': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff']},
-    'application/tiff': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff']},
-    'application/x-tiff': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff']}
+    'image/tif': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'image/x-tif': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'image/tiff': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'image/x-tiff': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'application/tif': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'application/x-tif': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'application/tiff': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'application/x-tiff': {'allowed_extns':[u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'}
 }
 
 EXTNS = []
