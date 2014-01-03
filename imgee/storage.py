@@ -234,7 +234,7 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
             processed = True
     if not processed:
         try:
-            check_call('convert -thumbnail %sx%s %s -colorspace sRGB %s' % (size[0], size[1], src, dest), shell=True)
+            check_call('convert -quiet -thumbnail %sx%s %s -colorspace sRGB %s' % (size[0], size[1], src, dest), shell=True)
         except CalledProcessError:
             return False
 
