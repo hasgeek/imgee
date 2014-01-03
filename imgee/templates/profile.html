@@ -161,8 +161,15 @@
       }
     };
 
-    thumbs.find('li.image').each(function() {
-      valign_thumb($(this));
+    var align_all = function(loaded) {
+      thumbs.find('li.image').each(function() {
+        valign_thumb($(this), loaded);
+      });
+    };
+    
+    align_all();
+    $('#gridview').click(function() {
+      align_all(true);
     });
 
     var add_thumb = function(thumb_data) {
