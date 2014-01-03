@@ -143,7 +143,7 @@ def not_in_deleteQ(imgs):
 
 def get_width_height(img_path):
     try:
-        o = check_output('identify -ping -format "%wx%h" {}'.format(img_path), shell=True)
+        o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
         return tuple(int(dim) for dim in o.split('x'))
     except CalledProcessError:
         return (0, 0)
