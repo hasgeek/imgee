@@ -221,10 +221,22 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
         return
     if not size:
         return src
-    try:
-        check_call('convert -thumbnail %sx%s %s -colorspace sRGB %s' % (size[0], size[1], src, dest), shell=True)
-    except CalledProcessError:
-        return False
+
+    processed = False
+    
+    if 'processor' in ALLOWED_MIMETYPES[mimetype]:
+        if ALLOWED_MIMETYPES[mimetype]['processor'] == 'rsvg-convert':
+            try:
+                check_call('rsvg-convert --width=%s --height=%s --keep-aspect-ratio=TRUE --format=%s %s > %s'
+                    % (size[0], size[1], format, src, dest), shell=True)
+            except CalledProcessError as e:
+                return False
+            processed = True
+    if not processed:
+        try:
+            check_call('convert -thumbnail %sx%s %s -colorspace sRGB %s' % (size[0], size[1], src, dest), shell=True)
+        except CalledProcessError:
+            return False
 
     # if is_thumbnail:
     #     # and crop the rest, keeping the center.
