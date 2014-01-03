@@ -73,6 +73,8 @@ def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     width, height = get_width_height(local_path)
     stored_file = StoredFile(name=name, title=unicode(title), profile=profile, orig_extn=unicode(orig_extn),
                     size=size_in_bytes, width=width, height=height, mimetype=unicode(mimetype))
+    if 'thumb_extn' in ALLOWED_MIMETYPES[mimetype] and ALLOWED_MIMETYPES[mimetype]['thumb_extn'] is False:
+        stored_file.no_previews = True
     db.session.add(stored_file)
     db.session.commit()
     return stored_file
