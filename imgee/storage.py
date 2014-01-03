@@ -225,13 +225,7 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     processed = False
     
     if 'processor' in ALLOWED_MIMETYPES[mimetype]:
-        if ALLOWED_MIMETYPES[mimetype]['processor'] == 'svgz':
-            try:
-                check_call('gunzip -kdf -S .svgz %s' % src, shell=True)
-                return resize_img(src.replace('.svgz', ''), dest, size, 'image/svg+xml', format, is_thumbnail)
-            except CalledProcessError as e:
-                return False
-        elif ALLOWED_MIMETYPES[mimetype]['processor'] == 'rsvg-convert':
+        if ALLOWED_MIMETYPES[mimetype]['processor'] == 'rsvg-convert':
             try:
                 check_call('rsvg-convert --width=%s --height=%s --keep-aspect-ratio=TRUE --format=%s %s > %s'
                     % (size[0], size[1], format, src, dest), shell=True)

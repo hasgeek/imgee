@@ -28,7 +28,7 @@ ALLOWED_MIMETYPES = {
     'application/illustrator': {'allowed_extns':[u'.ai'], 'extn': u'.ai', 'thumb_extn': u'.png'},
     'application/postscript': {'allowed_extns':[u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/svg+xml': {'allowed_extns':[u'.svg'], 'extn': u'.svg', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
-    'application/x-gzip': {'allowed_extns':[u'.svgz'], 'extn': u'.svgz', 'thumb_extn': u'.png', 'processor': 'svgz'},
+    'application/x-gzip': {'allowed_extns':[u'.svgz'], 'extn': u'.svgz', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
     'image/bmp': {'allowed_extns':[u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
     'image/x-bmp': {'allowed_extns':[u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
     'image/x-bitmap': {'allowed_extns':[u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
