@@ -6,7 +6,6 @@ https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/jace/flask-alembic/archive/master.zip
 Flask-Admin
 boto
-Pillow==2.1.0
 redis
 celery
 xml4h
