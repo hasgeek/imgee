@@ -4,7 +4,6 @@ https://github.com/hasgeek/baseframe/zipball/master
 Flask-SQLAlchemy
 https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/jace/flask-alembic/archive/master.zip
-Flask-Admin
 boto
 redis
 celery
