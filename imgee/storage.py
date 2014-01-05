@@ -104,7 +104,7 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
         k = b.new_key(folder+filename)
         headers = {
             'Cache-Control': 'max-age=31536000',  # 60*60*24*365
-            'Content-Type': content_type or get_file_type(fp),
+            'Content-Type': get_file_type(fp),
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
     return filename
