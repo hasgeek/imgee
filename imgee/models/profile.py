@@ -3,7 +3,7 @@ from flask.ext.lastuser.sqlalchemy import ProfileMixin
 from imgee.models import db
 
 
-class Profile(BaseNameMixin, ProfileMixin, db.Model):
+class Profile(ProfileMixin, BaseNameMixin, db.Model):
     __tablename__ = 'profile'
 
     userid = db.Column(db.Unicode(22), nullable=False, unique=True)
