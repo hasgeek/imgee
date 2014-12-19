@@ -2,9 +2,10 @@
 
 import os.path
 from uuid import uuid4
-import mimetypes
-from PIL import Image
+import defusedxml.cElementTree as elementtree
+import magic
 from urlparse import urljoin
+from subprocess import check_output, CalledProcessError
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
@@ -15,6 +16,60 @@ from flask import request
 import imgee
 from imgee import app
 
+ALLOWED_MIMETYPES = {
+    'image/jpg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
+    'image/jpe': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
+    'image/jpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
+    'image/pjpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
+    'image/png': {'allowed_extns': [u'.png'], 'extn': u'.png'},
+    'image/gif': {'allowed_extns': [u'.gif'], 'extn': u'.gif'},
+    'image/vnd.adobe.photoshop': {'allowed_extns': [u'.psd'], 'extn': u'.psd', 'thumb_extn': False},
+    'application/pdf': {'allowed_extns': [u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai'], 'thumb_extn': u'.png'},
+    'application/illustrator': {'allowed_extns': [u'.ai'], 'extn': u'.ai', 'thumb_extn': u'.png'},
+    'application/postscript': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
+    'image/svg+xml': {'allowed_extns': [u'.svg'], 'extn': u'.svg', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
+    'application/x-gzip': {'allowed_extns': [u'.svgz'], 'extn': u'.svgz', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
+    'image/bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'image/x-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'image/x-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'image/x-xbitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'image/x-win-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'image/x-windows-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'image/ms-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'image/x-ms-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'application/bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'application/x-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'application/x-win-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'application/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
+    'application/coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
+    'application/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
+    'application/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
+    'image/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
+    'image/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
+    'application/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
+    'application/x-eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
+    'image/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
+    'image/x-eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
+    'image/tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'image/x-tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'image/tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'image/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'application/tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'application/x-tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'application/tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'application/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'}
+}
+
+EXTNS = []
+for mimetype, data in ALLOWED_MIMETYPES.iteritems():
+    if type(data['extn']) == list:
+        for extn in data['extn']:
+            EXTNS.append(extn)
+    else:
+        EXTNS.append(data['extn'])
+EXTNS = list(set(EXTNS))
+
+
 def newid():
     return unicode(uuid4().hex)
 
@@ -23,20 +78,56 @@ def get_media_domain():
     scheme = request.scheme
     return '%s:%s' % (scheme, app.config.get('MEDIA_DOMAIN'))
 
+
 def path_for(img_name):
     return os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
 
 
 # -- mimetypes and content types
 
-def guess_extension(mimetype):
-    if mimetype in ('image/jpg', 'image/jpe', 'image/jpeg'):
-        return '.jpeg'    # guess_extension returns .jpe, which PIL doesn't like
-    return mimetypes.guess_extension(mimetype)
+def guess_extension(mimetype, orig_extn):
+    if mimetype in ALLOWED_MIMETYPES:
+        if orig_extn not in ALLOWED_MIMETYPES[mimetype]['allowed_extns']:
+            if type(ALLOWED_MIMETYPES[mimetype]['extn']) == str:
+                orig_extn = ALLOWED_MIMETYPES[mimetype]['extn']
+            else:
+                orig_extn = ALLOWED_MIMETYPES[mimetype]['extn'][0]
+        if type(ALLOWED_MIMETYPES[mimetype]['extn']) == list:
+            if orig_extn in ALLOWED_MIMETYPES[mimetype]['extn']:
+                return orig_extn
+            else:
+                return ALLOWED_MIMETYPES[mimetype]['extn'][0]
+        else:
+            return ALLOWED_MIMETYPES[mimetype]['extn']
 
 
-def get_file_type(filename):
-    return mimetypes.guess_type(filename)[0]
+def is_svg(fp):
+    fp.seek(0)
+    tag = None
+    try:
+        for event, el in elementtree.iterparse(fp, ('start',)):
+            tag = el.tag
+            break
+    except elementtree.ParseError:
+        pass
+    fp.seek(0)
+    return tag == '{http://www.w3.org/2000/svg}svg'
+
+
+def get_file_type(fp):
+    fp.seek(0)
+    data = fp.read()
+    fp.seek(0)
+    result = magic.from_buffer(data, mime=True)
+    if result in ('text/plain', 'text/xml', 'application/xml'):
+        if is_svg(fp):
+            return 'image/svg+xml'
+    return result
+
+
+def is_file_allowed(fp):
+    return get_file_type(fp) in ALLOWED_MIMETYPES
+
 
 # -- s3 related --
 
@@ -72,15 +163,10 @@ def not_in_deleteQ(imgs):
 
 def get_width_height(img_path):
     try:
-        img = Image.open(img_path)
-    except IOError:
+        o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
+        return tuple(int(dim) for dim in o.split('x'))
+    except CalledProcessError:
         return (0, 0)
-    else:
-        return img.size
-
-
-def image_formats():
-    return '.jpg .jpe .jpeg .png .gif .bmp'.split()
 
 
 def get_url(img_name, extn=''):
@@ -89,19 +175,30 @@ def get_url(img_name, extn=''):
     return urljoin(media_domain, img_name)
 
 
+def get_no_previews_url(size):
+    if size in ('75x75', '75'):
+        return '/static/img/no-preview-75.png'
+    else:
+        return '/static/img/no-preview-800.png'
+
+
 def get_image_url(image, size=None):
     extn = image.extn
-    if size and (extn in image_formats()):
+    if size and extn in EXTNS:
+        if image.no_previews:
+            return get_no_previews_url(size)
         r = imgee.storage.get_resized_image(image, size)
         img_name = imgee.async.get_async_result(r)
     else:
         img_name = image.name
+    if size and 'thumb_extn' in ALLOWED_MIMETYPES[image.mimetype]:
+        extn = ALLOWED_MIMETYPES[image.mimetype]['thumb_extn']
     return get_url(img_name, extn)
 
 
 def get_thumbnail_url(image):
     extn = image.extn
-    if extn in image_formats():
+    if extn in EXTNS:
         tn_size = app.config.get('THUMBNAIL_SIZE')
         r = imgee.storage.get_resized_image(image, tn_size, is_thumbnail=True)
         thumbnail = imgee.async.get_async_result(r)

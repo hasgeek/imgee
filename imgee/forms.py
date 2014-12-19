@@ -9,15 +9,11 @@ from wtforms import (FileField, TextField, HiddenField,
 
 from imgee import app
 from imgee.models import Label
-
-
-allowed_formats = 'jpg jpe jpeg png gif bmp tiff psd tif eps svg ai ps'.split()
+from imgee.utils import get_file_type, is_file_allowed
 
 
 def valid_file(form, field):
-    filename = field.data.filename
-    name, extn = os.path.splitext(filename)
-    if not extn or extn.lower().strip('.') not in allowed_formats:
+    if not is_file_allowed(field.data.stream):
         raise ValidationError("Sorry, unknown image format. Please try uploading another file.")
 
 
@@ -70,6 +66,9 @@ class RemoveLabelForm(Form):
 class EditTitleForm(Form):
     file_name = HiddenField('file_name')
     file_title = TextField('title', validators=[Required(), Length(max=250)])
+
+class UpdateTitle(Form):
+    title = TextField('Title', validators=[Required(), Length(max=250)])
 
 
 class EditLabelForm(Form):

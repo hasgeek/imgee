@@ -34,7 +34,7 @@ a:hover {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('../img/logo.png?1375185015');
+  background-image: url('../img/logo.png?1381326109');
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width: 150px;
@@ -47,7 +47,7 @@ a:hover {
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
   #logo {
-    background-image: url('../img/logo@2x.png?1375185015');
+    background-image: url('../img/logo@2x.png?1381326109');
     -webkit-background-size: 150px 75px;
   }
 }
@@ -526,7 +526,7 @@ a:hover {
 }
 
 li.image .image-thumb > img {
-  box-shadow: 1px 1px 2px #cccccc;
+  box-shadow: 0px 0px 4px #cccccc;
 }
 
 .gallery {
@@ -558,7 +558,8 @@ ul.list li {
   clear: both;
   border-top: 1px solid #e5e5e5;
   margin-left: 5px;
-  padding-top: 6px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   float: left;
 }
 ul.list li:last-child {
@@ -573,13 +574,19 @@ ul.list li .span1 {
 ul.list li section.left {
   display: block;
   float: left;
-  margin-left: 10px;
   margin-right: -10px;
   position: relative;
+  height: 50px;
+  text-align: center;
 }
 ul.list li section.left img {
-  width: 35px;
-  height: 35px;
+  max-width: 100%;
+  max-height: 100%;
+  border: 5px solid white;
+  margin-top: 0 !important;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
 }
 ul.list li section.right {
   display: block;
@@ -596,6 +603,7 @@ ul.list .list2 {
 /*grid view */
 ul.grid {
   list-style: none;
+  padding-left: 5px;
 }
 ul.grid section.top {
   display: none;
@@ -603,10 +611,26 @@ ul.grid section.top {
 ul.grid li {
   position: relative;
   float: left;
-  margin-right: 5px;
+  margin-right: 15px;
+  margin-top: 10px;
   border-bottom: 0px;
   padding-bottom: 0px;
   padding-top: 0px;
+}
+ul.grid li .image-thumb {
+  height: 85px;
+  width: 85px;
+  text-align: center;
+  opacity: 0.8;
+  transition: 0.5s opacity;
+}
+ul.grid li .image-thumb:hover {
+  opacity: 1;
+}
+ul.grid li .image-thumb > img {
+  border: 5px solid white;
+  max-width: 75px;
+  max-height: 75px;
 }
 ul.grid li section.left {
   position: relative;
@@ -644,6 +668,9 @@ ul.grid li section.right {
     clear: both;
     float: right;
   }
+  .gallery ul.list .left img {
+    border-width: 2px;
+  }
   .gallery ul.list .image-thumb {
     margin-left: 5px;
   }
@@ -673,6 +700,11 @@ ul.grid li section.right {
     display: none;
   }
 }
+@media (min-width: 1200px) {
+  ul.list li section.left {
+    margin-left: 2px;
+  }
+}
 @media (min-width: 768px) and (max-width: 979px) {
   span#delete {
     display: none;
@@ -682,8 +714,8 @@ ul.grid li section.right {
     display: none;
   }
 
-  ul.list li section.left {
-    margin-right: -20px;
+  ul.list li section.left img {
+    border-width: 3px;
   }
 
   ul.list section.top .top3 {
@@ -691,8 +723,8 @@ ul.grid li section.right {
   }
 }
 @media (min-width: 980px) and (max-width: 1200px) {
-  ul.list li section.left {
-    margin-right: -20px;
+  ul.list li section.left img {
+    border-width: 3px;
   }
 }
 .title {
@@ -868,31 +900,93 @@ input[type="file"] {
   display: none;
 }
 
+#uploaded-files {
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 20px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+#uploaded-files .alert {
+  display: none;
+  padding-right: 14px;
+}
+#uploaded-files .alert .close {
+  top: -6px;
+  right: -10px;
+}
+#uploaded-files .alert .heading {
+  color: inherit;
+  font-size: inherit;
+  word-break: break-all;
+  clear: none;
+  margin-right: 0px;
+}
+#uploaded-files .alert .thumb {
+  float: right;
+  margin-left: 5px;
+}
+#uploaded-files .alert .thumb.has-data {
+  border: 3px solid white;
+  width: 30px;
+}
+#uploaded-files .alert .thumb.has-data + .heading {
+  margin-right: 45px;
+}
+#uploaded-files .alert .form {
+  clear: both;
+}
+#uploaded-files .alert .form-actions button {
+  float: none;
+}
+
 .sidebar .browse-img > h5 {
   margin-bottom: 20px;
   margin-top: 5px;
 }
-.sidebar .img-thumb-placeholder-small {
-  width: 47px;
-  height: 47px;
-  display: block;
-  float: left;
-  margin: 2.5px;
-}
 .sidebar .image-thumb {
   float: left;
+  text-align: center;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+.sidebar .image-thumb:nth-child(4n + 2) {
+  width: 35px;
+  height: 35px;
+  margin-top: 10px;
   margin-bottom: 10px;
 }
-.sidebar .image-thumb .active {
-  border: 5px solid #f0a40c;
-  margin-top: -2.5px;
+.sidebar .image-thumb:nth-child(3), .sidebar .image-thumb:nth-child(5) {
+  width: 45px;
+  height: 45px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.sidebar .image-thumb.active {
+  box-shadow: 0px 0px 5px #f0a40c;
+  width: 55px;
+  height: 55px;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 .sidebar .image-thumb img {
-  width: 47px;
-  height: 47px;
-  display: block;
-  box-shadow: 1px 1px 2px #cccccc;
-  margin: 2.5px;
+  max-width: 100%;
+  max-height: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: 3.5px solid white;
+}
+.sidebar .image-thumb.active, .sidebar .image-thumb:hover {
+  opacity: 1;
+}
+.sidebar a.image-thumb {
+  box-shadow: 0px 0px 3px #cccccc;
+  opacity: 0.8;
+  transition: 0.5s opacity;
+  -webkit-transition: 0.5s opacity;
+  -moz-transition: 0.5s opacity;
+  -o-transition: 0.5s opacity;
 }
 
 @media screen and (max-width: 767px) {
@@ -911,49 +1005,66 @@ input[type="file"] {
     border-bottom: white 1px solid;
   }
 }
-@media screen and (max-width: 480px) {
-  .sidebar .image-thumb img {
-    width: 37px;
-    height: 37px;
-  }
-  .sidebar .img-thumb-placeholder-small {
-    width: 37px;
-    height: 37px;
-  }
-}
 @media (min-width: 768px) and (max-width: 979px) {
   .btn-group .hide-mob {
     display: none;
   }
 
-  .sidebar .image-thumb img {
-    width: 25.2px;
-    height: 25.2px;
+  .sidebar .image-thumb {
+    margin-left: 2px;
+    margin-right: 2px;
   }
-  .sidebar .img-thumb-placeholder-small {
-    width: 25.2px;
-    height: 25.2px;
+  .sidebar .image-thumb img {
+    border-width: 2px;
+  }
+  .sidebar .image-thumb.active {
+    box-shadow: 0px 0px 2.5px #f0a40c;
+  }
+  .sidebar .image-thumb:nth-child(4n + 2) {
+    width: 25px;
+    height: 25px;
+    margin-top: 5.5px;
+    margin-bottom: 5.5px;
+  }
+  .sidebar .image-thumb:nth-child(3), .sidebar .image-thumb:nth-child(5) {
+    width: 30px;
+    height: 30px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+  .sidebar .image-thumb.active {
+    width: 36px;
+    height: 36px;
+  }
+  .sidebar a.image-thumb {
+    box-shadow: 0px 0px 1px #cccccc;
   }
 }
 @media (min-width: 980px) and (max-width: 1200px) {
-  .sidebar .image-thumb img {
-    width: 37px;
-    height: 37px;
+  .sidebar .image-thumb:nth-child(4n + 2) {
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
-  .sidebar .img-thumb-placeholder-small {
-    width: 37px;
-    height: 37px;
+  .sidebar .image-thumb:nth-child(3), .sidebar .image-thumb:nth-child(5) {
+    width: 40px;
+    height: 40px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  .sidebar .image-thumb.active {
+    width: 50px;
+    height: 50px;
   }
 }
 .dropzone {
   border-bottom: 5px solid #efefef;
   border-radius: 0;
-  background-image: url("http://subtlepatterns.com/patterns/shinedotted.png");
 }
 
 .profile-dropzone {
   text-align: center;
-  margin-bottom: 20px;
 }
 .profile-dropzone h4 {
   color: #666666;
@@ -975,31 +1086,9 @@ input[type="file"] {
   position: absolute;
   top: 0;
   transition: opacity 0.3s ease-in-out 0s;
-  width: 869px;
+  width: 100%;
 }
 
-#reload-page {
-  left: 46%;
-  position: relative;
-  right: 0;
-  top: -37px;
-}
-
-@media (min-width: 980px) and (max-width: 1200px) {
-  .dropzone .dz-default.dz-message {
-    width: 699px;
-  }
-}
-@media (min-width: 768px) and (max-width: 979px) {
-  .dropzone .dz-default.dz-message {
-    width: 536px;
-  }
-}
-@media screen and (max-width: 767px) {
-  .dropzone .dz-default.dz-message {
-    width: auto;
-  }
-}
 .tucked-corners-top {
   background-attachment: scroll, scroll, scroll, scroll;
   background-clip: border-box, border-box, border-box, border-box;
@@ -1765,7 +1854,7 @@ ul#resize li#img-size-custom input {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('../img/logo.png?1375185015');
+  background-image: url('../img/logo.png?1381326109');
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width: 150px;
