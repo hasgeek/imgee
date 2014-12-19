@@ -5,9 +5,6 @@ import os.path
 from subprocess import check_call, CalledProcessError
 from glob import glob
 import re
-import mimetypes
-from StringIO import StringIO
-from PIL import Image
 from celery.result import AsyncResult
 from sqlalchemy import or_
 from werkzeug import secure_filename
