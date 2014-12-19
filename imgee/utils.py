@@ -2,6 +2,7 @@
 
 import os.path
 from uuid import uuid4
+import defusedxml.cElementTree as elementtree
 import magic
 from urlparse import urljoin
 from subprocess import check_output, CalledProcessError
@@ -100,11 +101,28 @@ def guess_extension(mimetype, orig_extn):
             return ALLOWED_MIMETYPES[mimetype]['extn']
 
 
+def is_svg(fp):
+    fp.seek(0)
+    tag = None
+    try:
+        for event, el in elementtree.iterparse(fp, ('start',)):
+            tag = el.tag
+            break
+    except elementtree.ParseError:
+        pass
+    fp.seek(0)
+    return tag == '{http://www.w3.org/2000/svg}svg'
+
+
 def get_file_type(fp):
     fp.seek(0)
     data = fp.read()
     fp.seek(0)
-    return magic.from_buffer(data, mime=True)
+    result = magic.from_buffer(data, mime=True)
+    if result in ('text/plain', 'text/xml', 'application/xml'):
+        if is_svg(fp):
+            return 'image/svg+xml'
+    return result
 
 
 def is_file_allowed(fp):
