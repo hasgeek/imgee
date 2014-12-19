@@ -1,4 +1,4 @@
-{% from "baseframe/forms.html" import renderform_inner, richtext_editor, rendersubmit %}
+{% from "baseframe/forms.html" import renderform_inner, rendersubmit %}
 <form id="{{ formid }}" method="POST" action="javascript:void(0);" accept-charset="UTF-8">
     {{ renderform_inner(form, formid or None) }}
     {{ rendersubmit([(None, 'Save', 'btn-primary')]) }}
