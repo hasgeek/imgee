@@ -9,3 +9,4 @@ redis
 celery
 xml4h
 python-magic
+defusedxml
