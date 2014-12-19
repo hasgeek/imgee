@@ -3,19 +3,34 @@
 
 {% block title %}{{ profile.title }}{% endblock %}
 
-{% block maincontent %}
-  <section class="profile">
-    {{ title_form.hidden_tag() }}
-    <div class="row">
-      <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone profile-dropzone span9" id="uploadimage" method="POST" enctype="multipart/form-data">
+{% block extendedsidebar %}
+  {{ title_form.hidden_tag() }}
+<div class="row">
+  <div class="span3 sidebar">
+      <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
         {{ uf_form.hidden_tag() }}
         <i class="icon-cloud-upload"></i>
         <h4>Drop files to upload<br /></h4>
           <p>(<em>or click here</em>)</p>        
       </form>
-      <div class="span9"><a id="reload-page" class="btn btn-primary">Finish Upload</a></div>
-    </div>
+      <div id="uploaded-files" class="">
+        <div class="sample hidden">
+          <div class="alert">
+            <a href="javascript:void(0)" class="close" data-dismiss="alert">&times;</a>
+            <div class="clearfix"></div>
+            <img class="thumb">
+            <h4 class="heading"></h4>
+            <div class="form"></div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+{% endblock %} 
 
+{% block maincontent %}
+  <section class="profile">
     <div class="gallery">
       {% if files %}
         <div class="row">
@@ -75,29 +90,31 @@
                     <div class="span1 top4">File size</div>
                     <div class="span2 top5">Image size</div>
                   </section>
-
+                  <section class="thumbs">
                   {% for img in files %}
                     <li class="image">
-                      <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">
+                      <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
                         <section class="left">
                           <div class="image-thumb">    
-                            <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
+                            <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}">
                           </div>
                         </section>
                       </a>
                       
                       <section class="right span8">
                         <div class="row">   
-                          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="view image">                                 
+                          <a href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
                             <div class="title editable_title span3 list2" id="{{img.name}}">{{img.title}}</div>
-                            <div class="span2 date list3">{{ img.created_at.strftime('%B %d, %Y') }}</div>
-                            <div class="span1 date list4">{{ img.size | filesizeformat }}</div>
-                            <div class="span2 date list5">{{ img.width }} x {{ img.height }} px</div>
+                            <div class="uploaded span2 date list3">{{ img.created_at.strftime('%B %d, %Y') }}</div>
+                            <div class="filesize span1 date list4">{{ img.size | filesizeformat }}</div>
+                            <div class="imgsize span2 date list5">{{ img.width }} x {{ img.height }} px</div>
                           </a>
                         </div>
                       </section> 
-                    </li><!-- /image -->
-                  {% endfor %}  
+                    </li>
+                  {% endfor %} 
+                  <div class="clearfix"></div>
+                  </section> 
                 </div><!-- /row-ctrl -->
               </ul><!-- showcase -->
             </div><!-- gallery-->
@@ -127,39 +144,129 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
 <script type="text/javascript">
   $(function() {
-  Dropzone.options.uploadimage = {
-    paramName: "file"
+    var uploaded = $('#uploaded-files');
+    var sample_upload = uploaded.find('.sample').html();
+    var thumbs = $('.gallery .thumbs');
+
+    var valign_thumb = function(thumb, loaded, img_onload) {
+      var t = thumb.find('.image-thumb img');
+      var m = (75 - t.height())/2;
+      if(m < 0) m = 0;
+      t.css({'margin-top': m});
+      if(typeof loaded == 'undefined' || (typeof loaded == 'boolean' && !loaded)) {
+        thumb.find('.image-thumb img').load(function() {
+          if(typeof img_onload == 'string')
+            $(this).attr('src', img_onload);
+          valign_thumb(thumb, true, img_onload);
+        });
+      }
+    };
+
+    var align_all = function(loaded) {
+      thumbs.find('li.image').each(function() {
+        valign_thumb($(this), loaded);
+      });
+    };
+    
+    align_all();
+    $('#gridview').click(function() {
+      align_all(true);
+    });
+
+    var add_thumb = function(thumb_data) {
+      var thumb_sample = thumbs.find('li.image').first().html();
+      if(!thumb_sample) location.reload();
+      else {
+        thumbs.prepend('<li class="image">' + thumb_sample + '</li>');
+        var new_thumb = thumbs.find('li.image').first();
+        valign_thumb(new_thumb, false, thumb_data.thumb_url);
+        new_thumb.find('.image-thumb img').attr('src', '{{ url_for('static', filename='img/spinner.gif') }}');
+        new_thumb.find('a').attr('href', thumb_data.url);
+        new_thumb.find('a').attr('title', thumb_data.title);
+        new_thumb.find('.title').html(thumb_data.title);
+        new_thumb.find('.uploaded').html(thumb_data.uploaded);
+        new_thumb.find('.filesize').html(thumb_data.filesize);
+        new_thumb.find('.imgsize').html(thumb_data.imgsize);
+      }
+    };
+    var upload_form_submit = function(current, response) {
+      current.find('.form').html(response.form);
+      current.find('.form form').submit(function(){
+        d = current.find('.form form').serializeArray();
+        $.ajax({
+          url: response.update_url,
+          type: 'POST',
+          data: d,
+          dataType: 'json',
+          success: function(data) {
+            if(data.status) {
+              current.slideUp(function() {
+                $(this).remove();
+                var success_alert = add_alert();
+                success_alert.find('.heading').html(data.message);
+                success_alert.addClass('alert-success');
+                success_alert.slideDown();
+                add_thumb(data.image_data);
+              });
+            }
+            else {
+              upload_form_submit(current, data);
+            }
+          }
+        });
+      });
+    };
+    var add_alert = function() {
+      uploaded.append(sample_upload);
+      var last = uploaded.find('.alert').last();
+      last.find('.close').click(function() {
+        $(this).parent().parent().children('.alert-success, .alert-error').slideUp(function(){
+          $(this).remove();
+        });
+      });
+      return last;
+    };
+    Dropzone.options.uploadimage = {
+      paramName: "file",
+      acceptedFiles: {{ ','.join(mimetypes)|tojson }},
+      init: function() {
+        this.on('complete', function(file) {
+          var response = $.parseJSON(file.xhr.response);
+          var img = $(file.previewElement).find('img').first();
+          var title = $(file.previewElement).find('.dz-filename>span').first().html();
+          this.removeFile(file);
+          var current = add_alert();
+          img.load(function(){
+            var src = $(this).attr('src');
+            var thumb = current.find('.thumb');
+            thumb.attr('src', src);
+            if(src) {
+              thumb.addClass('has-data');
+            }
+          });
+          if(response.status) {
+            current.find('.heading').html(response.message);
+            upload_form_submit(current, response)
+            current.addClass('alert-info');
+            current.find('.close').click(function() {
+              add_thumb(response.image_data);
+            });
+          }
+          else {
+            current.find('.heading').html("Error uploading " + title);
+            current.find('.form').html(response.message);
+            current.addClass('alert-error');
+          }
+          current.slideDown();
+        });
+      }
     };
   });
 </script>
 <script type="text/javascript">
   $(function(){
     $('.dropzone').css('min-height', '30px');
-    $('.dropzone').droppable({
-      over: function(event, ui) {
-        $(this).css('height', '200px');
-        $('#reload-page').show();
-      },
-      out: function(event, ui) {
-        $(this).css('height', '30px');
-        $('#reload-page').show();
-      },
-      drop: function(event, ui) {
-        $(this).css('height', '30px');
-        $('#reload-page').show();
-      }
-    });
   });  
-</script>
-<script type="text/javascript">
-  $('#reload-page').hide();
-  $('.dropzone').click(function(){
-    $('#reload-page').show();
-  })  
-  $('#reload-page').click(function(){
-
-    location.reload();
-  });
 </script>
 
 <script type="text/javascript">

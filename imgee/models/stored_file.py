@@ -39,6 +39,8 @@ class StoredFile(BaseNameMixin, db.Model):
     width = db.Column(db.Integer, default=0)
     height = db.Column(db.Integer, default=0)
     mimetype = db.Column(db.Unicode(32), nullable=False)
+    orig_extn = db.Column(db.Unicode(15), nullable=True)
+    no_previews = db.Column(db.Boolean, default=False, nullable=False)
     thumbnails = db.relationship('Thumbnail', backref='stored_file',
                                  cascade='all, delete-orphan')
     labels = db.relationship('Label', secondary='image_labels',
@@ -54,7 +56,7 @@ class StoredFile(BaseNameMixin, db.Model):
 
     @property
     def extn(self):
-        return guess_extension(self.mimetype) or ''
+        return guess_extension(self.mimetype, self.orig_extn) or ''
 
     def is_queued_for_deletion(self):
         if imgee.app.config.get('CELERY_ALWAYS_EAGER'):

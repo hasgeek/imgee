@@ -3,8 +3,10 @@ https://github.com/hasgeek/coaster/zipball/master
 https://github.com/hasgeek/baseframe/zipball/master
 Flask-SQLAlchemy
 https://github.com/hasgeek/flask-lastuser/zipball/master
-Flask-Admin
+https://github.com/jace/flask-alembic/archive/master.zip
 boto
-Pillow==2.1.0
 redis
 celery
+xml4h
+python-magic
+defusedxml
