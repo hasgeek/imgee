@@ -9,9 +9,6 @@ env:
       EGeHYvQUiyAg7zM4KdNJr6txj+jBE8MAeh7EwYNHoh9B7Vx//GxmXFnWyjXV
       9cJkFroDW1Zfs2SZjLtzMQC8YXE30jmMxg+XHCQewKzRa4u1320=
 language: python
-notifications: 
-  email: false
-  irc: irc.freenode.net#hasgeek-dev
 python: 
   - 2.7
 before_script:
@@ -22,3 +19,8 @@ install:
   - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc
   - pip install -r requirements.txt
   - pip install nose coverage BeautifulSoup4 Pillow
+notifications:
+  email: false
+  slack:
+    - hasgeek:HDCoMDj3T4ICB59qFFVorCG8
+    - friendsofhasgeek:3bLViYSzhfaThJovFYCVD3fX
