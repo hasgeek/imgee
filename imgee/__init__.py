@@ -40,7 +40,7 @@ def error403(error):
 def init_for(env):
     coaster.app.init_app(app, env)
     baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
-    app.error_handlers[403] =  error403
+    app.error_handlers[403] = error403
     lastuser.init_app(app)
     lastuser.init_usermanager(UserManager(db, models.User))
     if app.config.get('MEDIA_DOMAIN') and (
@@ -48,6 +48,6 @@ def init_for(env):
             app.config['MEDIA_DOMAIN'].startswith('https:')):
         app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
     mkdir_p(app.config['UPLOADED_FILES_DEST'])
-    celery.conf.add_defaults(app.config)
+    celery.conf.update(app.config)
     registry.set_connection()
     app.register_blueprint(api, url_prefix='/api/1')

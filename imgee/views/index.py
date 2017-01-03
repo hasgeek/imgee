@@ -197,6 +197,7 @@ def get_image(image):
         try:
             image_url = utils.get_image_url(image, size)
         except async.StillProcessingException:
+            print 'waiting'
             time.sleep(1)
             retries += 1
         else:

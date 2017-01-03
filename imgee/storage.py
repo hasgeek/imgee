@@ -34,7 +34,7 @@ def get_resized_image(img, size, is_thumbnail=False):
         else:
             size = get_fitting_size((img.width, img.height), size_t)
             resized_filename = get_resized_filename(img, size)
-            job = queueit('resize_and_save', img, size, is_thumbnail=is_thumbnail, taskid=resized_filename)
+            job = queueit('resize_and_save', img.name, size, is_thumbnail=is_thumbnail, taskid=resized_filename)
             return job
     return img_name
 
@@ -82,9 +82,10 @@ def save_tn_in_db(img, tn_name, (tn_w, tn_h)):
     Save thumbnail info in db.
     """
     name, extn = os.path.splitext(tn_name)
-    tn = Thumbnail(name=name, width=tn_w, height=tn_h, stored_file=img)
-    db.session.add(tn)
-    db.session.commit()
+    if Thumbnail.query.filter(Thumbnail.name == name).count() == 0:
+        tn = Thumbnail(name=name, width=tn_w, height=tn_h, stored_file=img)
+        db.session.add(tn)
+        db.session.commit()
     return name
 
 
@@ -187,11 +188,12 @@ def get_resized_filename(img, size):
 
 
 @celery.task(name='imgee.storage.resize-and-s3-upload', base=BaseTask)
-def resize_and_save(img, size, is_thumbnail=False):
+def resize_and_save(img_name, size, is_thumbnail=False):
     """
     Get the original image from local disk cache, download it from S3 if it misses.
     Resize the image and save resized image on S3 and size details in db.
     """
+    img = StoredFile.query.filter(StoredFile.name == img_name).first()
     src_path = download_frm_s3(img.name + img.extn)
 
     if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:
@@ -222,7 +224,7 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
         return src
 
     processed = False
-    
+
     if 'processor' in ALLOWED_MIMETYPES[mimetype]:
         if ALLOWED_MIMETYPES[mimetype]['processor'] == 'rsvg-convert':
             try:

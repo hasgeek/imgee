@@ -10,3 +10,10 @@ celery
 xml4h
 python-magic
 defusedxml
+cffi
+idna
+tldextract
+html5lib
+flask-wtf
+flask-cache
+cssmin
