@@ -39,6 +39,8 @@ AWS_ACCESS_KEY = 'Set aws access key here'
 AWS_SECRET_KEY = 'Set aws secret key here'
 AWS_BUCKET = 'set your bucketname here'
 AWS_FOLDER = ''     # set this if you want all files to be uploaded to a particular folder eg., 'test/'
+AWS_THUMB_FOLDER = ''   # all thumbnails are stored inside this folder
+AWS_CROP_FOLDER = ''    # all cropped images are stored inside this folder
 #: Domain name for files
 MEDIA_DOMAIN = 'http://%s.s3.amazonaws.com' % AWS_BUCKET
 THUMBNAIL_SIZE = '75x75'   # WxH in px

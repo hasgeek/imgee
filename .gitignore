@@ -21,3 +21,8 @@ baseframe-packed.js
 error.log
 imgee/static/uploads
 imgee/static/gen
+
+lambda/testfiles
+lambda/testthumbs
+lambda/venv
+lambda/*.zip
