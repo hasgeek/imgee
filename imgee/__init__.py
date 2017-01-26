@@ -3,7 +3,6 @@
 # The imports in this file are order-sensitive
 
 import os
-from celery import Celery
 
 from flask import Flask, redirect, url_for
 from flask.ext.lastuser import Lastuser
@@ -16,7 +15,6 @@ from ._version import __version__
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
 lastuser = Lastuser()
-celery = Celery()
 
 assets['imgee.css'][version] = 'css/app.css'
 
@@ -48,6 +46,5 @@ def init_for(env):
             app.config['MEDIA_DOMAIN'].startswith('https:')):
         app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
     mkdir_p(app.config['UPLOADED_FILES_DEST'])
-    celery.conf.update(app.config)
     registry.set_connection()
     app.register_blueprint(api, url_prefix='/api/1')

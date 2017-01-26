@@ -6,7 +6,6 @@ https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/jace/flask-alembic/archive/master.zip
 boto
 redis
-celery
 xml4h
 python-magic
 defusedxml

@@ -1,6 +1,7 @@
 from __future__ import print_function
 import boto3
 import os
+import re
 from PIL import Image
 import mimetypes
 import subprocess
@@ -25,7 +26,7 @@ class ThumbnailGenerator(object):
     }
 
     DOWNLOAD_DIR = "/tmp"
-    THUMB_EXTN = "jpg"
+    TARGET_THUMB_EXTN = "jpg"
     S3_THUMB_DIR = "thumb"
 
     IMAGE_MIMETYPES = [
@@ -41,13 +42,30 @@ class ThumbnailGenerator(object):
         '.jpe', '.jpg', '.jpeg', '.png', '.gif', '.bmp'
     ]
 
-    def __init__(self, key, bucket):
+    def __init__(self, key, bucket, target_size=None):
         """
         key - key of the file that was uploaded on s3
         bucket - the Bucket objects from the s3 resource
         """
         self.key = key
         self.bucket = bucket
+        self.target_size = self.parse_size(target_size)
+
+    def parse_size(self, size):
+        """
+        Calculate and return (w, h) from the query parameter `size`.
+        Returns None if not formattable.
+        """
+        if isinstance(size, (str, unicode)):
+            # return (w, h) if size is 'wxh'
+            r = r'^(\d+)x(\d+)$'
+            matched = re.match(r, size)
+            if matched:
+                w, h = matched.group(1, 2)
+                h = int(h.lstrip('x')) if h is not None else 0
+                return int(w), h
+        elif isinstance(size, (tuple, list)) and len(size) == 2:
+            return tuple(map(int, size))
 
     def split_key(self, key):
         """
@@ -76,7 +94,7 @@ class ThumbnailGenerator(object):
         and replace original file with it
         """
         returncode = subprocess.call([
-            "convert", filepath, "{}:{}".format(self.THUMB_EXTN, filepath)
+            "convert", filepath, "{}:{}".format(self.TARGET_THUMB_EXTN, filepath)
         ])
 
         if returncode != 0:
@@ -99,11 +117,19 @@ class ThumbnailGenerator(object):
     def create_thumbnail(self, filepath):
         folder, filename, ext = self.split_key(self.key)
 
-        for size in self.SIZES.values():
-            thumb_name = self.get_thumb_name(filename, ext, size)
+        if self.target_size:
+            # if we need thumbnail for a particular size
+            thumb_name = self.get_thumb_name(filename, ext, self.target_size)
             resize_path = os.path.join(self.DOWNLOAD_DIR, thumb_name)
             self.resize_image(filepath, resize_path)
             self.upload_thumbnail(thumb_name)
+        else:
+            # if we need to generate thumbnail for all preset sizes
+            for size in self.SIZES.values():
+                thumb_name = self.get_thumb_name(filename, ext, size)
+                resize_path = os.path.join(self.DOWNLOAD_DIR, thumb_name)
+                self.resize_image(filepath, resize_path)
+                self.upload_thumbnail(thumb_name)
 
     def create_thumbnails(self):
         is_image = True

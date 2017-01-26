@@ -16,15 +16,25 @@ from flask import request
 import imgee
 from imgee import app
 
+
+THUMBNAIL_COMMANDS = {
+    'inkscape': "inkscape -z -f {src} -e {src}.png && convert -quiet -thumbnail {width}x{height} {src}.png -colorspace sRGB -quality 75% {dest}",
+    'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio=TRUE --format={format} {src} > {dest}",
+    'convert': "convert -quiet -thumbnail {width}x{height} {src} -colorspace sRGB -quality 75% {dest}",
+    'convert-pdf': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% -background white -flatten {dest}",
+    'convert-gif': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% {dest}"
+}
+
+
 ALLOWED_MIMETYPES = {
     'image/jpg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/jpe': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/jpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/pjpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/png': {'allowed_extns': [u'.png'], 'extn': u'.png'},
-    'image/gif': {'allowed_extns': [u'.gif'], 'extn': u'.gif'},
+    'image/gif': {'allowed_extns': [u'.gif'], 'extn': u'.gif', 'processor': 'convert-gif'},
     'image/vnd.adobe.photoshop': {'allowed_extns': [u'.psd'], 'extn': u'.psd', 'thumb_extn': False},
-    'application/pdf': {'allowed_extns': [u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai'], 'thumb_extn': u'.png'},
+    'application/pdf': {'allowed_extns': [u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai'], 'thumb_extn': u'.png', 'processor': 'convert-pdf'},
     'application/illustrator': {'allowed_extns': [u'.ai'], 'extn': u'.ai', 'thumb_extn': u'.png'},
     'application/postscript': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/svg+xml': {'allowed_extns': [u'.svg'], 'extn': u'.svg', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
@@ -40,12 +50,12 @@ ALLOWED_MIMETYPES = {
     'application/bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
     'application/x-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
     'application/x-win-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'application/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'application/coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'application/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'application/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'image/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'image/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
+    'application/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
+    'application/coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
+    'application/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
+    'application/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
+    'image/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
+    'image/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
     'application/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'application/x-eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
@@ -122,17 +132,21 @@ def get_file_type(fp):
     if result in ('text/plain', 'text/xml', 'application/xml'):
         if is_svg(fp):
             return 'image/svg+xml'
+    print("Type: {}".format(result))
     return result
 
 
-def is_file_allowed(fp):
+def is_file_allowed(fp, provided_mimetype=None):
     return get_file_type(fp) in ALLOWED_MIMETYPES
 
 
 # -- s3 related --
+def get_s3_connection():
+    return connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
+
 
 def get_s3_bucket():
-    conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
+    conn = get_s3_connection()
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
     return bucket
 
@@ -142,6 +156,19 @@ def get_s3_folder(f=''):
     if f and not f.endswith('/'):
         f = f + '/'
     return f or ''
+
+
+def exists_in_s3(thumb):
+    folder = get_s3_folder()
+    bucket = get_s3_bucket()
+    key = os.path.join(folder, thumb.name + thumb.stored_file.extn)
+    print("checking whether exists in s3: {}".format(key))
+    resp = bucket.get_key(key)
+    if not resp:
+        print("does not exist")
+        return False
+    print("exists")
+    return True
 
 
 def download_frm_s3(img_name):
@@ -162,8 +189,12 @@ def not_in_deleteQ(imgs):
 # -- image details --
 
 def get_width_height(img_path):
+    name, extn = os.path.splitext(img_path)
     try:
-        o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
+        if extn in ['.pdf']:
+            o = check_output('identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path), shell=True)
+        else:
+            o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
         return tuple(int(dim) for dim in o.split('x'))
     except CalledProcessError:
         return (0, 0)
@@ -187,8 +218,7 @@ def get_image_url(image, size=None):
     if size and extn in EXTNS:
         if image.no_previews:
             return get_no_previews_url(size)
-        r = imgee.storage.get_resized_image(image, size)
-        img_name = imgee.async.get_async_result(r)
+        img_name = imgee.storage.get_resized_image(image, size)
     else:
         img_name = image.name
     if size and 'thumb_extn' in ALLOWED_MIMETYPES[image.mimetype]:
@@ -197,11 +227,4 @@ def get_image_url(image, size=None):
 
 
 def get_thumbnail_url(image):
-    extn = image.extn
-    if extn in EXTNS:
-        tn_size = app.config.get('THUMBNAIL_SIZE')
-        r = imgee.storage.get_resized_image(image, tn_size, is_thumbnail=True)
-        thumbnail = imgee.async.get_async_result(r)
-    else:
-        thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
-    return get_url(thumbnail, extn)
+    return get_image_url(image, app.config.get('THUMBNAIL_SIZE'))

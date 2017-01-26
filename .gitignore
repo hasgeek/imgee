@@ -5,6 +5,7 @@ test.sh
 *.wpr
 .project
 .pydevproject
+.vscode/
 .settings
 *.egg-info
 .coverage

@@ -13,10 +13,15 @@ class Status(object):
     ok = 'OK'
     in_process = 'PROCESSING'
     notfound = 'NOT FOUND'
+    accepted = 'ACCEPTED'
 
 @api.errorhandler(404)
 def error404(error):
     return jsonify({"status": Status.notfound, "status_code": 404})
+
+@api.errorhandler(202)
+def error202(error):
+    return jsonify({"status": Status.accepted, "status_code": 202})
 
 
 @api.route('/file/<image>.json')
@@ -43,15 +48,8 @@ def get_image_json(image):
 def upload_file_json(callerinfo, profile):
     file_ = request.files['file']
     title = request.form.get('title')
-    title, job = storage.save(file_, profile=profile, title=title)
-    try:
-        imgname = async.get_async_result(job)
-    except async.StillProcessingException as e:
-        imgname = e.args[0]
-        status = Status.in_process
-    else:
-        status = Status.ok
-
+    title, stored_file = storage.save(file_, profile=profile, title=title)
+    imgname = stored_file.name
     url = utils.get_url(imgname)
     imgname = os.path.splitext(imgname)[0]
     imgee_url = urljoin(request.host_url, url_for('get_image', image=imgname))
