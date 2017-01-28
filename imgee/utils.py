@@ -161,7 +161,10 @@ def get_s3_folder(f=''):
 def exists_in_s3(thumb):
     folder = get_s3_folder()
     bucket = get_s3_bucket()
-    key = os.path.join(folder, thumb.name + thumb.stored_file.extn)
+    extn = thumb.stored_file.extn
+    if 'thumb_extn' in ALLOWED_MIMETYPES[thumb.stored_file.mimetype]:
+        extn = ALLOWED_MIMETYPES[thumb.stored_file.mimetype]['thumb_extn']
+    key = os.path.join(folder, thumb.name + extn)
     print("checking whether exists in s3: {}".format(key))
     resp = bucket.get_key(key)
     if not resp:
