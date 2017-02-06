@@ -19,11 +19,6 @@ class Status(object):
 def error404(error):
     return jsonify({"status": Status.notfound, "status_code": 404})
 
-@api.errorhandler(202)
-def error202(error):
-    return jsonify({"status": Status.accepted, "status_code": 202})
-
-
 @api.route('/file/<image>.json')
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image_json(image):

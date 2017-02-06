@@ -18,7 +18,7 @@ from imgee import app
 
 
 THUMBNAIL_COMMANDS = {
-    'inkscape': "inkscape -z -f {src} -e {src}.png && convert -quiet -thumbnail {width}x{height} {src}.png -colorspace sRGB -quality 75% {dest}",
+    'inkscape': "inkscape -z -f {src} -e {src}.original.png && convert -quiet -thumbnail {width}x{height} {src}.original.png -colorspace sRGB -quality 75% {dest}",
     'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio=TRUE --format={format} {src} > {dest}",
     'convert': "convert -quiet -thumbnail {width}x{height} {src} -colorspace sRGB -quality 75% {dest}",
     'convert-pdf': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% -background white -flatten {dest}",
@@ -50,12 +50,14 @@ ALLOWED_MIMETYPES = {
     'application/bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
     'application/x-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
     'application/x-win-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'application/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
-    'application/coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
-    'application/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
-    'application/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
-    'image/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
-    'image/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False, 'processor': 'inkscape'},
+    'application/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'application/coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'application/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'application/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'application/vnd.corel-draw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'image/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'image/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'image/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
     'application/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'application/x-eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
@@ -124,20 +126,32 @@ def is_svg(fp):
     return tag == '{http://www.w3.org/2000/svg}svg'
 
 
-def get_file_type(fp):
+def get_file_type(fp, filename=None):
     fp.seek(0)
     data = fp.read()
     fp.seek(0)
     result = magic.from_buffer(data, mime=True)
     if result in ('text/plain', 'text/xml', 'application/xml'):
         if is_svg(fp):
-            return 'image/svg+xml'
+            result = 'image/svg+xml'
+    elif result in ('application/octet-stream', 'application/zip'):
+        if filename:
+            name, extn = os.path.splitext(filename)
+            if extn == '.cdr':
+                result = 'application/cdr'
     print("Type: {}".format(result))
     return result
 
 
-def is_file_allowed(fp, provided_mimetype=None):
-    return get_file_type(fp) in ALLOWED_MIMETYPES
+def is_file_allowed(fp, provided_mimetype=None, filename=None):
+    # reject files with zero size
+    fp.seek(0)
+    data = fp.read()
+    fp.seek(0)
+    if len(data) == 0:
+        print("zero size")
+        return False
+    return get_file_type(fp, filename) in ALLOWED_MIMETYPES
 
 
 # -- s3 related --
@@ -196,6 +210,10 @@ def get_width_height(img_path):
     try:
         if extn in ['.pdf']:
             o = check_output('identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path), shell=True)
+        elif extn in ['.cdr']:
+            wo = check_output('inkscape -z -W {}'.format(img_path), shell=True)
+            ho = check_output('inkscape -z -H {}'.format(img_path), shell=True)
+            o = "{}x{}".format(int(round(float(wo))), int(round(float(ho))))
         else:
             o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
         return tuple(int(dim) for dim in o.split('x'))

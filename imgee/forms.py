@@ -13,7 +13,7 @@ from imgee.utils import get_file_type, is_file_allowed
 
 
 def valid_file(form, field):
-    if not is_file_allowed(field.data.stream, field.data.mimetype):
+    if not is_file_allowed(field.data.stream, field.data.mimetype, field.data.filename):
         raise ValidationError("Sorry, unknown image format. Please try uploading another file.")
 
 

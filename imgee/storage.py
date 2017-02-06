@@ -55,7 +55,7 @@ def save(fp, profile, title=None):
     """
     id_ = newid()
     title = title or secure_filename(fp.filename)
-    content_type = get_file_type(fp)
+    content_type = get_file_type(fp, fp.filename)
     name, extn = os.path.splitext(fp.filename)
     extn = guess_extension(content_type, extn)
     img_name = "%s%s" % (id_, extn)
@@ -114,7 +114,7 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
         k = b.new_key(folder+filename)
         headers = {
             'Cache-Control': 'max-age=31536000',  # 60*60*24*365
-            'Content-Type': get_file_type(fp),
+            'Content-Type': get_file_type(fp, filename),
             'Expires': datetime.now() + timedelta(days=365)
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
@@ -163,7 +163,11 @@ def get_fitting_size((orig_w, orig_h), size):
     >>> get_fitting_size((200, 500), (400, 600))
     [240, 600]
     """
-    if size[0] == 0 and size[1] == 0:
+    if orig_w == 0 or orig_h == 0:
+        # this is either a cdr file or a zero width file
+        # just go with target  size
+        w, h = size
+    elif size[0] == 0 and size[1] == 0 and orig_w > 0 and orig_h > 0:
         w, h = orig_w, orig_h
     elif size[0] == 0:
         w, h = orig_w*size[1]/float(orig_h), size[1]
