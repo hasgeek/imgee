@@ -69,7 +69,8 @@ ALLOWED_MIMETYPES = {
     'application/tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
     'application/x-tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
     'application/tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'application/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'}
+    'application/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'image/webp': {'allowed_extns': [u'.webp'], 'extn': '.webp', 'thumb_extn': u'.png'}
 }
 
 EXTNS = []
