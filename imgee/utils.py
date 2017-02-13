@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os.path
+import re
 from uuid import uuid4
 import defusedxml.cElementTree as elementtree
 import magic
@@ -22,7 +23,7 @@ THUMBNAIL_COMMANDS = {
     'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio=TRUE --format={format} {src} > {dest}",
     'convert': "convert -quiet -thumbnail {width}x{height} {src} -colorspace sRGB -quality 75% {dest}",
     'convert-pdf': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% -background white -flatten {dest}",
-    'convert-gif': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% {dest}"
+    'convert-layered': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% {dest}"
 }
 
 
@@ -32,8 +33,8 @@ ALLOWED_MIMETYPES = {
     'image/jpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/pjpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/png': {'allowed_extns': [u'.png'], 'extn': u'.png'},
-    'image/gif': {'allowed_extns': [u'.gif'], 'extn': u'.gif', 'processor': 'convert-gif'},
-    'image/vnd.adobe.photoshop': {'allowed_extns': [u'.psd'], 'extn': u'.psd', 'thumb_extn': False},
+    'image/gif': {'allowed_extns': [u'.gif'], 'extn': u'.gif', 'processor': 'convert-layered'},
+    'image/vnd.adobe.photoshop': {'allowed_extns': [u'.psd'], 'extn': u'.psd', 'thumb_extn': '.jpeg', 'processor': 'convert-layered'},
     'application/pdf': {'allowed_extns': [u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai'], 'thumb_extn': u'.png', 'processor': 'convert-pdf'},
     'application/illustrator': {'allowed_extns': [u'.ai'], 'extn': u'.ai', 'thumb_extn': u'.png'},
     'application/postscript': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
@@ -70,7 +71,8 @@ ALLOWED_MIMETYPES = {
     'application/x-tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
     'application/tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
     'application/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'image/webp': {'allowed_extns': [u'.webp'], 'extn': '.webp', 'thumb_extn': u'.png'}
+    'image/webp': {'allowed_extns': [u'.webp'], 'extn': '.webp', 'thumb_extn': u'.jpeg'},
+    'image/x-xcf': {'allowed_extns': [u'.xcf'], 'extn': '.xcf', 'thumb_extn': u'.jpeg'}
 }
 
 EXTNS = []
@@ -209,12 +211,21 @@ def not_in_deleteQ(imgs):
 def get_width_height(img_path):
     name, extn = os.path.splitext(img_path)
     try:
+        o = '0x0'
         if extn in ['.pdf']:
             o = check_output('identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path), shell=True)
         elif extn in ['.cdr']:
             wo = check_output('inkscape -z -W {}'.format(img_path), shell=True)
             ho = check_output('inkscape -z -H {}'.format(img_path), shell=True)
             o = "{}x{}".format(int(round(float(wo))), int(round(float(ho))))
+        elif extn in ['.psd']:
+            # identify command doesn't seem to work on psd files
+            # hence using file command and extracting resolution from there
+            fo = check_output('file {}'.format(img_path), shell=True)
+            possible_size = re.findall(r'\d+\ x\ \d+', fo)
+            if len(possible_size) == 1:
+                wo, ho = possible_size[0].split(' x ')
+                o = "{}x{}".format(int(round(float(wo))), int(round(float(ho))))
         else:
             o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
         return tuple(int(dim) for dim in o.split('x'))

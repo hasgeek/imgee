@@ -88,10 +88,10 @@ def upload_file_json(profile):
         form = render_template('edit_title_form.html', form=update_form, formid='edit_title_' + stored_file.name)
         return jsonify(
             status=True, message="%s uploaded successfully" % title, form=form,
-            update_url=url_for('update_title_json', profile=profile.name,file=stored_file.name),
+            update_url=url_for('update_title_json', profile=profile.name, file=stored_file.name),
             image_data=stored_file_data(stored_file))
     else:
-        response = jsonify(status=False, message=upload_form.errors['file'])
+        response = jsonify(status=False, message=' '.join(upload_form.errors.values()))
         response.status_code = 403
         return response
 
