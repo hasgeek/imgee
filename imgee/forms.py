@@ -2,7 +2,7 @@
 
 import os.path
 from coaster import make_name
-from flask.ext.wtf import Form
+from flask_wtf import FlaskForm
 from wtforms.validators import Required, ValidationError, Length
 from wtforms import (FileField, TextField, HiddenField,
         SelectMultipleField, SelectField)
@@ -17,15 +17,15 @@ def valid_file(form, field):
         raise ValidationError("Sorry, unknown image format. Please try uploading another file.")
 
 
-class UploadImageForm(Form):
+class UploadImageForm(FlaskForm):
     file = FileField("File", validators=[Required(), valid_file])
 
 
-class DeleteImageForm(Form):
+class DeleteImageForm(FlaskForm):
     pass
 
 
-class PurgeCacheForm(Form):
+class PurgeCacheForm(FlaskForm):
     pass
 
 def reserved_words():
@@ -49,31 +49,31 @@ def label_doesnt_exist(form, field):
         raise ValidationError('Label "%s" already exists. Please try another name.' % field.data)
 
 
-class CreateLabelForm(Form):
+class CreateLabelForm(FlaskForm):
     label = TextField('Label', validators=[Required(), Length(max=250), label_doesnt_exist])
     profile_id = HiddenField('profile_id')
 
 
-class AddLabelForm(Form):
+class AddLabelForm(FlaskForm):
     stored_file_id = HiddenField('stored_file_id')
     labels = HiddenField('labels')
 
 
-class RemoveLabelForm(Form):
+class RemoveLabelForm(FlaskForm):
     pass
 
 
-class EditTitleForm(Form):
+class EditTitleForm(FlaskForm):
     file_name = HiddenField('file_name')
     file_title = TextField('title', validators=[Required(), Length(max=250)])
 
-class UpdateTitle(Form):
+class UpdateTitle(FlaskForm):
     title = TextField('Title', validators=[Required(), Length(max=250)])
 
 
-class EditLabelForm(Form):
+class EditLabelForm(FlaskForm):
     label_name = TextField('label', validators=[Required(), Length(max=250)])
 
 
-class ChangeProfileForm(Form):
+class ChangeProfileForm(FlaskForm):
     profiles = SelectField('Profiles')
