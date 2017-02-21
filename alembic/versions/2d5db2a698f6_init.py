@@ -39,8 +39,6 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('userid', sa.Unicode(length=22), nullable=False),
-    sa.Column('description', sa.UnicodeText(), nullable=False),
-    sa.Column('type', sa.Integer(), nullable=False),
     sa.Column('name', sa.Unicode(length=250), nullable=False),
     sa.Column('title', sa.Unicode(length=250), nullable=False),
     sa.PrimaryKeyConstraint('id'),
