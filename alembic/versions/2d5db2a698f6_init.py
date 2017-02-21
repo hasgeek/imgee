@@ -61,6 +61,7 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('name', sa.String(length=50), nullable=False),
+    sa.Column('title', sa.String(length=50), nullable=False),
     sa.Column('profile_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['profile_id'], ['profile.id'], ),
     sa.PrimaryKeyConstraint('id')
