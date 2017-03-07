@@ -11,6 +11,10 @@ from baseframe import baseframe, assets, Version
 import coaster.app
 from ._version import __version__
 
+from . import models, views
+from .models import db
+from .api import api
+from .async import TaskRegistry
 
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
@@ -18,12 +22,8 @@ lastuser = Lastuser()
 
 assets['imgee.css'][version] = 'css/app.css'
 
-from . import models, views
-from .models import db
-from .api import api
-from .async import TaskRegistry
+registry = TaskRegistry(os.getenv('ENV', 'production'))
 
-registry = TaskRegistry()
 
 def mkdir_p(dirname):
     if not os.path.exists(dirname):

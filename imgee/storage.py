@@ -11,6 +11,7 @@ from werkzeug import secure_filename
 from datetime import datetime, timedelta
 
 import imgee
+from flask import abort
 from imgee import app
 from imgee.models import db, Thumbnail, StoredFile
 from imgee.utils import (newid, guess_extension, get_file_type,

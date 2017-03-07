@@ -20,6 +20,11 @@ def global_vars():
     return {'cl_form': cl_form, 'uf_form': forms.UploadImageForm()}
 
 
+@app.errorhandler(202)
+def error_202(e):
+    return render_template('202.html'), 202
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
