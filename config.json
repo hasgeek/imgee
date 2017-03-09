@@ -1,0 +1,53 @@
+{
+  "id": "6b03cd7b-5c02-41b7-936d-79ba12aa5b27",
+  "app_id": "fb9b1f03-4444-483b-9e12-0e3722fbb7a6",
+  "artifacts": [
+    "b8e5a9c9-5a09-47e8-b960-66c7c62f6f4f"
+  ],
+  "env": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "PORT": "4500"
+  },
+  "meta": {
+    "docker-receive": "true"
+  },
+  "processes": {
+    "app": {
+      "args": [
+        "uwsgi",
+        "-i",
+        "uwsgi.ini"
+      ],
+      "ports": [
+        {
+          "port": 4500,
+          "proto": "http",
+          "service": {
+            "name": "imgee",
+            "create": true
+          }
+        }
+      ],
+      "resources": {
+        "cpu": {
+          "request": 1000,
+          "limit": 1000
+        },
+        "max_fd": {
+          "request": 10000,
+          "limit": 10000
+        },
+        "memory": {
+          "request": 1073741824,
+          "limit": 1073741824
+        },
+        "temp_disk": {
+          "request": 104857600,
+          "limit": 104857600
+        }
+      }
+    }
+  },
+  "created_at": "2017-03-06T07:30:23.485108Z",
+  "artifact": "b8e5a9c9-5a09-47e8-b960-66c7c62f6f4f"
+}

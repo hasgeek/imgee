@@ -9,8 +9,7 @@ from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile, Label
 from imgee.storage import delete, save, clean_local_cache
-from imgee.utils import newid, get_media_domain, not_in_deleteQ, get_no_previews_url, ALLOWED_MIMETYPES
-from imgee.async import queueit
+from imgee.utils import get_media_domain, not_in_deleteQ, ALLOWED_MIMETYPES
 import imgee.async as async
 import imgee.utils as utils
 
@@ -19,6 +18,11 @@ import imgee.utils as utils
 def global_vars():
     cl_form = forms.CreateLabelForm()
     return {'cl_form': cl_form, 'uf_form': forms.UploadImageForm()}
+
+
+@app.errorhandler(202)
+def error_202(e):
+    return render_template('202.html'), 202
 
 
 @app.route('/')
@@ -71,8 +75,7 @@ def upload_file(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        title, job, stored_file = save(file_, profile=profile)
-        generate_thumbs(stored_file)
+        title, stored_file = save(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
     return render_template('form.html', form=upload_form, profile=profile)
@@ -84,17 +87,16 @@ def upload_file_json(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        title, job, stored_file = save(file_, profile=profile)
-        generate_thumbs(stored_file)
+        title, stored_file = save(file_, profile=profile)
         update_form = forms.UpdateTitle()
         update_form.title.data = stored_file.title
         form = render_template('edit_title_form.html', form=update_form, formid='edit_title_' + stored_file.name)
         return jsonify(
             status=True, message="%s uploaded successfully" % title, form=form,
-            update_url=url_for('update_title_json', profile=profile.name,file=stored_file.name),
+            update_url=url_for('update_title_json', profile=profile.name, file=stored_file.name),
             image_data=stored_file_data(stored_file))
     else:
-        response = jsonify(status=False, message=upload_form.errors['file'])
+        response = jsonify(status=False, message=' '.join(upload_form.errors.values()))
         response.status_code = 403
         return response
 
@@ -192,31 +194,8 @@ def view_image(profile, img):
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image(image):
     size = request.args.get('size')
-    retries = 0
-    while retries < 15:
-        try:
-            image_url = utils.get_image_url(image, size)
-        except async.StillProcessingException:
-            time.sleep(1)
-            retries += 1
-        else:
-            if image_url == get_no_previews_url(size):
-                code = 302
-            else:
-                code = 301
-            return redirect(image_url, code=code)
-    return redirect(get_no_previews_url(size), code=302)
-
-
-@app.route('/embed/thumbnail/<image>')
-@load_model(StoredFile, {'name': 'image'}, 'image')
-def get_thumbnail(image):
-    try:
-        tn_url = utils.get_thumbnail_url(image)
-    except async.StillProcessingException:
-        return async.loading()
-    else:
-        return redirect(tn_url, code=301)
+    image_url = utils.get_image_url(image, size)
+    return redirect(image_url, code=301)
 
 
 @app.route('/<profile>/delete/<image>', methods=['GET', 'POST'])
@@ -227,7 +206,7 @@ def get_thumbnail(image):
 def delete_file(profile, img):
     form = forms.DeleteImageForm()
     if form.is_submitted():
-        queueit('delete', img, taskid=img.name + img.extn)
+        delete(img)
         flash("%s is deleted" % img.title)
     else:
         return render_template('delete.html', form=form, file=img, profile=profile)
