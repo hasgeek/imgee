@@ -15,7 +15,7 @@ version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
 lastuser = Lastuser()
 
-from . import models
+from . import models, views
 from .models import db
 from .api import api
 from .async import TaskRegistry
