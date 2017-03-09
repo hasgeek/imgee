@@ -11,14 +11,15 @@ from baseframe import baseframe, assets, Version
 import coaster.app
 from ._version import __version__
 
-from . import models, views
+version = Version(__version__)
+app = Flask(__name__, instance_relative_config=True)
+lastuser = Lastuser()
+
+from . import models
 from .models import db
 from .api import api
 from .async import TaskRegistry
 
-version = Version(__version__)
-app = Flask(__name__, instance_relative_config=True)
-lastuser = Lastuser()
 
 assets['imgee.css'][version] = 'css/app.css'
 

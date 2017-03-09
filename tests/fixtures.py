@@ -8,15 +8,17 @@ from imgee.models import db, User, Profile, StoredFile
 
 
 def get_test_user(name, id=1):
-    if not name:
-        name = 'testuser_%d' % id
-    userid = ''.join(random.sample(string.letters, 22))
-    u = User(username=unicode(name), userid=unicode(userid),
-            lastuser_token_scope=u'id email organizations', lastuser_token_type=u'bearer',
-            lastuser_token=u'last-user-token',
-            fullname=unicode(name.capitalize()), id=id)
-    db.session.add(u)
-    db.session.commit()
+    u = db.session.query(User).filter_by(id=id).first()
+    if not u:
+        if not name:
+            name = 'testuser_%d' % id
+        userid = ''.join(random.sample(string.letters, 22))
+        u = User(username=unicode(name), userid=unicode(userid),
+                lastuser_token_scope=u'id email organizations', lastuser_token_type=u'bearer',
+                lastuser_token=u'last-user-token',
+                fullname=unicode(name.capitalize()), id=id)
+        db.session.add(u)
+        db.session.commit()
     return u
 
 
