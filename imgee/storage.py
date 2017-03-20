@@ -17,7 +17,7 @@ from imgee.models import db, Thumbnail, StoredFile
 from imgee.utils import (newid, guess_extension, get_file_type,
                         path_for, get_s3_folder, get_s3_bucket,
                         download_frm_s3, get_width_height, ALLOWED_MIMETYPES,
-                        THUMBNAIL_COMMANDS, exists_in_s3)
+                        THUMBNAIL_COMMANDS, exists_in_s3, get_no_previews_url)
 
 
 # -- functions used in views --
@@ -41,7 +41,7 @@ def get_resized_image(img, size, is_thumbnail=False):
             resized_filename = get_resized_filename(img, size)
             registry = imgee.registry
             if resized_filename in registry:
-                abort(202)
+                return get_no_previews_url(size)
             else:
                 registry.add(resized_filename)
             img_name = resize_and_save(img, size, is_thumbnail=is_thumbnail)
@@ -50,7 +50,7 @@ def get_resized_image(img, size, is_thumbnail=False):
     return img_name
 
 
-def save(fp, profile, title=None):
+def save_file(fp, profile, title=None):
     """
     Attaches the image to the profile and uploads it to S3.
     """

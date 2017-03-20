@@ -1,7 +1,7 @@
 import unittest
 
 from imgee import storage
-from imgee.models import StoredFile, Label, db
+from imgee.models import StoredFile, Label, db, User, Profile
 from fixtures import ImgeeTestCase
 import test_utils
 
@@ -35,7 +35,8 @@ class LabelTestCase(ImgeeTestCase):
     def test_add_remove_label(self):
         # upload image
         img_title, r = self.upload()
-        img = StoredFile.query.filter_by(title=img_title).one()
+        print img_title, r
+        img = StoredFile.query.filter_by(title=unicode(img_title)).one()
         img_id, img_name = img.id, img.name
         self.assertFalse(img.labels)
 
@@ -67,8 +68,6 @@ class LabelTestCase(ImgeeTestCase):
         self.assertTrue(r.status_code, 200)
         r = self.client.get('/%s/%s', self.test_user_name, label)
         self.assertEquals(r.status_code, 404)
-
-
 
 
 if __name__ == '__main__':

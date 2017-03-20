@@ -4,29 +4,31 @@
 {% block title %}{{ profile.title }}{% endblock %}
 
 {% block extendedsidebar %}
-  {{ title_form.hidden_tag() }}
-<div class="row">
-  <div class="span3 sidebar">
-      <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
-        {{ uf_form.hidden_tag() }}
-        <i class="icon-cloud-upload"></i>
-        <h4>Drop files to upload<br /></h4>
-          <p>(<em>or click here</em>)</p>
-      </form>
-      <div id="uploaded-files" class="">
-        <div class="sample hidden">
-          <div class="alert">
-            <a href="javascript:void(0)" class="close" data-dismiss="alert">&times;</a>
-            <div class="clearfix"></div>
-            <img class="thumb">
-            <h4 class="heading"></h4>
-            <div class="form"></div>
-            <div class="clearfix"></div>
+  {%- if g.user %}
+    {{ title_form.hidden_tag() }}
+    <div class="row">
+      <div class="span3 sidebar">
+          <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
+            {{ uf_form.hidden_tag() }}
+            <i class="icon-cloud-upload"></i>
+            <h4>Drop files to upload<br /></h4>
+              <p>(<em>or click here</em>)</p>
+          </form>
+          <div id="uploaded-files" class="">
+            <div class="sample hidden">
+              <div class="alert">
+                <a href="javascript:void(0)" class="close" data-dismiss="alert">&times;</a>
+                <div class="clearfix"></div>
+                <img class="thumb">
+                <h4 class="heading"></h4>
+                <div class="form"></div>
+                <div class="clearfix"></div>
+              </div>
+            </div>
           </div>
-        </div>
       </div>
-  </div>
-</div>
+    </div>
+  {%- endif %}
 {% endblock %}
 
 {% block maincontent %}
@@ -35,13 +37,9 @@
       {% if files %}
         <div class="row">
           <div class="span7">
-            <h4 class="selected-profile"><a href="{{ url_for('profile_view',profile=profile.name) }}">{{ profile.title }}</a>'s Gallery</h4>
+            <h4 class="selected-profile"><a href="{{ url_for('profile_view', profile=profile.name) }}">{{ profile.title }}</a>'s Gallery</h4>
             <em>
-              {% if files|count == 1 %}
-                1 image
-              {% else %}
-                {{ files | count }} images
-              {% endif %}
+              {{ files|count }} image{% if files|count > 1 %}s{% endif %}
             </em>
           </div>
 
@@ -144,6 +142,7 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/list-grid.js') }}"></script>
 <script type="text/javascript">
   $(function() {
+    console.log('test');
     var uploaded = $('#uploaded-files');
     var sample_upload = uploaded.find('.sample').html();
     var thumbs = $('.gallery .thumbs');
@@ -175,7 +174,9 @@
 
     var add_thumb = function(thumb_data) {
       var thumb_sample = thumbs.find('li.image').first().html();
-      if(!thumb_sample) location.reload();
+      if(!thumb_sample) {
+        location.reload();
+      }
       else {
         thumbs.prepend('<li class="image">' + thumb_sample + '</li>');
         var new_thumb = thumbs.find('li.image').first();
@@ -189,6 +190,7 @@
         new_thumb.find('.imgsize').html(thumb_data.imgsize);
       }
     };
+
     var upload_form_submit = function(current, response) {
       current.find('.form').html(response.form);
       current.find('.form form').submit(function(){
@@ -199,6 +201,7 @@
           data: d,
           dataType: 'json',
           success: function(data) {
+            console.log(data);
             if(data.status) {
               current.slideUp(function() {
                 $(this).remove();
@@ -230,7 +233,9 @@
       paramName: "file",
       acceptedFiles: {{ ','.join(mimetypes)|tojson }},
       init: function() {
+        console.log('init');
         this.on('complete', function(file) {
+          console.log(file)
           var response = $.parseJSON(file.xhr.response);
           var img = $(file.previewElement).find('img').first();
           var title = $(file.previewElement).find('.dz-filename>span').first().html();
@@ -259,6 +264,10 @@
           }
           current.slideDown();
         });
+      },
+      accept: function (file, done) {
+        console.log(file);
+        console.log(done);
       }
     };
   });

@@ -8,7 +8,7 @@ from sqlalchemy import and_, not_
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile, Label
-from imgee.storage import delete, save, clean_local_cache
+from imgee.storage import delete, save_file, clean_local_cache
 from imgee.utils import get_media_domain, not_in_deleteQ, ALLOWED_MIMETYPES
 import imgee.async as async
 import imgee.utils as utils
@@ -45,6 +45,7 @@ def _redirect_url_frm_upload(profile_name):
         url = url_for('profile_view', profile=profile_name)
     return url
 
+
 def stored_file_data(stored_file):
     return dict(
         title=stored_file.title,
@@ -53,6 +54,7 @@ def stored_file_data(stored_file):
         imgsize='%s x %s' % (stored_file.width, stored_file.height),
         url=url_for('view_image', profile=stored_file.profile.name, image=stored_file.name),
         thumb_url=url_for('get_image', image=stored_file.name, size=app.config.get('THUMBNAIL_SIZE')))
+
 
 def generate_thumbs(image):
     def generate_thumb(image, size):
@@ -68,26 +70,32 @@ def generate_thumbs(image):
         else:
             generate_thumb(image, str(size))
 
+
 @app.route('/<profile>/new', methods=['GET', 'POST'])
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
+@lastuser.requires_login
+@load_model(
+    Profile, {'name': 'profile'}, 'profile',
+    permission=['new-file', 'siteadmin'])
 def upload_file(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        title, stored_file = save(file_, profile=profile)
+        title, stored_file = save_file(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
     return render_template('form.html', form=upload_form, profile=profile)
 
+
 @app.route('/<profile>/new.json', methods=['POST'])
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
+@lastuser.requires_login
+@load_model(
+    Profile, {'name': 'profile'}, 'profile',
+    permission=['new-file', 'siteadmin'])
 def upload_file_json(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        title, stored_file = save(file_, profile=profile)
+        title, stored_file = save_file(file_, profile=profile)
         update_form = forms.UpdateTitle()
         update_form.title.data = stored_file.title
         form = render_template('edit_title_form.html', form=update_form, formid='edit_title_' + stored_file.name)
@@ -100,9 +108,12 @@ def upload_file_json(profile):
         response.status_code = 403
         return response
 
+
 @app.route('/<profile>/popup')
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+@lastuser.requires_login
+@load_model(
+    Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'])
 def pop_up_gallery(profile):
     label = request.args.get('label')
     files = profile.stored_files
@@ -118,8 +129,10 @@ def pop_up_gallery(profile):
 
 
 @app.route('/<profile>/edit_title', methods=['POST'])
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+@lastuser.requires_login
+@load_model(
+    Profile, {'name': 'profile'}, 'profile',
+    permission=['edit', 'siteadmin'])
 def edit_title(profile):
     form = forms.EditTitleForm()
     if form.validate_on_submit():
@@ -132,11 +145,13 @@ def edit_title(profile):
     else:
         return form.file_title.errors and form.file_title.errors[0], 400
 
+
 @app.route('/<profile>/<file>/edit_title.json', methods=['POST'])
+@lastuser.requires_login
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'file'}, 'stored_file'),
-    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['edit', 'siteadmin'])
 def update_title_json(profile, stored_file):
     form = forms.UpdateTitle()
     if form.validate_on_submit():
@@ -160,14 +175,17 @@ def profile_view(profile):
 
 
 @app.route('/<profile>/archive')
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+@lastuser.requires_login
+@load_model(
+    Profile, {'name': 'profile'}, 'profile',
+    permission=['view', 'siteadmin'])
 def unlabelled_images(profile):
     """Get all unlabelled images owned by profile"""
     files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by('created_at desc').all()
     files = not_in_deleteQ(files)
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
+
 
 def get_prev_next_images(profile, img, limit=2):
     # query for "all" images though we need just the `limit`
@@ -177,11 +195,12 @@ def get_prev_next_images(profile, img, limit=2):
     pos = imgs.index(img)
     return imgs[pos+1 : pos+1+limit], imgs[:pos][-limit:]
 
+
 @app.route('/<profile>/view/<image>')
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['view', 'siteadmin'])
 def view_image(profile, img):
     prev, next = get_prev_next_images(profile, img)
     form = forms.AddLabelForm(stored_file_id=img.name)
@@ -199,10 +218,11 @@ def get_image(image):
 
 
 @app.route('/<profile>/delete/<image>', methods=['GET', 'POST'])
+@lastuser.requires_login
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['delete', 'siteadmin'])
 def delete_file(profile, img):
     form = forms.DeleteImageForm()
     if form.is_submitted():
@@ -214,6 +234,7 @@ def delete_file(profile, img):
 
 
 @app.route('/_admin/purge-cache', methods=['GET', 'POST'])
+@lastuser.requires_login
 @lastuser.requires_permission('siteadmin')
 def purge_cache():
     form = forms.PurgeCacheForm()

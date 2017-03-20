@@ -17,7 +17,6 @@ lastuser = Lastuser()
 
 from . import models, views
 from .models import db
-from .api import api
 from .async import TaskRegistry
 
 
@@ -48,4 +47,3 @@ def init_for(env):
         app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
     mkdir_p(app.config['UPLOADED_FILES_DEST'])
     registry.set_connection()
-    app.register_blueprint(api, url_prefix='/api/1')

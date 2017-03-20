@@ -4,6 +4,7 @@ import requests
 from PIL import Image
 
 from imgee.models import StoredFile, Thumbnail
+from imgee.views import upload_file
 from fixtures import ImgeeTestCase, app
 import test_utils
 
@@ -33,6 +34,7 @@ class TestEmpty(ImgeeBaseTest):
         r = self.client.get('/%s' % self.test_user_name)
         self.assertEquals(r.status_code, 200)
         self.assertEquals(len(StoredFile.query.all()), 0)
+
 
 class TestUpload(ImgeeBaseTest):
     def setUp(self):

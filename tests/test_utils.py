@@ -2,14 +2,21 @@ from StringIO import StringIO
 import requests
 import os
 from PIL import Image
-from imgee.models import StoredFile
+from imgee.models import StoredFile, db
+
 
 def upload(test_client, filepath, upload_url):
     filepath = os.path.abspath(filepath)
-    content = open(filepath).read()
     filename = os.path.basename(filepath)
-    d = {'file': (StringIO(content), filename)}
-    response = test_client.post(upload_url, data=d, follow_redirects=True)
+    response = None
+    with open(filepath) as f:
+        content = f.read()
+        d = {'file': (StringIO(content), unicode(filename))}
+        with test_client.session_transaction() as session:
+            session['lastuser_userid'] = test_client.test_user.userid
+            session['lastuser_sessionid'] = 'some-session-id'
+            response = test_client.post(upload_url, data=d, follow_redirects=False)
+            print response.headers
     return filename, response
 
 

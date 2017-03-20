@@ -3,20 +3,19 @@ import random
 import string
 
 from flask import g
-from imgee import init_for, app, storage
+from imgee import init_for, app, storage, lastuser
 from imgee.models import db, User, Profile, StoredFile
 
 
-def get_test_user(name, id=1):
-    u = db.session.query(User).filter_by(id=id).first()
+def get_test_user(name=u'testuser'):
+    u = db.session.query(User).first()
     if not u:
-        if not name:
-            name = 'testuser_%d' % id
         userid = ''.join(random.sample(string.letters, 22))
-        u = User(username=unicode(name), userid=unicode(userid),
-                lastuser_token_scope=u'id email organizations', lastuser_token_type=u'bearer',
-                lastuser_token=u'last-user-token',
-                fullname=unicode(name.capitalize()), id=id)
+        if not name:
+            name = 'testuser_%d' % userid
+        u = User(
+            username=unicode(name), userid=unicode(userid),
+            email=u"{}@hasgeek.com".format(userid))
         db.session.add(u)
         db.session.commit()
     return u
@@ -29,11 +28,12 @@ class ImgeeTestCase(unittest.TestCase):
         app.testing = True
         db.create_all()
         self.test_user_name = u'testuser'
-        test_user = get_test_user(name=self.test_user_name)
         self.client = app.test_client()
+        self.client.test_user = get_test_user(name=self.test_user_name)
         with self.client.session_transaction() as session:
-            session['lastuser_userid'] = test_user.userid
-            Profile.update_from_user(test_user, db.session)
+            session['lastuser_userid'] = self.client.test_user.userid
+            session['lastuser_sessionid'] = 'some-session-id'
+            Profile.update_from_user(self.client.test_user, db.session)
             db.session.commit()
 
     def tearDown(self):
