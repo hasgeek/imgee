@@ -1,20 +1,28 @@
 # -*- coding: utf-8 -*-
 
 import os.path
-from uuid import uuid4
-import defusedxml.cElementTree as elementtree
-import magic
-from urlparse import urljoin
+import re
 from subprocess import check_output, CalledProcessError
+from urlparse import urljoin
+from uuid import uuid4
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
 from boto.s3.key import Key
-
+import defusedxml.cElementTree as elementtree
 from flask import request
+import magic
 
 import imgee
 from imgee import app
+
+THUMBNAIL_COMMANDS = {
+    'inkscape': "inkscape -z -f {src} -e {src}.original.png && convert -quiet -thumbnail {width}x{height} {src}.original.png -colorspace sRGB -quality 75% {dest}",
+    'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio=TRUE --format={format} {src} > {dest}",
+    'convert': "convert -quiet -thumbnail {width}x{height} {src} -colorspace sRGB -quality 75% {dest}",
+    'convert-pdf': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% -background white -flatten {dest}",
+    'convert-layered': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% {dest}"
+}
 
 ALLOWED_MIMETYPES = {
     'image/jpg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
@@ -114,7 +122,7 @@ def is_svg(fp):
     return tag == '{http://www.w3.org/2000/svg}svg'
 
 
-def get_file_type(fp):
+def get_file_type(fp, filename=None):
     fp.seek(0)
     data = fp.read()
     fp.seek(0)
@@ -125,14 +133,23 @@ def get_file_type(fp):
     return result
 
 
-def is_file_allowed(fp):
-    return get_file_type(fp) in ALLOWED_MIMETYPES
+def is_file_allowed(fp, provided_mimetype=None, filename=None):
+    # reject files with zero size
+    fp.seek(0)
+    data = fp.read()
+    fp.seek(0)
+    if len(data) == 0:
+        return False
+    return get_file_type(fp, filename) in ALLOWED_MIMETYPES
 
 
 # -- s3 related --
+def get_s3_connection():
+    return connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
+
 
 def get_s3_bucket():
-    conn = connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
+    conn = get_s3_connection()
     bucket = Bucket(conn, app.config['AWS_BUCKET'])
     return bucket
 
@@ -142,6 +159,22 @@ def get_s3_folder(f=''):
     if f and not f.endswith('/'):
         f = f + '/'
     return f or ''
+
+
+def exists_in_s3(thumb):
+    folder = get_s3_folder()
+    bucket = get_s3_bucket()
+    extn = thumb.stored_file.extn
+    if 'thumb_extn' in ALLOWED_MIMETYPES[thumb.stored_file.mimetype]:
+        extn = ALLOWED_MIMETYPES[thumb.stored_file.mimetype]['thumb_extn']
+    key = os.path.join(folder, thumb.name + extn)
+    print("checking whether exists in s3: {}".format(key))
+    resp = bucket.get_key(key)
+    if not resp:
+        print("does not exist")
+        return False
+    print("exists")
+    return True
 
 
 def download_frm_s3(img_name):
@@ -187,8 +220,7 @@ def get_image_url(image, size=None):
     if size and extn in EXTNS:
         if image.no_previews:
             return get_no_previews_url(size)
-        r = imgee.storage.get_resized_image(image, size)
-        img_name = imgee.async.get_async_result(r)
+        img_name = imgee.storage.get_resized_image(image, size)
     else:
         img_name = image.name
     if size and 'thumb_extn' in ALLOWED_MIMETYPES[image.mimetype]:
@@ -197,11 +229,4 @@ def get_image_url(image, size=None):
 
 
 def get_thumbnail_url(image):
-    extn = image.extn
-    if extn in EXTNS:
-        tn_size = app.config.get('THUMBNAIL_SIZE')
-        r = imgee.storage.get_resized_image(image, tn_size, is_thumbnail=True)
-        thumbnail = imgee.async.get_async_result(r)
-    else:
-        thumbnail = app.config.get('UNKNOWN_FILE_THUMBNAIL')
-    return get_url(thumbnail, extn)
+    return get_image_url(image, app.config.get('THUMBNAIL_SIZE'))

@@ -14,5 +14,3 @@ MEDIA_DOMAIN = 'https://%s.s3.amazonaws.com' % AWS_BUCKET
 
 SQLALCHEMY_DATABASE_URI = 'sqlite://'
 WTF_CSRF_ENABLED = False
-CELERY_ALWAYS_EAGER = True
-
