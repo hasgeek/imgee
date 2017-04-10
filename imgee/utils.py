@@ -181,8 +181,9 @@ def download_frm_s3(img_name):
     local_path = path_for(img_name)
     if not os.path.exists(local_path):
         bucket = get_s3_bucket()
+        folder = get_s3_folder()
         k = Key(bucket)
-        k.key = img_name
+        k.key = os.path.join(folder, img_name)
         k.get_contents_to_filename(local_path)
     return local_path
 
