@@ -134,11 +134,11 @@ def get_file_type(fp, filename=None):
 
 
 def is_file_allowed(fp, provided_mimetype=None, filename=None):
-    # reject files with zero size
     fp.seek(0)
     data = fp.read()
     fp.seek(0)
     if len(data) == 0:
+        # reject files with zero size
         return False
     return get_file_type(fp, filename) in ALLOWED_MIMETYPES
 
