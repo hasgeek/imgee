@@ -23,3 +23,4 @@ imgee/static/uploads
 *.bak
 instance/production.env.sh
 imgee/static/gen
+tests/imgee/
