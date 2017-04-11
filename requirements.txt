@@ -9,15 +9,6 @@ https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/jace/flask-alembic/archive/master.zip
 boto
 redis
-celery
 xml4h
 python-magic
 defusedxml
-cffi
-idna
-tldextract
-html5lib
-flask-wtf
-flask-cache
-cssmin
-uwsgi

@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import os.path
 from coaster import make_name
-from flask_wtf import FlaskForm
+from baseframe.forms import Form
 from wtforms.validators import Required, ValidationError, Length
 from wtforms import (FileField, TextField, HiddenField,
         SelectMultipleField, SelectField)
 
 from imgee import app
 from imgee.models import Label
-from imgee.utils import get_file_type, is_file_allowed
+from imgee.utils import is_file_allowed
 
 
 def valid_file(form, field):
@@ -17,15 +16,15 @@ def valid_file(form, field):
         raise ValidationError("Sorry, unknown image format. Please try uploading another file.")
 
 
-class UploadImageForm(FlaskForm):
+class UploadImageForm(Form):
     file = FileField("File", validators=[Required(), valid_file])
 
 
-class DeleteImageForm(FlaskForm):
+class DeleteImageForm(Form):
     pass
 
 
-class PurgeCacheForm(FlaskForm):
+class PurgeCacheForm(Form):
     pass
 
 
@@ -50,31 +49,32 @@ def label_doesnt_exist(form, field):
         raise ValidationError('Label "%s" already exists. Please try another name.' % field.data)
 
 
-class CreateLabelForm(FlaskForm):
+class CreateLabelForm(Form):
     label = TextField('Label', validators=[Required(), Length(max=250), label_doesnt_exist])
     profile_id = HiddenField('profile_id')
 
 
-class AddLabelForm(FlaskForm):
+class AddLabelForm(Form):
     stored_file_id = HiddenField('stored_file_id')
     labels = HiddenField('labels')
 
 
-class RemoveLabelForm(FlaskForm):
+class RemoveLabelForm(Form):
     pass
 
 
-class EditTitleForm(FlaskForm):
+class EditTitleForm(Form):
     file_name = HiddenField('file_name')
     file_title = TextField('title', validators=[Required(), Length(max=250)])
 
-class UpdateTitle(FlaskForm):
+
+class UpdateTitle(Form):
     title = TextField('Title', validators=[Required(), Length(max=250)])
 
 
-class EditLabelForm(FlaskForm):
+class EditLabelForm(Form):
     label_name = TextField('label', validators=[Required(), Length(max=250)])
 
 
-class ChangeProfileForm(FlaskForm):
+class ChangeProfileForm(Form):
     profiles = SelectField('Profiles')

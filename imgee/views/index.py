@@ -50,19 +50,6 @@ def stored_file_data(stored_file):
         url=url_for('view_image', profile=stored_file.profile.name, image=stored_file.name),
         thumb_url=url_for('get_image', image=stored_file.name, size=app.config.get('THUMBNAIL_SIZE')))
 
-def generate_thumbs(image):
-    def generate_thumb(image, size):
-        try:
-            utils.get_image_url(image, size)
-        except async.StillProcessingException:
-            pass
-    generate_thumb(image, '75x75')
-    sizes = [250, 400, 430, 600, 770]
-    for size in sizes:
-        if size > image.width:
-            break
-        else:
-            generate_thumb(image, str(size))
 
 @app.route('/<profile>/new', methods=['GET', 'POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -75,6 +62,7 @@ def upload_file(profile):
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
     return render_template('form.html', form=upload_form, profile=profile)
+
 
 @app.route('/<profile>/new.json', methods=['POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
