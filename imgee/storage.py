@@ -95,10 +95,11 @@ def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     return stored_file
 
 
-def save_tn_in_db(img, tn_name, (tn_w, tn_h)):
+def save_tn_in_db(img, tn_name, size):
     """
     Save thumbnail info in db.
     """
+    tn_w, tn_h = size
     name, extn = os.path.splitext(tn_name)
     if Thumbnail.query.filter(Thumbnail.name == name).count() == 0:
         tn = Thumbnail(name=name, width=tn_w, height=tn_h, stored_file=img)

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os.path
-import re
 from subprocess import check_output, CalledProcessError
 from urlparse import urljoin
 from uuid import uuid4

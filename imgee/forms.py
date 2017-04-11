@@ -3,8 +3,7 @@
 from coaster import make_name
 from baseframe.forms import Form
 from wtforms.validators import Required, ValidationError, Length
-from wtforms import (FileField, TextField, HiddenField,
-        SelectMultipleField, SelectField)
+from wtforms import (FileField, TextField, HiddenField, SelectField)
 
 from imgee import app
 from imgee.models import Label

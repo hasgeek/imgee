@@ -1,10 +1,7 @@
 import redis
-from flask import url_for, redirect, current_app, make_response
 import time
 
-import imgee
-from imgee import app, storage, utils
-from imgee.models import db
+from imgee import app
 
 
 def now_in_secs():
@@ -47,17 +44,3 @@ class TaskRegistry(object):
     def is_queued_for_deletion(self, imgname):
         taskid = get_taskid('delete', imgname)
         return taskid in self
-
-
-def loading():
-    """
-    Returns the `LOADING_IMG` as the content of the response.
-    """
-    with open(app.config.get('LOADING_IMG')) as loading_img:
-        response = make_response(loading_img.read())
-        response.headers['Content-Type'] = utils.get_file_type(loading_img)
-        return response
-
-
-class StillProcessingException(Exception):
-    pass

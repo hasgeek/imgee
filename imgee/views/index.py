@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-import os.path
-import time
-
 from flask import (render_template, request, g, url_for,
-    redirect, flash, Response, jsonify)
+    redirect, flash, jsonify)
 from sqlalchemy import and_, not_
 
 from coaster.views import load_model, load_models
@@ -11,7 +8,6 @@ from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile, Label
 from imgee.storage import delete, save, clean_local_cache
 from imgee.utils import get_media_domain, not_in_deleteQ, ALLOWED_MIMETYPES
-import imgee.async as async
 import imgee.utils as utils
 
 
@@ -40,6 +36,7 @@ def _redirect_url_frm_upload(profile_name):
     else:
         url = url_for('profile_view', profile=profile_name)
     return url
+
 
 def stored_file_data(stored_file):
     return dict(
@@ -84,6 +81,7 @@ def upload_file_json(profile):
         response.status_code = 403
         return response
 
+
 @app.route('/<profile>/popup')
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
@@ -91,7 +89,7 @@ def pop_up_gallery(profile):
     label = request.args.get('label')
     files = profile.stored_files
     if label:
-        files = files.join(StoredFile.labels).filter(Label.name==label)
+        files = files.join(StoredFile.labels).filter(Label.name == label)
     files = files.order_by('stored_file.created_at desc').all()
     files = not_in_deleteQ(files)
     form = forms.UploadImageForm()
@@ -115,6 +113,7 @@ def edit_title(profile):
         return f.title
     else:
         return form.file_title.errors and form.file_title.errors[0], 400
+
 
 @app.route('/<profile>/<file>/edit_title.json', methods=['POST'])
 @load_models(
@@ -153,13 +152,15 @@ def unlabelled_images(profile):
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
+
 def get_prev_next_images(profile, img, limit=2):
     # query for "all" images though we need just the `limit`
     # bcoz we don't know how many are there in deleteQ.
     imgs = profile.stored_files.order_by('created_at desc').all()
     imgs = not_in_deleteQ(imgs)
     pos = imgs.index(img)
-    return imgs[pos+1 : pos+1+limit], imgs[:pos][-limit:]
+    return imgs[pos+1:pos+1+limit], imgs[:pos][-limit:]
+
 
 @app.route('/<profile>/view/<image>')
 @load_models(
