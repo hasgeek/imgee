@@ -168,12 +168,12 @@ def exists_in_s3(thumb):
     if 'thumb_extn' in ALLOWED_MIMETYPES[thumb.stored_file.mimetype]:
         extn = ALLOWED_MIMETYPES[thumb.stored_file.mimetype]['thumb_extn']
     key = os.path.join(folder, thumb.name + extn)
-    print("checking whether exists in s3: {}".format(key))
+    # print("checking whether exists in s3: {}".format(key))
     resp = bucket.get_key(key)
     if not resp:
-        print("does not exist")
+        # print("does not exist")
         return False
-    print("exists")
+    # print("exists")
     return True
 
 

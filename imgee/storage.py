@@ -248,7 +248,6 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     processor = ALLOWED_MIMETYPES[mimetype].get('processor', 'convert')
     command = THUMBNAIL_COMMANDS.get(processor)
     prepared_command = command.format(width=size[0], height=size[1], format=format, src=src, dest=dest)
-    print(prepared_command)
     try:
         check_call(prepared_command, shell=True)
         return True
