@@ -19,7 +19,7 @@ assets['imgee.css'][version] = 'css/app.css'
 
 from . import models, views
 from .models import db
-from .async import TaskRegistry
+from .tasks import TaskRegistry
 
 registry = TaskRegistry(os.getenv('ENV', 'production'))
 
