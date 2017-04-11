@@ -13,10 +13,12 @@ from werkzeug import secure_filename
 
 import imgee
 from imgee.models import db, Thumbnail, StoredFile
-from imgee.utils import (newid, guess_extension, get_file_type,
-                        path_for, get_s3_folder, get_s3_bucket,
-                        download_frm_s3, get_width_height, ALLOWED_MIMETYPES,
-                        exists_in_s3, get_no_previews_url, THUMBNAIL_COMMANDS)
+from imgee.utils import (
+    newid, guess_extension, get_file_type,
+    path_for, get_s3_folder, get_s3_bucket,
+    download_frm_s3, get_width_height, ALLOWED_MIMETYPES,
+    exists_in_s3, get_no_previews_url, THUMBNAIL_COMMANDS
+)
 
 
 # -- functions used in views --
@@ -37,13 +39,21 @@ def get_resized_image(img, size, is_thumbnail=False):
             size = get_fitting_size((img.width, img.height), size_t)
             resized_filename = get_resized_filename(img, size)
             registry = imgee.registry
-            registry.remove_all()
-            if resized_filename in registry:
-                return get_no_previews_url(size)  # this doesn't work. Needs test.
-            else:
-                registry.add(resized_filename)
-            img_name = resize_and_save(img, size, is_thumbnail=is_thumbnail)
-            registry.remove(resized_filename)
+
+            try:
+                if resized_filename in registry:
+                    # file is still being processed
+                    # returning None will show "no preview available" thumbnail
+                    return None
+                else:
+                    registry.add(resized_filename)
+                img_name = resize_and_save(img, size, is_thumbnail=is_thumbnail)
+            except Exception as e:
+                # something broke while processing the file
+                raise e
+            finally:
+                # file has been processed, remove from registry
+                registry.remove(resized_filename)
     return img_name
 
 
@@ -141,6 +151,8 @@ def get_fitting_size((orig_w, orig_h), size):
      along the smaller side and preserve aspect ratio.
      w or h being 0 means preserve aspect ratio with that height or width
 
+    >>> get_fitting_size((0, 0), (200, 500))
+    [200, 500]
     >>> get_fitting_size((200, 500), (0, 0))
     [200, 500]
     >>> get_fitting_size((200, 500), (400, 0))
@@ -160,7 +172,7 @@ def get_fitting_size((orig_w, orig_h), size):
     """
     if orig_w == 0 or orig_h == 0:
         # this is either a cdr file or a zero width file
-        # just go with target  size
+        # just go with target size
         w, h = size
     elif size[0] == 0 and size[1] == 0 and orig_w > 0 and orig_h > 0:
         w, h = orig_w, orig_h

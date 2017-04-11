@@ -222,6 +222,8 @@ def get_image_url(image, size=None):
         if image.no_previews:
             return get_no_previews_url(size)
         img_name = imgee.storage.get_resized_image(image, size)
+        if not img_name:
+            return get_no_previews_url(size)
     else:
         img_name = image.name
     if size and 'thumb_extn' in ALLOWED_MIMETYPES[image.mimetype]:
