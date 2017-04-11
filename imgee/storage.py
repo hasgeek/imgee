@@ -252,8 +252,7 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
         check_call(prepared_command, shell=True)
         return True
     except CalledProcessError as e:
-        print(e)
-        return False
+        raise e
 
 
 def clean_local_cache(expiry=24):
