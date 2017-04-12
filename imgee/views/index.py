@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
-import os.path
-import time
 from flask import (render_template, request, g, url_for,
-    redirect, flash, Response, jsonify)
+    redirect, flash, jsonify)
 from sqlalchemy import and_, not_
 
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
 from imgee.models import StoredFile, db, Profile, Label
 from imgee.storage import delete, save, clean_local_cache
-from imgee.utils import newid, get_media_domain, not_in_deleteQ, get_no_previews_url, ALLOWED_MIMETYPES
-from imgee.async import queueit
-import imgee.async as async
+from imgee.utils import get_media_domain, not_in_deleteQ, ALLOWED_MIMETYPES
 import imgee.utils as utils
 
 
@@ -41,6 +37,7 @@ def _redirect_url_frm_upload(profile_name):
         url = url_for('profile_view', profile=profile_name)
     return url
 
+
 def stored_file_data(stored_file):
     return dict(
         title=stored_file.title,
@@ -50,19 +47,6 @@ def stored_file_data(stored_file):
         url=url_for('view_image', profile=stored_file.profile.name, image=stored_file.name),
         thumb_url=url_for('get_image', image=stored_file.name, size=app.config.get('THUMBNAIL_SIZE')))
 
-def generate_thumbs(image):
-    def generate_thumb(image, size):
-        try:
-            utils.get_image_url(image, size)
-        except async.StillProcessingException:
-            pass
-    generate_thumb(image, '75x75')
-    sizes = [250, 400, 430, 600, 770]
-    for size in sizes:
-        if size > image.width:
-            break
-        else:
-            generate_thumb(image, str(size))
 
 @app.route('/<profile>/new', methods=['GET', 'POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -71,11 +55,11 @@ def upload_file(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        title, job, stored_file = save(file_, profile=profile)
-        generate_thumbs(stored_file)
+        title, stored_file = save(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
     return render_template('form.html', form=upload_form, profile=profile)
+
 
 @app.route('/<profile>/new.json', methods=['POST'])
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -84,19 +68,19 @@ def upload_file_json(profile):
     upload_form = forms.UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
-        title, job, stored_file = save(file_, profile=profile)
-        generate_thumbs(stored_file)
+        title, stored_file = save(file_, profile=profile)
         update_form = forms.UpdateTitle()
         update_form.title.data = stored_file.title
         form = render_template('edit_title_form.html', form=update_form, formid='edit_title_' + stored_file.name)
         return jsonify(
             status=True, message="%s uploaded successfully" % title, form=form,
-            update_url=url_for('update_title_json', profile=profile.name,file=stored_file.name),
+            update_url=url_for('update_title_json', profile=profile.name, file=stored_file.name),
             image_data=stored_file_data(stored_file))
     else:
         response = jsonify(status=False, message=upload_form.errors['file'])
         response.status_code = 403
         return response
+
 
 @app.route('/<profile>/popup')
 @load_model(Profile, {'name': 'profile'}, 'profile',
@@ -105,7 +89,7 @@ def pop_up_gallery(profile):
     label = request.args.get('label')
     files = profile.stored_files
     if label:
-        files = files.join(StoredFile.labels).filter(Label.name==label)
+        files = files.join(StoredFile.labels).filter(Label.name == label)
     files = files.order_by('stored_file.created_at desc').all()
     files = not_in_deleteQ(files)
     form = forms.UploadImageForm()
@@ -129,6 +113,7 @@ def edit_title(profile):
         return f.title
     else:
         return form.file_title.errors and form.file_title.errors[0], 400
+
 
 @app.route('/<profile>/<file>/edit_title.json', methods=['POST'])
 @load_models(
@@ -167,13 +152,15 @@ def unlabelled_images(profile):
     title_form = forms.EditTitleForm()
     return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
+
 def get_prev_next_images(profile, img, limit=2):
     # query for "all" images though we need just the `limit`
     # bcoz we don't know how many are there in deleteQ.
     imgs = profile.stored_files.order_by('created_at desc').all()
     imgs = not_in_deleteQ(imgs)
     pos = imgs.index(img)
-    return imgs[pos+1 : pos+1+limit], imgs[:pos][-limit:]
+    return imgs[pos+1:pos+1+limit], imgs[:pos][-limit:]
+
 
 @app.route('/<profile>/view/<image>')
 @load_models(
@@ -192,31 +179,8 @@ def view_image(profile, img):
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image(image):
     size = request.args.get('size')
-    retries = 0
-    while retries < 15:
-        try:
-            image_url = utils.get_image_url(image, size)
-        except async.StillProcessingException:
-            time.sleep(1)
-            retries += 1
-        else:
-            if image_url == get_no_previews_url(size):
-                code = 302
-            else:
-                code = 301
-            return redirect(image_url, code=code)
-    return redirect(get_no_previews_url(size), code=302)
-
-
-@app.route('/embed/thumbnail/<image>')
-@load_model(StoredFile, {'name': 'image'}, 'image')
-def get_thumbnail(image):
-    try:
-        tn_url = utils.get_thumbnail_url(image)
-    except async.StillProcessingException:
-        return async.loading()
-    else:
-        return redirect(tn_url, code=301)
+    image_url = utils.get_image_url(image, size)
+    return redirect(image_url, code=301)
 
 
 @app.route('/<profile>/delete/<image>', methods=['GET', 'POST'])
@@ -227,7 +191,7 @@ def get_thumbnail(image):
 def delete_file(profile, img):
     form = forms.DeleteImageForm()
     if form.is_submitted():
-        queueit('delete', img, taskid=img.name + img.extn)
+        delete(img)
         flash("%s is deleted" % img.title)
     else:
         return render_template('delete.html', form=form, file=img, profile=profile)

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import (render_template, request, g, url_for,
-    redirect, flash)
+from flask import (render_template, request, url_for, redirect, flash)
 from coaster.views import load_models, load_model
 
 from imgee import app, forms, lastuser

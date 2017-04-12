@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import os.path
 from coaster import make_name
-from flask.ext.wtf import Form
+from baseframe.forms import Form
 from wtforms.validators import Required, ValidationError, Length
-from wtforms import (FileField, TextField, HiddenField,
-        SelectMultipleField, SelectField)
+from wtforms import (FileField, TextField, HiddenField, SelectField)
 
 from imgee import app
 from imgee.models import Label
-from imgee.utils import get_file_type, is_file_allowed
+from imgee.utils import is_file_allowed
 
 
 def valid_file(form, field):
-    if not is_file_allowed(field.data.stream):
+    if not is_file_allowed(field.data.stream, field.data.mimetype, field.data.filename):
         raise ValidationError("Sorry, unknown image format. Please try uploading another file.")
 
 
@@ -27,6 +25,7 @@ class DeleteImageForm(Form):
 
 class PurgeCacheForm(Form):
     pass
+
 
 def reserved_words():
     """get all words which can't be used as labels"""
@@ -66,6 +65,7 @@ class RemoveLabelForm(Form):
 class EditTitleForm(Form):
     file_name = HiddenField('file_name')
     file_title = TextField('title', validators=[Required(), Length(max=250)])
+
 
 class UpdateTitle(Form):
     title = TextField('Title', validators=[Required(), Length(max=250)])

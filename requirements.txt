@@ -1,12 +1,14 @@
-Flask
+Flask==0.10.1
 https://github.com/hasgeek/coaster/zipball/master
 https://github.com/hasgeek/baseframe/zipball/master
-Flask-SQLAlchemy
+SQLAlchemy==1.1.5
+SQLAlchemy-Utils==0.32.12
+Flask-SQLAlchemy==2.1
+psycopg2
 https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/jace/flask-alembic/archive/master.zip
 boto
 redis
-celery
 xml4h
 python-magic
 defusedxml
