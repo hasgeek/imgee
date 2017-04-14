@@ -93,6 +93,19 @@ def manage_labels(profile, img):
     return render_template('view_image.html', form=form, img=img)
 
 
+def utils_save_labels(form_lns, img, profile):
+    if isinstance(form_lns, str):
+        form_lns = [form_lns, ]
+    form_lns = set(form_lns)
+    profile_lns = set(l.title for l in profile.labels)
+    labels = [l for l in profile.labels if l.title in form_lns]
+    for lname in form_lns - profile_lns:
+        l = utils_save_label(lname, profile, commit=False)
+        labels.append(l)
+    s, saved = utils_save_labels_to(img, labels)
+    return s, saved
+
+
 def utils_save_label(label_name, profile, commit=True):
     label = Label(title=label_name, profile=profile)
     label.make_name()
