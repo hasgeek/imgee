@@ -2,7 +2,7 @@ import unittest
 
 from imgee.models import StoredFile, Label
 from imgee.views.labels import utils_save_labels, utils_save_label, utils_delete_label
-from imgee.storage import delete, save
+from imgee.storage import save
 from fixtures import ImgeeTestCase
 from werkzeug.datastructures import FileStorage
 

@@ -12,6 +12,7 @@ from sqlalchemy import or_
 from werkzeug import secure_filename
 
 import imgee
+from imgee import app
 from imgee.models import db, Thumbnail, StoredFile
 from imgee.utils import (
     newid, guess_extension, get_file_type,
