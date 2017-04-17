@@ -2,7 +2,7 @@
 
 from coaster.sqlalchemy import BaseNameMixin, BaseScopedNameMixin
 import imgee
-from imgee import app
+from imgee import app, url_for
 from imgee.models import db
 from imgee.utils import newid, guess_extension
 
@@ -69,4 +69,22 @@ class StoredFile(BaseNameMixin, db.Model):
             filesize=app.jinja_env.filters['filesizeformat'](self.size),
             imgsize='%s x %s' % (self.width, self.height),
             url=url_for('view_image', profile=self.profile.name, image=self.name),
-            thumb_url=url_for('get_image', image=self.name, size=app.config.get('THUMBNAIL_SIZE')))
+            thumb_url=url_for('get_image', image=self.name, size=app.config.get('THUMBNAIL_SIZE'))
+        )
+
+    def add_labels(self, labels):
+        new_labels = set(labels)
+        old_labels = set(self.labels)
+        if new_labels != old_labels:
+            self.labels = labels
+
+        if (new_labels == old_labels):
+            status, diff = '0', []
+        elif (new_labels > old_labels):
+            status, diff = '+', (new_labels - old_labels)
+        elif (old_labels > new_labels):
+            status, diff = '-', (old_labels - new_labels)
+        else:
+            status, diff = '', new_labels
+
+        return status, list(diff)

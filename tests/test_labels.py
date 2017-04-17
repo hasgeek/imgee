@@ -39,9 +39,9 @@ class LabelTestCase(ImgeeTestCase):
         # create label
         label = self.test_labels[0]
         # attach label to image
-        status, saved_list = utils_save_labels(label, img, self.get_test_profile())
-        self.assertEqual(status, '+')
+        saved_list, msg = utils_save_labels(label, img, self.get_test_profile())
         self.assertEqual(len(saved_list), 1)
+        self.assertEqual(("Added label '%s' to '%s'." % (label, img.title)), str(msg))
 
         img = StoredFile.query.get(img_id)
         self.assertEquals(len(img.labels), 1)
