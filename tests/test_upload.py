@@ -35,7 +35,7 @@ class UploadTestCase(ImgeeTestCase):
     def test_delete_file(self):
         delete(self.sf)
         resp = requests.get("http:" + os.path.join(app.config.get('MEDIA_DOMAIN'), app.config.get('AWS_FOLDER'), "{}{}".format(self.sf.name, self.sf.extn)))
-        self.assertEquals(resp.status_code, 404)
+        self.assertEquals(resp.status_code, 403)  # S3 throws 403 for non existing files
 
 
 if __name__ == '__main__':
