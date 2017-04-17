@@ -8,10 +8,11 @@ from imgee.models import Label, StoredFile, Profile, db
 
 
 @app.route('/<profile>/<label>')
+@lastuser.requires_login
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['view', 'siteadmin'])
 def show_label(profile, label):
     files = label.stored_files.order_by('stored_file.created_at desc').all()
     form = forms.EditLabelForm()
@@ -67,30 +68,39 @@ def edit_label(profile, label):
 
 
 @app.route('/<profile>/save_labels/<image>', methods=['POST'])
+@lastuser.requires_login
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['edit', 'siteadmin'])
 def manage_labels(profile, img):
     form = forms.AddLabelForm(stored_file_id=img.id)
     if form.validate_on_submit():
         form_label_data = form.labels.data.strip()
-        if form_label_data:
-            form_lns = set(l.strip() for l in form_label_data.split(','))
-        else:
-            form_lns = set()
-        profile_lns = set(l.title for l in profile.labels)
-        labels = [l for l in profile.labels if l.title in form_lns]
-        for lname in form_lns - profile_lns:
-            l = utils_save_label(lname, profile, commit=False)
-            labels.append(l)
-        s, saved = utils_save_labels_to(img, labels)
-        if saved:
-            status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
-            plural = 's' if len(saved) > 1 else ''
-            flash("%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.title for l in saved), status[s][1], img.title))
+        saved, msg = utils_save_labels(form_label_data, img, profile)
+        if msg:
+            flash(msg)
         return redirect(url_for('view_image', profile=profile.name, image=img.name))
     return render_template('view_image.html', form=form, img=img)
+
+
+def utils_save_labels(form_label_data, img, profile):
+    msg = ""
+    form_lns = set()
+    if form_label_data:
+        form_lns = set(l.strip() for l in form_label_data.split(','))
+    profile_lns = set(l.title for l in profile.labels)
+    labels = [l for l in profile.labels if l.title in form_lns]
+    for lname in form_lns - profile_lns:
+        l = utils_save_label(lname, profile, commit=False)
+        labels.append(l)
+    s, saved = img.add_labels(labels)
+    if saved:
+        db.session.commit()
+        status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
+        plural = 's' if len(saved) > 1 else ''
+        msg = "%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.title for l in saved), status[s][1], img.title)
+    return saved, msg
 
 
 def utils_save_label(label_name, profile, commit=True):
@@ -103,26 +113,7 @@ def utils_save_label(label_name, profile, commit=True):
 
 
 def utils_delete_label(label):
+    if isinstance(label, str):
+        label = Label.query.filter_by(title=label).first()
     db.session.delete(label)
     db.session.commit()
-
-
-def utils_get_label_changes(nlabels, olabels):
-    if (nlabels == olabels):
-        status, diff = '0', []
-    elif (nlabels > olabels):
-        status, diff = '+', nlabels-olabels
-    elif (olabels > nlabels):
-        status, diff = '-', olabels-nlabels
-    else:
-        status, diff = '', nlabels
-    return status, list(diff)
-
-
-def utils_save_labels_to(stored_file, labels):
-    new_labels = set(labels)
-    old_labels = set(stored_file.labels)
-    if new_labels != old_labels:
-        stored_file.labels = labels
-        db.session.commit()
-    return utils_get_label_changes(new_labels, old_labels)

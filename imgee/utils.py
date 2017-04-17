@@ -29,9 +29,9 @@ ALLOWED_MIMETYPES = {
     'image/jpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/pjpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/png': {'allowed_extns': [u'.png'], 'extn': u'.png'},
-    'image/gif': {'allowed_extns': [u'.gif'], 'extn': u'.gif'},
-    'image/vnd.adobe.photoshop': {'allowed_extns': [u'.psd'], 'extn': u'.psd', 'thumb_extn': False},
-    'application/pdf': {'allowed_extns': [u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai'], 'thumb_extn': u'.png'},
+    'image/gif': {'allowed_extns': [u'.gif'], 'extn': u'.gif', 'processor': 'convert-layered'},
+    'image/vnd.adobe.photoshop': {'allowed_extns': [u'.psd'], 'extn': u'.psd', 'thumb_extn': '.jpeg', 'processor': 'convert-layered'},
+    'application/pdf': {'allowed_extns': [u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai'], 'thumb_extn': u'.png', 'processor': 'convert-pdf'},
     'application/illustrator': {'allowed_extns': [u'.ai'], 'extn': u'.ai', 'thumb_extn': u'.png'},
     'application/postscript': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/svg+xml': {'allowed_extns': [u'.svg'], 'extn': u'.svg', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
@@ -47,12 +47,14 @@ ALLOWED_MIMETYPES = {
     'application/bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
     'application/x-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
     'application/x-win-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'application/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'application/coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'application/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'application/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'image/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
-    'image/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': False},
+    'application/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'application/coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'application/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'application/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'application/vnd.corel-draw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'image/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'image/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
+    'image/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
     'application/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'application/x-eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
@@ -64,8 +66,11 @@ ALLOWED_MIMETYPES = {
     'application/tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
     'application/x-tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
     'application/tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'application/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'}
+    'application/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
+    'image/webp': {'allowed_extns': [u'.webp'], 'extn': '.webp', 'thumb_extn': u'.jpeg'},
+    'image/x-xcf': {'allowed_extns': [u'.xcf'], 'extn': '.xcf', 'thumb_extn': u'.jpeg'}
 }
+
 
 EXTNS = []
 for mimetype, data in ALLOWED_MIMETYPES.iteritems():
@@ -195,8 +200,25 @@ def not_in_deleteQ(imgs):
 # -- image details --
 
 def get_width_height(img_path):
+    name, extn = os.path.splitext(img_path)
     try:
-        o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
+        o = '0x0'
+        if extn in ['.pdf']:
+            o = check_output('identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path), shell=True)
+        elif extn in ['.cdr']:
+            wo = check_output('inkscape -z -W {}'.format(img_path), shell=True)
+            ho = check_output('inkscape -z -H {}'.format(img_path), shell=True)
+            o = "{}x{}".format(int(round(float(wo))), int(round(float(ho))))
+        elif extn in ['.psd']:
+            # identify command doesn't seem to work on psd files
+            # hence using file command and extracting resolution from there
+            fo = check_output('file {}'.format(img_path), shell=True)
+            possible_size = re.findall(r'\d+\ x\ \d+', fo)
+            if len(possible_size) == 1:
+                wo, ho = possible_size[0].split(' x ')
+                o = "{}x{}".format(int(round(float(wo))), int(round(float(ho))))
+        else:
+            o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
         return tuple(int(dim) for dim in o.split('x'))
     except CalledProcessError:
         return (0, 0)
