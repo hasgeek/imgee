@@ -52,7 +52,7 @@ def upload_file_json(profile):
             update_url=url_for('update_title_json', profile=profile.name, file=stored_file.name),
             image_data=stored_file.dict_data())
     else:
-        response = jsonify(status=False, message=upload_form.errors['file'])
+        response = jsonify(status=False, message=' '.join(upload_form.errors.values()))
         response.status_code = 403
         return response
 
