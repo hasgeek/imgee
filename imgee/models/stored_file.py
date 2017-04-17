@@ -2,6 +2,7 @@
 
 from coaster.sqlalchemy import BaseNameMixin, BaseScopedNameMixin
 import imgee
+from imgee import app
 from imgee.models import db
 from imgee.utils import newid, guess_extension
 
@@ -60,3 +61,12 @@ class StoredFile(BaseNameMixin, db.Model):
 
     def is_queued_for_deletion(self):
         return imgee.registry.is_queued_for_deletion(self.name+self.extn)
+
+    def dict_data(self):
+        return dict(
+            title=self.title,
+            uploaded=self.created_at.strftime('%B %d, %Y'),
+            filesize=app.jinja_env.filters['filesizeformat'](self.size),
+            imgsize='%s x %s' % (self.width, self.height),
+            url=url_for('view_image', profile=self.profile.name, image=self.name),
+            thumb_url=url_for('get_image', image=self.name, size=app.config.get('THUMBNAIL_SIZE')))

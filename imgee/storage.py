@@ -58,7 +58,7 @@ def get_resized_image(img, size, is_thumbnail=False):
     return img_name
 
 
-def save(fp, profile, title=None):
+def save_file(fp, profile, title=None):
     """
     Attaches the image to the profile and uploads it to S3.
     """

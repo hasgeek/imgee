@@ -2,7 +2,7 @@ import unittest
 
 from imgee.models import StoredFile, Label
 from imgee.views.labels import utils_save_labels, utils_save_label, utils_delete_label
-from imgee.storage import save
+from imgee.storage import save_file
 from fixtures import ImgeeTestCase
 from werkzeug.datastructures import FileStorage
 
@@ -19,7 +19,7 @@ class LabelTestCase(ImgeeTestCase):
         sf = None
         with open(path or self.test_files[0]) as fp:
             fs = FileStorage(fp)
-            title, sf = save(fs, profile)
+            title, sf = save_file(fs, profile)
         return sf
 
     def test_empty(self):
