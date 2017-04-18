@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 import os.path
 from subprocess import check_output, CalledProcessError
 from urlparse import urljoin
@@ -190,12 +191,6 @@ def download_frm_s3(img_name):
         k.key = os.path.join(folder, img_name)
         k.get_contents_to_filename(local_path)
     return local_path
-
-
-def not_in_deleteQ(imgs):
-    # filters out the images which are queued for deletion and returns the remaining
-    return [i for i in imgs if not i.is_queued_for_deletion()]
-
 
 # -- image details --
 

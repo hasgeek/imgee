@@ -7,7 +7,6 @@ import re
 from subprocess import check_call, CalledProcessError
 import time
 
-import redis
 from sqlalchemy import or_
 from werkzeug import secure_filename
 
@@ -18,7 +17,7 @@ from imgee.utils import (
     newid, guess_extension, get_file_type,
     path_for, get_s3_folder, get_s3_bucket,
     download_frm_s3, get_width_height, ALLOWED_MIMETYPES,
-    exists_in_s3, get_no_previews_url, THUMBNAIL_COMMANDS
+    exists_in_s3, THUMBNAIL_COMMANDS
 )
 
 
@@ -278,7 +277,6 @@ def delete(stored_file):
     Delete all the thumbnails and images associated with a file, from local cache and S3.
     Wait for the upload/resize to complete if queued for the same image.
     """
-
     # remove locally
     cache_path = app.config.get('UPLOADED_FILES_DEST')
     cached_img_path = os.path.join(cache_path, '%s*' % stored_file.name)
@@ -295,7 +293,6 @@ def delete(stored_file):
     bucket.delete_keys(keys)
 
     # remove from the db
-
     # remove thumbnails explicitly.
     # cascade rules don't work as lazy loads don't work in async mode
     Thumbnail.query.filter_by(stored_file=stored_file).delete()

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from coaster.sqlalchemy import BaseNameMixin, BaseScopedNameMixin
-import imgee
 from imgee import app, url_for
 from imgee.models import db
 from imgee.utils import newid, guess_extension
@@ -58,9 +57,6 @@ class StoredFile(BaseNameMixin, db.Model):
     @property
     def extn(self):
         return guess_extension(self.mimetype, self.orig_extn) or ''
-
-    def is_queued_for_deletion(self):
-        return imgee.registry.is_queued_for_deletion(self.name+self.extn)
 
     def dict_data(self):
         return dict(
