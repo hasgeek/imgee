@@ -1,15 +1,5 @@
 import redis
-import time
-
 from imgee import app
-
-
-def now_in_secs():
-    return int(time.time())
-
-
-def get_taskid(funcname, imgname):
-    return "{f}:{n}".format(f=funcname, n=imgname)
 
 
 class TaskRegistry(object):
@@ -35,12 +25,11 @@ class TaskRegistry(object):
     def __contains__(self, taskid):
         return self.connection.sismember(self.key, taskid)
 
-    def keys_starting_with(self, exp):
-        return [k for k in self.connection.smembers(self.key) if k.startswith(exp)]
+    def keys_starting_with(self, query):
+        return filter(lambda k: k.startswith(query), self.connection.smembers(self.key))
+
+    def search(self, query):
+        return filter(lambda k: str(query) in k, self.connection.smembers(self.key))
 
     def get_all_keys(self):
-        return [k for k in self.connection.smembers(self.key)]
-
-    def is_queued_for_deletion(self, imgname):
-        taskid = get_taskid('delete', imgname)
-        return taskid in self
+        return list(self.connection.smembers(self.key))
