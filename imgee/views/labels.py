@@ -8,7 +8,6 @@ from imgee.models import Label, StoredFile, Profile, db
 
 
 @app.route('/<profile>/<label>')
-@lastuser.requires_login
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
@@ -20,8 +19,9 @@ def show_label(profile, label):
 
 
 @app.route('/<profile>/newlabel', methods=['GET', 'POST'])
+@lastuser.requires_login
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-label', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['new-label', 'siteadmin'])
 def create_label(profile):
     form = forms.CreateLabelForm(profile_id=profile.id)
     # profile_id is not filled in modal form, fill it here.
@@ -36,10 +36,11 @@ def create_label(profile):
 
 
 @app.route('/<profile>/<label>/delete', methods=['GET', 'POST'])
+@lastuser.requires_login
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['delete', 'siteadmin'])
 def delete_label(profile, label):
     form = forms.RemoveLabelForm()
     if form.is_submitted():
@@ -50,10 +51,11 @@ def delete_label(profile, label):
 
 
 @app.route('/<profile>/<label>/edit', methods=['POST'])
+@lastuser.requires_login
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['edit', 'siteadmin'])
 def edit_label(profile, label):
     form = forms.EditLabelForm()
     if form.validate_on_submit():
