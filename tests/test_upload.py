@@ -1,9 +1,9 @@
-import os
 import unittest
 import requests
 
 from imgee import app
 from imgee.storage import save_file, delete
+from imgee.utils import get_image_url
 from fixtures import ImgeeTestCase
 from werkzeug.datastructures import FileStorage
 
@@ -28,14 +28,16 @@ class UploadTestCase(ImgeeTestCase):
         return sf
 
     def test_save_file(self):
-        resp = requests.get("http:" + os.path.join(app.config.get('MEDIA_DOMAIN'), app.config.get('AWS_FOLDER'), "{}{}".format(self.sf.name, self.sf.extn)))
-        self.assertEquals(resp.status_code, 200)
-        self.assertEquals(resp.headers.get('Content-Type', ''), self.sf.mimetype)
+        with app.test_request_context('/'):
+            resp = requests.get(get_image_url(self.sf))
+            self.assertEquals(resp.status_code, 200)
+            self.assertEquals(resp.headers.get('Content-Type', ''), self.sf.mimetype)
 
     def test_delete_file(self):
         delete(self.sf)
-        resp = requests.get("http:" + os.path.join(app.config.get('MEDIA_DOMAIN'), app.config.get('AWS_FOLDER'), "{}{}".format(self.sf.name, self.sf.extn)))
-        self.assertEquals(resp.status_code, 403)  # S3 throws 403 for non existing files
+        with app.test_request_context('/'):
+            resp = requests.get(get_image_url(self.sf))
+            self.assertEquals(resp.status_code, 403)  # S3 throws 403 for non existing files
 
 
 if __name__ == '__main__':

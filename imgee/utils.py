@@ -87,9 +87,13 @@ def newid():
     return unicode(uuid4().hex)
 
 
-def get_media_domain():
-    scheme = request.scheme
+def get_media_domain(scheme=None):
+    scheme = scheme or request.scheme
     return '%s:%s' % (scheme, app.config.get('MEDIA_DOMAIN'))
+
+
+def get_file_url(scheme=None):
+    return ''
 
 
 def path_for(img_name):
@@ -191,6 +195,7 @@ def download_frm_s3(img_name):
         k.key = os.path.join(folder, img_name)
         k.get_contents_to_filename(local_path)
     return local_path
+
 
 # -- image details --
 

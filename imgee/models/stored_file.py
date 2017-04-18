@@ -74,9 +74,9 @@ class StoredFile(BaseNameMixin, db.Model):
         if new_labels != old_labels:
             self.labels = labels
 
-        if (new_labels == old_labels):
+        if new_labels == old_labels:
             status, diff = '0', []
-        elif (new_labels > old_labels):
+        elif new_labels > old_labels:
             status, diff = '+', (new_labels - old_labels)
         elif (old_labels > new_labels):
             status, diff = '-', (old_labels - new_labels)
