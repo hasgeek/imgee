@@ -3,7 +3,11 @@ from flask import (flash, g, jsonify, redirect, render_template, request, url_fo
 from sqlalchemy import and_
 
 from coaster.views import load_model, load_models
-from imgee import app, forms, lastuser
+from imgee import app, lastuser
+from imgee.forms import (
+    UploadImageForm, UpdateTitle, EditTitleForm,
+    AddLabelForm, DeleteImageForm
+)
 from imgee.models import StoredFile, db, Profile
 from imgee.storage import delete, save_file
 from imgee.utils import get_media_domain
@@ -26,7 +30,7 @@ def _redirect_url_frm_upload(profile_name):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['new-file', 'siteadmin'])
 def upload_file(profile):
-    upload_form = forms.UploadImageForm()
+    upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
         title, stored_file = save_file(file_, profile=profile)
@@ -40,11 +44,11 @@ def upload_file(profile):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['new-file', 'siteadmin'])
 def upload_file_json(profile):
-    upload_form = forms.UploadImageForm()
+    upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
         file_ = request.files['file']
         title, stored_file = save_file(file_, profile=profile)
-        update_form = forms.UpdateTitle()
+        update_form = UpdateTitle()
         update_form.title.data = stored_file.title
         form = render_template('edit_title_form.html', form=update_form, formid='edit_title_' + stored_file.name)
         return jsonify(
@@ -62,7 +66,7 @@ def upload_file_json(profile):
 @load_model(Profile, {'name': 'profile'}, 'profile',
     permission=['edit', 'siteadmin'])
 def edit_title(profile):
-    form = forms.EditTitleForm()
+    form = EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
         q = and_(Profile.userid.in_(g.user.user_organizations_owned_ids()), StoredFile.name == file_name)
@@ -81,7 +85,7 @@ def edit_title(profile):
     (StoredFile, {'name': 'file'}, 'stored_file'),
     permission=['edit', 'siteadmin'])
 def update_title_json(profile, stored_file):
-    form = forms.UpdateTitle()
+    form = UpdateTitle()
     if form.validate_on_submit():
         old_title = stored_file.title
         form.populate_obj(stored_file)
@@ -99,7 +103,7 @@ def update_title_json(profile, stored_file):
     permission=['view', 'siteadmin'])
 def view_image(profile, img):
     prev, next = get_prev_next_images(profile, img)
-    form = forms.AddLabelForm(stored_file_id=img.name)
+    form = AddLabelForm(stored_file_id=img.name)
     media_domain = get_media_domain()
     return render_template('view_image.html', profile=profile, form=form, img=img,
                     prev=prev, next=next, domain=media_domain)
@@ -120,7 +124,7 @@ def get_image(image):
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
     permission=['delete', 'siteadmin'])
 def delete_file(profile, img):
-    form = forms.DeleteImageForm()
+    form = DeleteImageForm()
     if form.is_submitted():
         delete(img)
         flash("%s is deleted" % img.title)
