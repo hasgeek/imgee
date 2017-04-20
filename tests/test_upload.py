@@ -3,7 +3,7 @@ import requests
 
 from imgee import app, url_for, db
 from imgee.storage import save_file, delete
-from imgee.utils import get_image_url
+from imgee.utils import get_image_url, get_thumbnail_url
 from fixtures import ImgeeTestCase
 from werkzeug.datastructures import FileStorage
 
@@ -51,7 +51,7 @@ class UploadTestCase(ImgeeTestCase):
             for file in self.files:
                 resp = self.client.get(url_for('get_image', image=file.name, size=app.config.get('THUMBNAIL_SIZE')))
                 self.assertEquals(resp.status_code, 301)
-                self.assertEquals('s3.amazonaws.com' in resp.headers.get('Location'), True)
+                self.assertEquals(resp.headers.get('Location'), get_thumbnail_url(file))
 
     def test_delete_file(self):
         for file in self.files:
