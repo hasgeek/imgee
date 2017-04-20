@@ -1,5 +1,5 @@
-env: 
-  global: 
+env:
+  global:
   - secure: |-
       G5Dn+zkbN/BeNoopxtM2idC2Hy1ebJxRxprD7XEAmH6VO26ANgWYLI1dMrdH
       uQc9F317STawQ/Um6KnqjErOKkC2BUYTOTj8AzoPVFz6NcK/Ca4d9Vfbtf5u
@@ -9,13 +9,15 @@ env:
       EGeHYvQUiyAg7zM4KdNJr6txj+jBE8MAeh7EwYNHoh9B7Vx//GxmXFnWyjXV
       9cJkFroDW1Zfs2SZjLtzMQC8YXE30jmMxg+XHCQewKzRa4u1320=
 language: python
-python: 
+python:
   - 2.7
+services:
+  - redis-server
 before_script:
   - mkdir imgee/static/test_uploads
-script: 
+script:
   - nosetests --with-coverage
-install: 
+install:
   - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc
   - pip install -r requirements.txt
   - pip install nose coverage BeautifulSoup4 Pillow
