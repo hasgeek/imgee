@@ -203,7 +203,7 @@ def get_width_height(img_path):
     name, extn = os.path.splitext(img_path)
     try:
         o = '0x0'
-        if extn in ['.pdf']:
+        if extn in ['.pdf', '.gif']:
             o = check_output('identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path), shell=True)
         elif extn in ['.cdr']:
             wo = check_output('inkscape -z -W {}'.format(img_path), shell=True)

@@ -272,7 +272,7 @@ def clean_local_cache(expiry=24):
     return n
 
 
-def delete(stored_file):
+def delete(stored_file, commit=True):
     """
     Delete all the thumbnails and images associated with a file, from local cache and S3.
     Wait for the upload/resize to complete if queued for the same image.
@@ -297,7 +297,9 @@ def delete(stored_file):
     # cascade rules don't work as lazy loads don't work in async mode
     Thumbnail.query.filter_by(stored_file=stored_file).delete()
     db.session.delete(stored_file)
-    db.session.commit()
+
+    if commit:
+        db.session.commit()
 
 
 if __name__ == '__main__':

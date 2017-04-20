@@ -14,3 +14,5 @@ MEDIA_DOMAIN = 'https://%s.s3.amazonaws.com' % AWS_BUCKET
 
 SQLALCHEMY_DATABASE_URI = 'sqlite://'
 WTF_CSRF_ENABLED = False
+
+THUMBNAIL_SIZE = '75x75'
