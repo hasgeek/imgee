@@ -4,7 +4,6 @@ import re
 import os.path
 from subprocess import check_output, CalledProcessError
 from urlparse import urljoin
-from uuid import uuid4
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
@@ -13,6 +12,7 @@ import defusedxml.cElementTree as elementtree
 from flask import request
 import magic
 
+from coaster.utils import uuid1mc
 import imgee
 from imgee import app
 
@@ -84,7 +84,7 @@ EXTNS = list(set(EXTNS))
 
 
 def newid():
-    return unicode(uuid4().hex)
+    return unicode(uuid1mc().hex)
 
 
 def get_media_domain(scheme=None):
@@ -186,7 +186,7 @@ def exists_in_s3(thumb):
     return True
 
 
-def download_frm_s3(img_name):
+def download_from_s3(img_name):
     local_path = path_for(img_name)
     if not os.path.exists(local_path):
         bucket = get_s3_bucket()

@@ -21,7 +21,7 @@ from . import models, views
 from .models import db
 from .tasks import TaskRegistry
 
-registry = TaskRegistry(os.getenv('ENV', 'production'))
+registry = TaskRegistry()
 
 
 def mkdir_p(dirname):

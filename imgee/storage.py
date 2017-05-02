@@ -16,7 +16,7 @@ from imgee.models import db, Thumbnail, StoredFile
 from imgee.utils import (
     newid, guess_extension, get_file_type,
     path_for, get_s3_folder, get_s3_bucket,
-    download_frm_s3, get_width_height, ALLOWED_MIMETYPES,
+    download_from_s3, get_width_height, ALLOWED_MIMETYPES,
     exists_in_s3, THUMBNAIL_COMMANDS
 )
 
@@ -38,8 +38,6 @@ def get_resized_image(img, size, is_thumbnail=False):
         else:
             size = get_fitting_size((img.width, img.height), size_t)
             resized_filename = get_resized_filename(img, size)
-            registry = imgee.registry
-
             try:
                 if resized_filename in registry:
                     # file is still being processed
@@ -48,9 +46,6 @@ def get_resized_image(img, size, is_thumbnail=False):
                 else:
                     registry.add(resized_filename)
                 img_name = resize_and_save(img, size, is_thumbnail=is_thumbnail)
-            except Exception as e:
-                # something broke while processing the file
-                raise e
             finally:
                 # file has been processed, remove from registry
                 registry.remove(resized_filename)
@@ -121,7 +116,7 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
         headers = {
             'Cache-Control': 'max-age=31536000',  # 60*60*24*365
             'Content-Type': get_file_type(fp, filename),
-            'Expires': datetime.now() + timedelta(days=365)
+            'Expires': str(datetime.utcnow() + timedelta(days=365))
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
     return filename
@@ -216,7 +211,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     Get the original image from local disk cache, download it from S3 if it misses.
     Resize the image and save resized image on S3 and size details in db.
     """
-    src_path = download_frm_s3(img.name + img.extn)
+    src_path = download_from_s3(img.name + img.extn)
 
     if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:
         format = ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
@@ -277,6 +272,8 @@ def delete(stored_file, commit=True):
     Delete all the thumbnails and images associated with a file, from local cache and S3.
     Wait for the upload/resize to complete if queued for the same image.
     """
+    registry = imgee.registry
+
     # remove locally
     cache_path = app.config.get('UPLOADED_FILES_DEST')
     cached_img_path = os.path.join(cache_path, '%s*' % stored_file.name)
