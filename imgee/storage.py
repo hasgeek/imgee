@@ -36,7 +36,8 @@ def get_resized_image(img, size, is_thumbnail=False):
         if scaled and exists_in_s3(scaled):
             img_name = scaled.name
         else:
-            size = get_fitting_size((img.width, img.height), size_t)
+            original_size = (img.width, img.height)
+            size = get_fitting_size(original_size, size_t)
             resized_filename = get_resized_filename(img, size)
             try:
                 if resized_filename in registry:
@@ -48,7 +49,8 @@ def get_resized_image(img, size, is_thumbnail=False):
                 img_name = resize_and_save(img, size, is_thumbnail=is_thumbnail)
             finally:
                 # file has been processed, remove from registry
-                registry.remove(resized_filename)
+                if resized_filename in registry:
+                    registry.remove(resized_filename)
     return img_name
 
 
@@ -69,7 +71,7 @@ def save_file(fp, profile, title=None):
 
     stored_file = save_img_in_db(name=id_, title=title, local_path=local_path,
                     profile=profile, mimetype=content_type, orig_extn=extn)
-    s3resp = save_on_s3(img_name, content_type=content_type)
+    save_on_s3(img_name, content_type=content_type)
     return title, stored_file
 
 
@@ -141,7 +143,7 @@ def parse_size(size):
         return tuple(map(int, size))
 
 
-def get_fitting_size((orig_w, orig_h), size):
+def get_fitting_size(original_size, size):
     """
      Return the size to fit the image to the box
      along the smaller side and preserve aspect ratio.
@@ -166,6 +168,8 @@ def get_fitting_size((orig_w, orig_h), size):
     >>> get_fitting_size((200, 500), (400, 600))
     [240, 600]
     """
+    orig_w, orig_h = original_size
+
     if orig_w == 0 or orig_h == 0:
         # this is either a cdr file or a zero width file
         # just go with target size
@@ -253,7 +257,8 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
 
 def clean_local_cache(expiry=24):
     """
-    Remove files from local cache which are NOT accessed in the last `expiry` hours.
+    Remove files from local cache
+    which are NOT accessed in the last `expiry` hours.
     """
     cache_path = app.config.get('UPLOADED_FILES_DEST')
     cache_path = os.path.join(cache_path, '*')
@@ -270,9 +275,11 @@ def clean_local_cache(expiry=24):
 def delete(stored_file, commit=True):
     """
     Delete all the thumbnails and images associated with a file, from local cache and S3.
-    Wait for the upload/resize to complete if queued for the same image.
     """
     registry = imgee.registry
+
+    # remove from registry
+    registry.remove_keys_starting_with(stored_file.name)
 
     # remove locally
     cache_path = app.config.get('UPLOADED_FILES_DEST')

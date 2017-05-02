@@ -18,6 +18,11 @@ class TaskRegistry(object):
     def remove(self, taskid):
         self.connection.srem(self.key, taskid)
 
+    def remove_keys_starting_with(self, query):
+        keys = self.keys_starting_with(query)
+        for k in keys:
+            self.remove(k)
+
     def remove_all(self):
         for k in self.get_all_keys():
             self.remove(k)
