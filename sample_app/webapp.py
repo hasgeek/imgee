@@ -1,6 +1,6 @@
 from flask import render_template, Flask
 from baseframe.forms.fields import ImgeeField
-from flask.ext.wtf import Form
+from flask_wtf import Form
 from wtforms.validators import Required
 from baseframe import baseframe
 
@@ -10,10 +10,11 @@ imgee_url = app.config.get('IMGEE_ENDPOINT', 'http://0.0.0.0:4500')
 
 app.config['SECRET_KEY'] = 'not set'
 
+
 class ImgeeForm(Form):
     image = ImgeeField(label='Logo', description='Your company logo here',
-           validators=[Required()],
-           profile='asldevi', img_label='', img_size='100x75'
+        validators=[Required()],
+        profile='asldevi', img_label='', img_size='100x75'
     )
 
 
@@ -29,4 +30,3 @@ def init_for(env):
 if __name__ == "__main__":
     init_for('dev')
     app.run(port=4333, debug=True)
-
