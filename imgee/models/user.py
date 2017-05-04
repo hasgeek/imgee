@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import url_for
-from flask.ext.lastuser.sqlalchemy import UserBase
+from flask_lastuser.sqlalchemy import UserBase
 from werkzeug.utils import cached_property
 from imgee.models import db
 from imgee.models.profile import Profile
