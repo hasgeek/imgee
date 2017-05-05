@@ -9,9 +9,9 @@ from flask import Flask, redirect, url_for
 from flask_lastuser import Lastuser
 from flask_lastuser.sqlalchemy import UserManager
 from baseframe import baseframe, assets, Version
+from flask_migrate import Migrate
 import coaster.app
 from ._version import __version__
-
 
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
@@ -39,6 +39,7 @@ def error403(error):
 # Configure the app
 
 coaster.app.init_app(app)
+migrate = Migrate(app, db)
 baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
 app.error_handlers[403] = error403
 lastuser.init_app(app)
