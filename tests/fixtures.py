@@ -2,7 +2,7 @@ import unittest
 import random
 import string
 
-from imgee import init_for, app, storage
+from imgee import app, storage
 from imgee.models import db, User, Profile, StoredFile
 
 
@@ -23,7 +23,6 @@ class ImgeeTestCase(unittest.TestCase):
         return self.get_test_user().profile
 
     def setUp(self):
-        init_for('testing')
         app.config['TESTING'] = True
         app.testing = True
         db.create_all()

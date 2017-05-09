@@ -1,5 +1,5 @@
 from coaster.sqlalchemy import BaseNameMixin
-from flask.ext.lastuser.sqlalchemy import ProfileMixin
+from flask_lastuser.sqlalchemy import ProfileMixin
 from imgee.models import db
 
 

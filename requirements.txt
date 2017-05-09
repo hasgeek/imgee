@@ -12,3 +12,4 @@ redis
 xml4h
 python-magic
 defusedxml
+Flask-Migrate

@@ -28,7 +28,7 @@ class PurgeCacheForm(Form):
 
 
 def reserved_words():
-    """get all words which can't be used as labels"""
+    """Get all words which can't be used as labels"""
     words = []
     for rule in app.url_map.iter_rules():
         r = rule.rule
