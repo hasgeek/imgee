@@ -20,9 +20,6 @@ assets['imgee.css'][version] = 'css/app.css'
 
 from . import models, views
 from .models import db
-from .tasks import TaskRegistry
-
-registry = TaskRegistry()
 
 
 def mkdir_p(dirname):
@@ -48,4 +45,6 @@ if app.config.get('MEDIA_DOMAIN') and (
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
 mkdir_p(app.config['UPLOADED_FILES_DEST'])
 
-registry.set_connection()
+from .tasks import TaskRegistry
+
+registry = TaskRegistry()
