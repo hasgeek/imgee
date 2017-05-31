@@ -14,7 +14,7 @@ import imgee
 from imgee import app
 from imgee.models import db, Thumbnail, StoredFile
 from imgee.utils import (
-    newid, guess_extension, get_file_type,
+    newid, guess_extension, get_file_type, is_animated_gif,
     path_for, get_s3_folder, get_s3_bucket,
     download_from_s3, get_width_height, ALLOWED_MIMETYPES,
     exists_in_s3, THUMBNAIL_COMMANDS
@@ -29,6 +29,13 @@ def get_resized_image(img, size, is_thumbnail=False):
     """
     registry = imgee.registry
     img_name = img.name
+
+    if img.mimetype == 'image/gif':
+        # if the gif file is animated, no need to resize
+        src_path = download_from_s3(img.name + img.extn)
+        if is_animated_gif(src_path):
+            return img.name
+
     size_t = parse_size(size)
     if (size_t and size_t[0] != img.width and size_t[1] != img.height) or ('thumb_extn' in ALLOWED_MIMETYPES[img.mimetype] and ALLOWED_MIMETYPES[img.mimetype]['thumb_extn'] != img.extn):
         w_or_h = or_(Thumbnail.width == size_t[0], Thumbnail.height == size_t[1])

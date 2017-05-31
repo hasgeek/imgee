@@ -11,6 +11,7 @@ from boto.s3.key import Key
 import defusedxml.cElementTree as elementtree
 from flask import request
 import magic
+from PIL import Image
 
 from coaster.utils import uuid1mc
 import imgee
@@ -129,6 +130,16 @@ def is_svg(fp):
         pass
     fp.seek(0)
     return tag == '{http://www.w3.org/2000/svg}svg'
+
+
+def is_animated_gif(local_path):
+    is_animated = True
+    gif = Image.open(local_path)
+    try:
+        gif.seek(1)
+    except EOFError:
+        is_animated = False
+    return is_animated
 
 
 def get_file_type(fp, filename=None):
