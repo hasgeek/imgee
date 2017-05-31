@@ -19,12 +19,12 @@ class TaskRegistry(object):
     def __contains__(self, taskid):
         return len(self.connection.keys(self._make_key(taskid))) > 0
 
-    def add(self, taskid):
+    def add(self, taskid, expire=60):
         self.connection.set(self._make_key(taskid), taskid)
         # setting TTL of 60 seconds for the key
         # if the file doesn't get processed within 60 seconds,
         # it'll be removed from the eregistry
-        self.connection.expire(self._make_key(taskid), 60)
+        self.connection.expire(self._make_key(taskid), expire)
 
     def search(self, query):
         # >> KEYS imgee:registry:default:*query*
