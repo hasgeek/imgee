@@ -3,7 +3,7 @@ import random
 import string
 
 from flask import g
-from imgee import init_for, app, storage
+from imgee import app, storage
 from imgee.models import db, User, Profile, StoredFile
 
 
@@ -22,7 +22,6 @@ def get_test_user(name, id=1):
 
 class ImgeeTestCase(unittest.TestCase):
     def setUp(self):
-        init_for('testing')
         app.config['TESTING'] = True
         app.testing = True
         db.create_all()
