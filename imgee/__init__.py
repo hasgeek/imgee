@@ -30,17 +30,17 @@ def mkdir_p(dirname):
         os.makedirs(dirname)
 
 
-def error403(error):
-    return redirect(url_for('login'))
-
-
 # Configure the app
 coaster.app.init_app(app)
 migrate = Migrate(app, db)
 baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
-app.error_handlers[403] = error403
 lastuser.init_app(app)
 lastuser.init_usermanager(UserManager(db, models.User))
+
+
+@app.errorhandler(403)
+def error403(error):
+    return redirect(url_for('login'))
 
 if app.config.get('MEDIA_DOMAIN') and (
         app.config['MEDIA_DOMAIN'].startswith('http:') or
