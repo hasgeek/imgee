@@ -59,9 +59,7 @@ class TaskRegistry(object):
         self.pipe.execute()
 
     def remove_keys_matching(self, query):
-        keys = self.search(query)
-        for k in keys:
-            self.remove_by_key(k)
+        self.remove_keys(self.search(query))
 
     def remove_keys_starting_with(self, query):
         self.remove_keys(self.keys_starting_with(query))
