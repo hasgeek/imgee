@@ -26,7 +26,7 @@ class TaskRegistry(object):
         self.connection.set(self.key_for(taskid), taskid)
         # setting TTL of 60 seconds for the key
         # if the file doesn't get processed within 60 seconds,
-        # it'll be removed from the eregistry
+        # it'll be removed from the registry
         self.connection.expire(self.key_for(taskid), expire)
 
     def search(self, query):
