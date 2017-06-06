@@ -58,6 +58,10 @@ class StoredFile(BaseNameMixin, db.Model):
     def extn(self):
         return guess_extension(self.mimetype, self.orig_extn) or ''
 
+    @property
+    def filename(self):
+        return self.name + self.extn
+
     def dict_data(self):
         return dict(
             title=self.title,

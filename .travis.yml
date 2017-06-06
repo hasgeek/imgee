@@ -16,11 +16,11 @@ services:
 before_script:
   - mkdir imgee/static/test_uploads
 script:
-  - python runtests.py
+  - ./runtests.sh
 install:
   - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc
   - pip install -r requirements.txt
-  - pip install nose coverage
+  - pip install -r test_requirements.txt
 notifications:
   email: false
   slack:

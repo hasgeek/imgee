@@ -32,7 +32,7 @@ def get_resized_image(img, size, is_thumbnail=False):
 
     if img.mimetype == 'image/gif':
         # if the gif file is animated, no need to resize
-        src_path = download_from_s3(img.name + img.extn)
+        src_path = download_from_s3(img.filename)
         if is_animated_gif(src_path):
             return img.name
 
@@ -222,7 +222,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     Get the original image from local disk cache, download it from S3 if it misses.
     Resize the image and save resized image on S3 and size details in db.
     """
-    src_path = download_from_s3(img.name + img.extn)
+    src_path = download_from_s3(img.filename)
 
     if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:
         format = ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
