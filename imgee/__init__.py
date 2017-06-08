@@ -22,11 +22,6 @@ from . import models, views
 from .models import db
 from .tasks import TaskRegistry
 
-
-def mkdir_p(dirname):
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-
 registry = TaskRegistry()
 
 # Configure the app
@@ -46,4 +41,3 @@ if app.config.get('MEDIA_DOMAIN') and (
         app.config['MEDIA_DOMAIN'].startswith('http:') or
         app.config['MEDIA_DOMAIN'].startswith('https:')):
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
-mkdir_p(app.config['UPLOADED_FILES_DEST'])
