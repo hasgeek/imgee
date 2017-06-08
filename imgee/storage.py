@@ -31,7 +31,9 @@ def get_resized_image(img, size, is_thumbnail=False):
     img_name = img.name
 
     if img.mimetype == 'image/gif':
-        # if the gif file is animated, no need to resize
+        # if the gif file is animated, not resizing it for now
+        # but we will need to resize the gif, keeping animation intact
+        # https://github.com/hasgeek/imgee/issues/55
         src_path = download_from_s3(img.filename)
         if is_animated_gif(src_path):
             return img.name
@@ -125,7 +127,8 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
         headers = {
             'Cache-Control': 'max-age=31536000',  # 60*60*24*365
             'Content-Type': get_file_type(fp, filename),
-            'Expires': str(datetime.utcnow() + timedelta(days=365))
+            # once cached, it is set to expire after a year
+            'Expires': datetime.utcnow() + timedelta(days=365)
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
     return filename
@@ -284,13 +287,14 @@ def delete(stored_file, commit=True):
     Delete all the thumbnails and images associated with a file, from local cache and S3.
     """
     registry = imgee.registry
-
-    # remove from registry
+    # remove all the keys related to the given file name
+    # this is delete all keys matching `imgee:registry:<name>*`
     registry.remove_keys_starting_with(stored_file.name)
 
     # remove locally
     cache_path = app.config.get('UPLOADED_FILES_DEST')
-    cached_img_path = os.path.join(cache_path, '%s*' % stored_file.name)
+    os.remove(os.path.join(cache_path, '%s' % stored_file.filename))
+    cached_img_path = os.path.join(cache_path, '%s_*' % stored_file.name)
     for f in glob(cached_img_path):
         os.remove(f)
 

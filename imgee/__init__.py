@@ -20,11 +20,14 @@ assets['imgee.css'][version] = 'css/app.css'
 
 from . import models, views
 from .models import db
+from .tasks import TaskRegistry
 
 
 def mkdir_p(dirname):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
+
+registry = TaskRegistry()
 
 # Configure the app
 coaster.app.init_app(app)
@@ -32,6 +35,7 @@ migrate = Migrate(app, db)
 baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
 lastuser.init_app(app)
 lastuser.init_usermanager(UserManager(db, models.User))
+registry.init_app()
 
 
 @app.errorhandler(403)
@@ -43,7 +47,3 @@ if app.config.get('MEDIA_DOMAIN') and (
         app.config['MEDIA_DOMAIN'].startswith('https:')):
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
 mkdir_p(app.config['UPLOADED_FILES_DEST'])
-
-from .tasks import TaskRegistry
-
-registry = TaskRegistry()

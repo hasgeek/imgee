@@ -3,13 +3,24 @@ import redis
 from imgee import app
 
 
+class InvalidRedisQueryException(Exception):
+    pass
+
+
 class TaskRegistry(object):
-    def __init__(self, name='default', connection=None):
+    def __init__(self, name='default', connection=None, app=None):
+        if app:
+            self.init_app(name, connection)
+
+    def init_app(self, name='default', connection=None):
         self.connection = connection or self.set_connection_from_url()
         self.name = name
         self.key_prefix = 'imgee:registry:%s' % name
         self.filename_pattern = '^[a-z0-9\_\.]+$'
         self.pipe = self.connection.pipeline()
+
+    def is_valid_query(self, query):
+        return bool(re.match(self.filename_pattern, query))
 
     def set_connection_from_url(self, url=None):
         url = url or app.config.get('REDIS_URL')
@@ -31,8 +42,8 @@ class TaskRegistry(object):
 
     def search(self, query):
         # >> KEYS imgee:registry:default:*query*
-        if not re.compile(self.filename_pattern).match(query):
-            return list()
+        if not self.is_valid_query(query):
+            raise InvalidRedisQueryException(u'Invalid query for searching redis keys: {}'.format(query))
         return self.connection.keys(self.key_for('*{}*'.format(query)))
 
     def get_all_keys(self):
@@ -41,9 +52,9 @@ class TaskRegistry(object):
 
     def keys_starting_with(self, query):
         # >> KEYS imgee:registry:default:query*
-        if not re.compile(self.filename_pattern).match(query):
-            return list()
-        return self.connection.keys(self.key_for('{}*'.format(query)))
+        if not self.is_valid_query(query):
+            raise InvalidRedisQueryException(u'Invalid query for searching redis keys, starting with: {}'.format(query))
+        return self.connection.keys(self.key_for('{}_*'.format(query)))
 
     def remove(self, taskid):
         # remove a key with the taskid
@@ -62,7 +73,7 @@ class TaskRegistry(object):
         self.remove_keys(self.search(query))
 
     def remove_keys_starting_with(self, query):
-        self.remove_keys(self.keys_starting_with(query))
+        self.remove_keys([self.key_for(query)] + self.keys_starting_with(query))
 
     def remove_all(self):
         self.remove_keys(self.get_all_keys())

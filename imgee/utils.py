@@ -14,7 +14,6 @@ import magic
 from PIL import Image
 
 from coaster.utils import uuid1mc
-import imgee
 from imgee import app
 
 THUMBNAIL_COMMANDS = {
@@ -249,11 +248,12 @@ def get_no_previews_url(size):
 
 
 def get_image_url(image, size=None):
+    from imgee import storage
     extn = image.extn
     if size and extn in EXTNS:
         if image.no_previews:
             return get_no_previews_url(size)
-        img_name = imgee.storage.get_resized_image(image, size)
+        img_name = storage.get_resized_image(image, size)
         if not img_name:
             return get_no_previews_url(size)
     else:
