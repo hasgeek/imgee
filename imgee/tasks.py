@@ -51,7 +51,9 @@ class TaskRegistry(object):
         return self.connection.keys(self.key_for('*'))
 
     def keys_starting_with(self, query):
-        # >> KEYS imgee:registry:default:query*
+        # >> KEYS imgee:registry:default:query_*
+        # chances are that we'll use this function to find the
+        # thumbnail keys, which look like "name_wNN_hNN", hence the _
         if not self.is_valid_query(query):
             raise InvalidRedisQueryException(u'Invalid query for searching redis keys, starting with: {}'.format(query))
         return self.connection.keys(self.key_for('{}_*'.format(query)))
@@ -73,6 +75,8 @@ class TaskRegistry(object):
         self.remove_keys(self.search(query))
 
     def remove_keys_starting_with(self, query):
+        # query will most likely be stored_file.name, So
+        # Delete keys for only `<query>` and `<query>_*`
         self.remove_keys([self.key_for(query)] + self.keys_starting_with(query))
 
     def remove_all(self):
