@@ -1,6 +1,5 @@
 import re
 import redis
-from imgee import app
 
 
 class InvalidRedisQueryException(Exception):
@@ -23,6 +22,7 @@ class TaskRegistry(object):
         return bool(re.match(self.filename_pattern, query))
 
     def set_connection_from_url(self, url=None):
+        from imgee import app
         url = url or app.config.get('REDIS_URL')
         self.connection = redis.from_url(url)
         return self.connection
