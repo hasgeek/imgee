@@ -13,8 +13,6 @@ python:
   - 2.7
 services:
   - redis-server
-before_script:
-  - mkdir imgee/static/test_uploads
 script:
   - ./runtests.sh
 install:
