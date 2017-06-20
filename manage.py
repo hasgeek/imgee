@@ -17,9 +17,6 @@ if __name__ == "__main__":
 
     @manager.command
     def init():
-        print("$"*40)
-        print(app.config['UPLOADED_FILES_DEST'])
-        print(os.environ.get('FLASK_ENV'))
         mkdir_p(app.config['UPLOADED_FILES_DEST'])
 
     manager.run()
