@@ -13,6 +13,8 @@ python:
   - 2.7
 services:
   - redis-server
+before-script:
+  - ./manage.py init  # creates the test upload directory
 script:
   - ./runtests.sh
 install:

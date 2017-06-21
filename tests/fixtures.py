@@ -1,3 +1,4 @@
+import os
 import unittest
 import random
 import string
@@ -25,6 +26,12 @@ class ImgeeTestCase(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.testing = True
+
+        # PYTHONPATH is `pwd` when testing and empty otherwise
+        # using it to determine the project root
+        # either get it from environment variable, or it's one level up from this init file
+        app.project_root = os.environ.get('PYTHONPATH', '') or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
         db.create_all()
         self.test_user_name = u'testuser'
         test_user = self.get_test_user(name=self.test_user_name)

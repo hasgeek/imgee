@@ -13,7 +13,7 @@ from flask import request
 import magic
 from PIL import Image
 
-from coaster.utils import uuid1mc
+from uuid import uuid4
 from imgee import app
 
 THUMBNAIL_COMMANDS = {
@@ -84,7 +84,7 @@ EXTNS = list(set(EXTNS))
 
 
 def newid():
-    return unicode(uuid1mc().hex)
+    return unicode(uuid4().hex)
 
 
 def get_media_domain(scheme=None):
@@ -97,7 +97,7 @@ def get_file_url(scheme=None):
 
 
 def path_for(img_name):
-    return os.path.join(app.project_root, app.config['UPLOADED_FILES_DEST'], img_name)
+    return os.path.join(app.static_folder, app.config['UPLOADED_FILES_DIR'], img_name)
 
 
 # -- mimetypes and content types

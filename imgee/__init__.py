@@ -24,26 +24,18 @@ from .tasks import TaskRegistry
 
 registry = TaskRegistry()
 
-# Configure the app
+# Configure the application
 coaster.app.init_app(app)
 migrate = Migrate(app, db)
 baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
 lastuser.init_app(app)
 lastuser.init_usermanager(UserManager(db, models.User))
-registry.init_app()
-
-# PYTHONPATH is `pwd` when testing and empty otherwise
-# using it to determine the project root
-# either get it from environment variable, or it's one level up from this init file
-app.project_root = os.environ.get('PYTHONPATH', '') or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print app.project_root
+registry.init_app(app)
 
 
 @app.errorhandler(403)
 def error403(error):
     return redirect(url_for('login'))
 
-if app.config.get('MEDIA_DOMAIN') and (
-        app.config['MEDIA_DOMAIN'].startswith('http:') or
-        app.config['MEDIA_DOMAIN'].startswith('https:')):
+if app.config.get('MEDIA_DOMAIN', '').lower().startswith(('http://', 'https://')):
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]

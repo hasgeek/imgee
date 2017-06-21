@@ -34,6 +34,7 @@ ADMINS = []
 LOGFILE = 'error.log'
 #: File uploads
 UPLOADED_FILES_DEST = 'imgee/static/uploads'
+UPLOADED_FILES_DIR = 'uploads'  # this folder should be inside `imgee/static/`
 #: S3 Configuration
 AWS_ACCESS_KEY = 'Set aws access key here'
 AWS_SECRET_KEY = 'Set aws secret key here'

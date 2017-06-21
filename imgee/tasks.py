@@ -8,24 +8,26 @@ class InvalidRedisQueryException(Exception):
 
 class TaskRegistry(object):
     def __init__(self, name='default', connection=None, app=None):
-        if app:
-            self.init_app(name, connection)
-
-    def init_app(self, name='default', connection=None):
-        self.connection = connection or self.set_connection_from_url()
         self.name = name
+        self.connection = connection
         self.key_prefix = 'imgee:registry:%s' % name
         self.filename_pattern = '^[a-z0-9\_\.]+$'
-        self.pipe = self.connection.pipeline()
+
+        if app:
+            self.init_app(app)
+        else:
+            self.app = None
+
+    def init_app(self, app):
+        self.app = app
+
+        if not self.connection:
+            url = self.app.config.get('REDIS_URL')
+            self.connection = redis.from_url(url)
+            self.pipe = self.connection.pipeline()
 
     def is_valid_query(self, query):
         return bool(re.match(self.filename_pattern, query))
-
-    def set_connection_from_url(self, url=None):
-        from imgee import app
-        url = url or app.config.get('REDIS_URL')
-        self.connection = redis.from_url(url)
-        return self.connection
 
     def key_for(self, taskid):
         return u'{key_prefix}:{taskid}'.format(key_prefix=self.key_prefix, taskid=taskid)

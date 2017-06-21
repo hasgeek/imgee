@@ -1,7 +1,6 @@
 #!/bin/sh
 set -e
 export FLASK_ENV="TESTING"
-export PYTHONPATH=$(pwd)  # setting project root as PYTHONPATH
-./manage.py init  # creates the test upload directory
+export PYTHONPATH=$(dirname $0)  # setting project root as PYTHONPATH
 coverage run `which nosetests` "$@"
 coverage report -m
