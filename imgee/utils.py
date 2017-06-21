@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-import os.path
+import os
 from subprocess import check_output, CalledProcessError
 from urlparse import urljoin
 
@@ -97,7 +97,7 @@ def get_file_url(scheme=None):
 
 
 def path_for(img_name):
-    return os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
+    return os.path.join(app.project_root, app.config['UPLOADED_FILES_DEST'], img_name)
 
 
 # -- mimetypes and content types

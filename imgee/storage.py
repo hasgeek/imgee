@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 from glob import glob
 import os.path
+import os
 import re
 from subprocess import check_call, CalledProcessError
 import time
@@ -292,7 +293,7 @@ def delete(stored_file, commit=True):
     registry.remove_keys_starting_with(stored_file.name)
 
     # remove locally
-    cache_path = app.config.get('UPLOADED_FILES_DEST')
+    cache_path = os.path.join(app.project_root, app.config.get('UPLOADED_FILES_DEST'))
     os.remove(os.path.join(cache_path, '%s' % stored_file.filename))
     cached_img_path = os.path.join(cache_path, '%s_*' % stored_file.name)
     for f in glob(cached_img_path):

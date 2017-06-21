@@ -1,5 +1,5 @@
 from os import environ
-UPLOADED_FILES_DEST = 'tests/imgee/static/test_uploads'
+UPLOADED_FILES_DEST = 'imgee/static/test_uploads'
 AWS_FOLDER = 'test/'
 
 UNKNOWN_FILE_THUMBNAIL = 'unknown.jpeg'

@@ -17,6 +17,6 @@ if __name__ == "__main__":
 
     @manager.command
     def init():
-        mkdir_p(app.config['UPLOADED_FILES_DEST'])
+        mkdir_p(os.path.join(app.project_root, app.config['UPLOADED_FILES_DEST']))
 
     manager.run()
