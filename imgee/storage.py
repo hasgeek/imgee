@@ -271,7 +271,7 @@ def clean_local_cache(expiry=24):
     Remove files from local cache
     which are NOT accessed in the last `expiry` hours.
     """
-    cache_path = os.path.join(app.static_folder, app.config.get('UPLOADED_FILES_DIR'))
+    cache_path = app.upload_folder
     cache_path = os.path.join(cache_path, '*')
     min_atime = time.time() - expiry*60*60
 
@@ -293,7 +293,7 @@ def delete(stored_file, commit=True):
     registry.remove_keys_starting_with(stored_file.name)
 
     # remove locally
-    cache_path = os.path.join(app.static_folder, app.config.get('UPLOADED_FILES_DIR'))
+    cache_path = app.upload_folder
     os.remove(os.path.join(cache_path, '%s' % stored_file.filename))
     cached_img_path = os.path.join(cache_path, '%s_*' % stored_file.name)
     for f in glob(cached_img_path):

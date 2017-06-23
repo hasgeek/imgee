@@ -39,3 +39,5 @@ def error403(error):
 
 if app.config.get('MEDIA_DOMAIN', '').lower().startswith(('http://', 'https://')):
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
+
+app.upload_folder = os.path.join(app.static_folder, app.config.get('UPLOADED_FILES_DIR'))

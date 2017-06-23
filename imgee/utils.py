@@ -97,7 +97,7 @@ def get_file_url(scheme=None):
 
 
 def path_for(img_name):
-    return os.path.join(app.static_folder, app.config['UPLOADED_FILES_DIR'], img_name)
+    return os.path.join(app.upload_folder, img_name)
 
 
 # -- mimetypes and content types

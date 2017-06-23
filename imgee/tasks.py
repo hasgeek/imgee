@@ -7,11 +7,11 @@ class InvalidRedisQueryException(Exception):
 
 
 class TaskRegistry(object):
-    def __init__(self, name='default', connection=None, app=None):
+    def __init__(self, app=None, name='default', connection=None):
         self.name = name
         self.connection = connection
         self.key_prefix = 'imgee:registry:%s' % name
-        self.filename_pattern = '^[a-z0-9\_\.]+$'
+        self.filename_pattern = r'^[a-z0-9_\.]+$'
 
         if app:
             self.init_app(app)

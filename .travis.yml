@@ -17,14 +17,14 @@ python:
   - 2.7
 services:
   - redis-server
-before_script:
-  - ./manage.py init  # creates the test upload directory
-script:
-  - ./runtests.sh
 install:
   - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc inkscape
   - pip install -r requirements.txt
   - pip install -r test_requirements.txt
+before_script:
+  - ./manage.py init  # creates the test upload directory
+script:
+  - ./runtests.sh
 notifications:
   email: false
   slack:

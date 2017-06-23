@@ -14,7 +14,7 @@ def mkdir_p(dirname):
 
 @manager.command
 def init():
-    mkdir_p(os.path.join(app.static_folder, app.config['UPLOADED_FILES_DIR']))
+    mkdir_p(app.upload_folder)
 
 if __name__ == "__main__":
     db.init_app(app)
