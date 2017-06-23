@@ -1,5 +1,8 @@
 from os import environ
-UPLOADED_FILES_DEST = 'imgee/static/test_uploads'
+
+# this will sit inside `app.static_folder`
+UPLOADED_FILES_DIR = 'test_uploads'
+
 AWS_FOLDER = 'test/'
 
 UNKNOWN_FILE_THUMBNAIL = 'unknown.jpeg'

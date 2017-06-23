@@ -58,12 +58,16 @@ class StoredFile(BaseNameMixin, db.Model):
     def extn(self):
         return guess_extension(self.mimetype, self.orig_extn) or ''
 
+    @property
+    def filename(self):
+        return self.name + self.extn
+
     def dict_data(self):
         return dict(
             title=self.title,
-            uploaded=self.created_at.strftime('%B %d, %Y'),
+            uploaded=self.created_at.isoformat() + 'Z',
             filesize=app.jinja_env.filters['filesizeformat'](self.size),
-            imgsize='%s x %s' % (self.width, self.height),
+            imgsize=u'%s×%s px' % (self.width, self.height),
             url=url_for('view_image', profile=self.profile.name, image=self.name),
             thumb_url=url_for('get_image', image=self.name, size=app.config.get('THUMBNAIL_SIZE'))
         )

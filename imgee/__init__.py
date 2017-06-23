@@ -22,30 +22,22 @@ from . import models, views
 from .models import db
 from .tasks import TaskRegistry
 
-registry = TaskRegistry(os.getenv('ENV', 'production'))
+registry = TaskRegistry()
 
-
-def mkdir_p(dirname):
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-
-
-# Configure the app
+# Configure the application
 coaster.app.init_app(app)
 migrate = Migrate(app, db)
 baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
 lastuser.init_app(app)
 lastuser.init_usermanager(UserManager(db, models.User))
+registry.init_app(app)
 
 
 @app.errorhandler(403)
 def error403(error):
     return redirect(url_for('login'))
 
-if app.config.get('MEDIA_DOMAIN') and (
-        app.config['MEDIA_DOMAIN'].startswith('http:') or
-        app.config['MEDIA_DOMAIN'].startswith('https:')):
+if app.config.get('MEDIA_DOMAIN', '').lower().startswith(('http://', 'https://')):
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
-mkdir_p(app.config['UPLOADED_FILES_DEST'])
 
-registry.set_connection()
+app.upload_folder = os.path.join(app.static_folder, app.config.get('UPLOADED_FILES_DIR'))

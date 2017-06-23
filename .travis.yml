@@ -8,19 +8,23 @@ env:
       SQ9lTuSD5jg3NSM8yMfMU58ppAYBgd+6VQP01wUPFrV/JSsbfgnVjMTm/Nbk
       EGeHYvQUiyAg7zM4KdNJr6txj+jBE8MAeh7EwYNHoh9B7Vx//GxmXFnWyjXV
       9cJkFroDW1Zfs2SZjLtzMQC8YXE30jmMxg+XHCQewKzRa4u1320=
+  # this is already being set in runtests.sh,
+  # but need to set it for `./manage.py init` too.
+  # could set it before running manage.py, but chose to put it here
+  - FLASK_ENV=TESTING
 language: python
 python:
   - 2.7
 services:
   - redis-server
-before_script:
-  - mkdir imgee/static/test_uploads
-script:
-  - nosetests --with-coverage
 install:
-  - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc
+  - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc inkscape
   - pip install -r requirements.txt
-  - pip install nose coverage BeautifulSoup4 Pillow
+  - pip install -r test_requirements.txt
+before_script:
+  - ./manage.py init  # creates the test upload directory
+script:
+  - ./runtests.sh
 notifications:
   email: false
   slack:

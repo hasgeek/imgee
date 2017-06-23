@@ -1,3 +1,4 @@
+import os
 import unittest
 import random
 import string
@@ -25,6 +26,7 @@ class ImgeeTestCase(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.testing = True
+
         db.create_all()
         self.test_user_name = u'testuser'
         test_user = self.get_test_user(name=self.test_user_name)

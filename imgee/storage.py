@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 from glob import glob
 import os.path
+import os
 import re
 from subprocess import check_call, CalledProcessError
 import time
@@ -14,9 +15,9 @@ import imgee
 from imgee import app
 from imgee.models import db, Thumbnail, StoredFile
 from imgee.utils import (
-    newid, guess_extension, get_file_type,
+    newid, guess_extension, get_file_type, is_animated_gif,
     path_for, get_s3_folder, get_s3_bucket,
-    download_frm_s3, get_width_height, ALLOWED_MIMETYPES,
+    download_from_s3, get_width_height, ALLOWED_MIMETYPES,
     exists_in_s3, THUMBNAIL_COMMANDS
 )
 
@@ -29,6 +30,15 @@ def get_resized_image(img, size, is_thumbnail=False):
     """
     registry = imgee.registry
     img_name = img.name
+
+    if img.mimetype == 'image/gif':
+        # if the gif file is animated, not resizing it for now
+        # but we will need to resize the gif, keeping animation intact
+        # https://github.com/hasgeek/imgee/issues/55
+        src_path = download_from_s3(img.filename)
+        if is_animated_gif(src_path):
+            return img.name
+
     size_t = parse_size(size)
     if (size_t and size_t[0] != img.width and size_t[1] != img.height) or ('thumb_extn' in ALLOWED_MIMETYPES[img.mimetype] and ALLOWED_MIMETYPES[img.mimetype]['thumb_extn'] != img.extn):
         w_or_h = or_(Thumbnail.width == size_t[0], Thumbnail.height == size_t[1])
@@ -36,10 +46,9 @@ def get_resized_image(img, size, is_thumbnail=False):
         if scaled and exists_in_s3(scaled):
             img_name = scaled.name
         else:
-            size = get_fitting_size((img.width, img.height), size_t)
+            original_size = (img.width, img.height)
+            size = get_fitting_size(original_size, size_t)
             resized_filename = get_resized_filename(img, size)
-            registry = imgee.registry
-
             try:
                 if resized_filename in registry:
                     # file is still being processed
@@ -48,12 +57,10 @@ def get_resized_image(img, size, is_thumbnail=False):
                 else:
                     registry.add(resized_filename)
                 img_name = resize_and_save(img, size, is_thumbnail=is_thumbnail)
-            except Exception as e:
-                # something broke while processing the file
-                raise e
             finally:
                 # file has been processed, remove from registry
-                registry.remove(resized_filename)
+                if resized_filename in registry:
+                    registry.remove(resized_filename)
     return img_name
 
 
@@ -74,7 +81,7 @@ def save_file(fp, profile, title=None):
 
     stored_file = save_img_in_db(name=id_, title=title, local_path=local_path,
                     profile=profile, mimetype=content_type, orig_extn=extn)
-    s3resp = save_on_s3(img_name, content_type=content_type)
+    save_on_s3(img_name, content_type=content_type)
     return title, stored_file
 
 
@@ -121,7 +128,8 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
         headers = {
             'Cache-Control': 'max-age=31536000',  # 60*60*24*365
             'Content-Type': get_file_type(fp, filename),
-            'Expires': datetime.now() + timedelta(days=365)
+            # once cached, it is set to expire after a year
+            'Expires': datetime.utcnow() + timedelta(days=365)
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
     return filename
@@ -146,7 +154,7 @@ def parse_size(size):
         return tuple(map(int, size))
 
 
-def get_fitting_size((orig_w, orig_h), size):
+def get_fitting_size(original_size, size):
     """
      Return the size to fit the image to the box
      along the smaller side and preserve aspect ratio.
@@ -171,6 +179,8 @@ def get_fitting_size((orig_w, orig_h), size):
     >>> get_fitting_size((200, 500), (400, 600))
     [240, 600]
     """
+    orig_w, orig_h = original_size
+
     if orig_w == 0 or orig_h == 0:
         # this is either a cdr file or a zero width file
         # just go with target size
@@ -216,7 +226,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     Get the original image from local disk cache, download it from S3 if it misses.
     Resize the image and save resized image on S3 and size details in db.
     """
-    src_path = download_frm_s3(img.name + img.extn)
+    src_path = download_from_s3(img.filename)
 
     if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:
         format = ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
@@ -258,9 +268,10 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
 
 def clean_local_cache(expiry=24):
     """
-    Remove files from local cache which are NOT accessed in the last `expiry` hours.
+    Remove files from local cache
+    which are NOT accessed in the last `expiry` hours.
     """
-    cache_path = app.config.get('UPLOADED_FILES_DEST')
+    cache_path = app.upload_folder
     cache_path = os.path.join(cache_path, '*')
     min_atime = time.time() - expiry*60*60
 
@@ -275,11 +286,16 @@ def clean_local_cache(expiry=24):
 def delete(stored_file, commit=True):
     """
     Delete all the thumbnails and images associated with a file, from local cache and S3.
-    Wait for the upload/resize to complete if queued for the same image.
     """
+    registry = imgee.registry
+    # remove all the keys related to the given file name
+    # this is delete all keys matching `imgee:registry:<name>*`
+    registry.remove_keys_starting_with(stored_file.name)
+
     # remove locally
-    cache_path = app.config.get('UPLOADED_FILES_DEST')
-    cached_img_path = os.path.join(cache_path, '%s*' % stored_file.name)
+    cache_path = app.upload_folder
+    os.remove(os.path.join(cache_path, '%s' % stored_file.filename))
+    cached_img_path = os.path.join(cache_path, '%s_*' % stored_file.name)
     for f in glob(cached_img_path):
         os.remove(f)
 

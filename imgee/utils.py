@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import re
-import os.path
+import os
 from subprocess import check_output, CalledProcessError
 from urlparse import urljoin
-from uuid import uuid4
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
@@ -12,8 +11,9 @@ from boto.s3.key import Key
 import defusedxml.cElementTree as elementtree
 from flask import request
 import magic
+from PIL import Image
 
-import imgee
+from uuid import uuid4
 from imgee import app
 
 THUMBNAIL_COMMANDS = {
@@ -97,7 +97,7 @@ def get_file_url(scheme=None):
 
 
 def path_for(img_name):
-    return os.path.join(app.config['UPLOADED_FILES_DEST'], img_name)
+    return os.path.join(app.upload_folder, img_name)
 
 
 # -- mimetypes and content types
@@ -129,6 +129,16 @@ def is_svg(fp):
         pass
     fp.seek(0)
     return tag == '{http://www.w3.org/2000/svg}svg'
+
+
+def is_animated_gif(local_path):
+    is_animated = True
+    gif = Image.open(local_path)
+    try:
+        gif.seek(1)
+    except EOFError:
+        is_animated = False
+    return is_animated
 
 
 def get_file_type(fp, filename=None):
@@ -186,7 +196,7 @@ def exists_in_s3(thumb):
     return True
 
 
-def download_frm_s3(img_name):
+def download_from_s3(img_name):
     local_path = path_for(img_name)
     if not os.path.exists(local_path):
         bucket = get_s3_bucket()
@@ -238,11 +248,12 @@ def get_no_previews_url(size):
 
 
 def get_image_url(image, size=None):
+    from imgee import storage
     extn = image.extn
     if size and extn in EXTNS:
         if image.no_previews:
             return get_no_previews_url(size)
-        img_name = imgee.storage.get_resized_image(image, size)
+        img_name = storage.get_resized_image(image, size)
         if not img_name:
             return get_no_previews_url(size)
     else:

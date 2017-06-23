@@ -1,9 +1,9 @@
-Flask==0.10.1
+Flask
 https://github.com/hasgeek/coaster/zipball/master
 https://github.com/hasgeek/baseframe/zipball/master
-SQLAlchemy==1.1.5
-SQLAlchemy-Utils==0.32.12
-Flask-SQLAlchemy==2.1
+SQLAlchemy
+SQLAlchemy-Utils
+Flask-SQLAlchemy
 psycopg2
 https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/jace/flask-alembic/archive/master.zip
@@ -13,3 +13,4 @@ xml4h
 python-magic
 defusedxml
 Flask-Migrate
+pillow
