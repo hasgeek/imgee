@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from coaster import make_name
+from coaster.utils import make_name
 from baseframe.forms import Form
 from wtforms.validators import Required, ValidationError, Length
 from wtforms import (FileField, TextField, HiddenField, SelectField)
