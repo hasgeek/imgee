@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from flask.ext.babelex import gettext, ngettext
 from flask import (render_template, request, url_for, redirect, flash)
 from coaster.views import load_models, load_model
 
@@ -11,9 +12,9 @@ from imgee.models import Label, StoredFile, Profile, db
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['view', 'siteadmin'])
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def show_label(profile, label):
-    files = label.stored_files.order_by('stored_file.created_at desc').all()
+    files = label.stored_files.order_by(db.desc(StoredFile.created_at)).all()
     form = forms.EditLabelForm()
     return render_template('show_label.html', form=form, label=label, files=files, profile=profile)
 
@@ -21,7 +22,7 @@ def show_label(profile, label):
 @app.route('/<profile>/newlabel', methods=['GET', 'POST'])
 @lastuser.requires_login
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-label', 'siteadmin'])
+    permission=['new-label', 'siteadmin'], addlperms=lastuser.permissions)
 def create_label(profile):
     form = forms.CreateLabelForm(profile_id=profile.id)
     # profile_id is not filled in modal form, fill it here.
@@ -40,7 +41,7 @@ def create_label(profile):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['delete', 'siteadmin'])
+    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
 def delete_label(profile, label):
     form = forms.RemoveLabelForm()
     if form.is_submitted():
@@ -55,7 +56,7 @@ def delete_label(profile, label):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['edit', 'siteadmin'])
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def edit_label(profile, label):
     form = forms.EditLabelForm()
     if form.validate_on_submit():
@@ -74,12 +75,12 @@ def edit_label(profile, label):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['edit', 'siteadmin'])
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def manage_labels(profile, img):
     form = forms.AddLabelForm(stored_file_id=img.id)
     if form.validate_on_submit():
         form_label_data = form.labels.data.strip()
-        saved, msg = utils_save_labels(form_label_data, img, profile)
+        total_saved, msg = utils_save_labels(form_label_data, img, profile)
         if msg:
             flash(msg)
         return redirect(url_for('view_image', profile=profile.name, image=img.name))
@@ -88,7 +89,9 @@ def manage_labels(profile, img):
 
 def utils_save_labels(form_label_data, img, profile):
     msg = ""
+    total_saved = 0
     form_lns = set()
+
     if form_label_data:
         form_lns = set(l.strip() for l in form_label_data.split(','))
     profile_lns = set(l.title for l in profile.labels)
@@ -96,13 +99,33 @@ def utils_save_labels(form_label_data, img, profile):
     for lname in form_lns - profile_lns:
         l = utils_save_label(lname, profile, commit=False)
         labels.append(l)
-    s, saved = img.add_labels(labels)
-    if saved:
+    status = img.add_labels(labels)
+
+    if status['+'] or status['-']:
+        # if any labels have been added or removed
         db.session.commit()
-        status = {'+': ('Added', 'to'), '-': ('Removed', 'from'), '': ('Saved', 'to')}
-        plural = 's' if len(saved) > 1 else ''
-        msg = "%s label%s '%s' %s '%s'." % (status[s][0], plural, "', '".join(l.title for l in saved), status[s][1], img.title)
-    return saved, msg
+
+        for s in ['+', '-']:
+            num_saved = len(status[s])
+
+            if num_saved == 0:
+                continue
+
+            total_saved += num_saved
+            label_names = "', '".join(l.title for l in status[s])
+            status_template = {
+                '+': ngettext('Added %(num)s label to', 'Added %(num)s labels to', num_saved),
+                '-': ngettext('Removed %(num)s label from', 'Removed %(num)s labels from', num_saved),
+            }
+            msg += '{status_text} "{img_name}": "{label_names}". '.format(
+                status_text=status_template[s],
+                img_name=img.title,
+                label_names=label_names
+            )
+    else:
+        # no new labels were added or removed
+        msg = gettext('No new labels were added or removed.')
+    return total_saved, msg
 
 
 def utils_save_label(label_name, profile, commit=True):
@@ -115,7 +138,7 @@ def utils_save_label(label_name, profile, commit=True):
 
 
 def utils_delete_label(label):
-    if isinstance(label, str):
+    if isinstance(label, basestring):
         label = Label.query.filter_by(title=label).first()
     db.session.delete(label)
     db.session.commit()

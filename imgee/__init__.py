@@ -4,6 +4,8 @@
 
 import os
 
+from werkzeug.utils import secure_filename
+
 from flask import Flask, redirect, url_for
 from flask_lastuser import Lastuser
 from flask_lastuser.sqlalchemy import UserManager
@@ -40,4 +42,4 @@ def error403(error):
 if app.config.get('MEDIA_DOMAIN', '').lower().startswith(('http://', 'https://')):
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
 
-app.upload_folder = os.path.join(app.static_folder, app.config.get('UPLOADED_FILES_DIR'))
+app.upload_folder = os.path.join(app.static_folder, secure_filename(app.config.get('UPLOADED_FILES_DIR')))

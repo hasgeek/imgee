@@ -39,9 +39,8 @@ class LabelTestCase(ImgeeTestCase):
         # create label
         label = self.test_labels[0]
         # attach label to image
-        saved_list, msg = utils_save_labels(label, img, self.get_test_profile())
-        self.assertEqual(len(saved_list), 1)
-        self.assertEqual(("Added label '%s' to '%s'." % (label, img.title)), str(msg))
+        total_saved, msg = utils_save_labels(label, img, self.get_test_profile())
+        self.assertEqual(total_saved, 1)
 
         img = StoredFile.query.get(img_id)
         self.assertEquals(len(img.labels), 1)
@@ -49,7 +48,7 @@ class LabelTestCase(ImgeeTestCase):
         self.assertEqual(len(self.get_test_profile().labels), 1)
 
         # remove the label from image
-        status, saved_list = utils_save_labels([], img, self.get_test_profile())
+        total_saved, msg = utils_save_labels([], img, self.get_test_profile())
         img = StoredFile.query.get(img_id)
         self.assertEquals(len(img.labels), 0)
 

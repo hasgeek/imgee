@@ -49,13 +49,14 @@ def get_resized_image(img, size, is_thumbnail=False):
             original_size = (img.width, img.height)
             size = get_fitting_size(original_size, size_t)
             resized_filename = get_resized_filename(img, size)
+
+            if resized_filename in registry:
+                # file is still being processed
+                # returning None will show "no preview available" thumbnail
+                return None
+
             try:
-                if resized_filename in registry:
-                    # file is still being processed
-                    # returning None will show "no preview available" thumbnail
-                    return None
-                else:
-                    registry.add(resized_filename)
+                registry.add(resized_filename)
                 img_name = resize_and_save(img, size, is_thumbnail=is_thumbnail)
             finally:
                 # file has been processed, remove from registry
@@ -108,7 +109,7 @@ def save_tn_in_db(img, tn_name, size):
     """
     tn_w, tn_h = size
     name, extn = os.path.splitext(tn_name)
-    if Thumbnail.query.filter(Thumbnail.name == name).count() == 0:
+    if Thumbnail.query.filter(Thumbnail.name == name).isempty():
         tn = Thumbnail(name=name, width=tn_w, height=tn_h, stored_file=img)
         db.session.add(tn)
         db.session.commit()
@@ -271,8 +272,7 @@ def clean_local_cache(expiry=24):
     Remove files from local cache
     which are NOT accessed in the last `expiry` hours.
     """
-    cache_path = app.upload_folder
-    cache_path = os.path.join(cache_path, '*')
+    cache_path = os.path.join(app.upload_folder, '*')
     min_atime = time.time() - expiry*60*60
 
     n = 0
@@ -294,8 +294,8 @@ def delete(stored_file, commit=True):
 
     # remove locally
     cache_path = app.upload_folder
-    os.remove(os.path.join(cache_path, '%s' % stored_file.filename))
-    cached_img_path = os.path.join(cache_path, '%s_*' % stored_file.name)
+    os.remove(os.path.join(cache_path, stored_file.filename))
+    cached_img_path = os.path.join(cache_path, stored_file.name + '_*')
     for f in glob(cached_img_path):
         os.remove(f)
 

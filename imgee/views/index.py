@@ -4,7 +4,7 @@ from sqlalchemy import not_
 
 from coaster.views import load_model
 from imgee import app, forms, lastuser
-from imgee.models import StoredFile, Profile, Label
+from imgee.models import StoredFile, Profile, Label, db
 from imgee.storage import clean_local_cache
 from imgee.utils import ALLOWED_MIMETYPES
 
@@ -23,13 +23,13 @@ def index():
 @app.route('/<profile>/popup')
 @lastuser.requires_login
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'])
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def pop_up_gallery(profile):
     label = request.args.get('label')
     files = profile.stored_files
     if label:
         files = files.join(StoredFile.labels).filter(Label.name == label)
-    files = files.order_by('stored_file.created_at desc').all()
+    files = files.order_by(db.desc(StoredFile.created_at)).all()
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
@@ -40,7 +40,7 @@ def pop_up_gallery(profile):
 @app.route('/<profile>')
 @load_model(Profile, {'name': 'profile'}, 'profile')
 def profile_view(profile):
-    files = profile.stored_files.order_by('created_at desc').all()
+    files = profile.stored_files.order_by(db.desc(StoredFile.created_at)).all()
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
     return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form, mimetypes=ALLOWED_MIMETYPES.keys())
@@ -48,7 +48,7 @@ def profile_view(profile):
 
 @app.route('/<profile>/archive')
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'])
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def unlabelled_images(profile):
     """Get all unlabelled images owned by profile"""
     files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by('created_at desc').all()
@@ -59,9 +59,9 @@ def unlabelled_images(profile):
 def get_prev_next_images(profile, img, limit=2):
     # query for "all" images though we need just the `limit`
     # bcoz we don't know how many are there in deleteQ.
-    imgs = profile.stored_files.order_by('created_at desc').all()
-    pos = imgs.index(img)
-    return imgs[pos+1:pos+1+limit], imgs[:pos][-limit:]
+    prev = profile.stored_files.filter(StoredFile.created_at <= img.created_at, StoredFile.id != img.id).order_by(db.desc(StoredFile.created_at)).limit(limit).all()
+    next = profile.stored_files.filter(StoredFile.created_at >= img.created_at, StoredFile.id != img.id).order_by(db.asc(StoredFile.created_at)).limit(limit).all()
+    return prev, next
 
 
 @app.route('/_admin/purge-cache', methods=['GET', 'POST'])

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from flask import url_for
 
 from coaster.sqlalchemy import BaseNameMixin, BaseScopedNameMixin
-from imgee import app, url_for
-from imgee.models import db
-from imgee.utils import newid, guess_extension
+from .. import app
+from . import db
+from ..utils import newid, guess_extension
 
 
 image_labels = db.Table('image_labels',
@@ -73,18 +74,19 @@ class StoredFile(BaseNameMixin, db.Model):
         )
 
     def add_labels(self, labels):
+        status = {
+            '+': [],
+            '-': [],
+            '': []
+        }
+
         new_labels = set(labels)
         old_labels = set(self.labels)
         if new_labels != old_labels:
             self.labels = labels
 
-        if new_labels == old_labels:
-            status, diff = '0', []
-        elif new_labels > old_labels:
-            status, diff = '+', (new_labels - old_labels)
-        elif (old_labels > new_labels):
-            status, diff = '-', (old_labels - new_labels)
-        else:
-            status, diff = '', new_labels
+        status['+'] = new_labels - old_labels  # added labels
+        status['-'] = old_labels - new_labels  # removed labels
+        status[''] = old_labels.intersection(new_labels)  # unchanged labels
 
-        return status, list(diff)
+        return status

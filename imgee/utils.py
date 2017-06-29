@@ -143,7 +143,7 @@ def is_animated_gif(local_path):
 
 def get_file_type(fp, filename=None):
     fp.seek(0)
-    data = fp.read()
+    data = fp.read(1024)  # https://github.com/ahupp/python-magic#usage
     fp.seek(0)
     result = magic.from_buffer(data, mime=True)
     if result in ('text/plain', 'text/xml', 'application/xml'):
@@ -154,11 +154,10 @@ def get_file_type(fp, filename=None):
 
 def is_file_allowed(fp, provided_mimetype=None, filename=None):
     fp.seek(0)
-    data = fp.read()
+    data = fp.read(1)  # we just want to see if the file is empty or not
     fp.seek(0)
     if len(data) == 0:
-        # reject files with zero size
-        return False
+        return False  # reject files with zero size
     return get_file_type(fp, filename) in ALLOWED_MIMETYPES
 
 
@@ -211,14 +210,15 @@ def download_from_s3(img_name):
 
 def get_width_height(img_path):
     name, extn = os.path.splitext(img_path)
+    w, h = 0, 0
     try:
-        o = '0x0'
         if extn in ['.pdf', '.gif']:
             o = check_output('identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path), shell=True)
+            w, h = o.split('x')
         elif extn in ['.cdr']:
             wo = check_output('inkscape -z -W {}'.format(img_path), shell=True)
             ho = check_output('inkscape -z -H {}'.format(img_path), shell=True)
-            o = "{}x{}".format(int(round(float(wo))), int(round(float(ho))))
+            w, h = int(round(float(wo))), int(round(float(ho)))
         elif extn in ['.psd']:
             # identify command doesn't seem to work on psd files
             # hence using file command and extracting resolution from there
@@ -226,10 +226,11 @@ def get_width_height(img_path):
             possible_size = re.findall(r'\d+\ x\ \d+', fo)
             if len(possible_size) == 1:
                 wo, ho = possible_size[0].split(' x ')
-                o = "{}x{}".format(int(round(float(wo))), int(round(float(ho))))
+                w, h = int(round(float(wo))), int(round(float(ho)))
         else:
             o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
-        return tuple(int(dim) for dim in o.split('x'))
+            w, h = o.split('x')
+        return (w, h)
     except CalledProcessError:
         return (0, 0)
 

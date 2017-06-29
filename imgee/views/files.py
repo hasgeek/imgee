@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import (flash, g, jsonify, redirect, render_template, request, url_for)
+from flask import flash, g, jsonify, redirect, render_template, request, url_for
 from sqlalchemy import and_
 
 from coaster.views import load_model, load_models
@@ -28,7 +28,7 @@ def _redirect_url_frm_upload(profile_name):
 @app.route('/<profile>/new', methods=['GET', 'POST'])
 @lastuser.requires_login
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-file', 'siteadmin'])
+    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
@@ -42,7 +42,7 @@ def upload_file(profile):
 @app.route('/<profile>/new.json', methods=['POST'])
 @lastuser.requires_login
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-file', 'siteadmin'])
+    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
 def upload_file_json(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
@@ -64,7 +64,7 @@ def upload_file_json(profile):
 @app.route('/<profile>/edit_title', methods=['POST'])
 @lastuser.requires_login
 @load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['edit', 'siteadmin'])
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def edit_title(profile):
     form = EditTitleForm()
     if form.validate_on_submit():
@@ -83,7 +83,7 @@ def edit_title(profile):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'file'}, 'stored_file'),
-    permission=['edit', 'siteadmin'])
+    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def update_title_json(profile, stored_file):
     form = UpdateTitle()
     if form.validate_on_submit():
@@ -100,7 +100,7 @@ def update_title_json(profile, stored_file):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['view', 'siteadmin'])
+    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def view_image(profile, img):
     prev, next = get_prev_next_images(profile, img)
     form = AddLabelForm(stored_file_id=img.name)
@@ -122,10 +122,10 @@ def get_image(image):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['delete', 'siteadmin'])
+    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
 def delete_file(profile, img):
     form = DeleteImageForm()
-    if form.is_submitted():
+    if form.validate_on_submit():
         delete(img)
         flash("%s is deleted" % img.title)
     else:

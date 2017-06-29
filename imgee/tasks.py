@@ -11,7 +11,7 @@ class TaskRegistry(object):
         self.name = name
         self.connection = connection
         self.key_prefix = 'imgee:registry:%s' % name
-        self.filename_pattern = r'^[a-z0-9_\.]+$'
+        self.filename_pattern = re.compile(r'^[a-z0-9_\.]+$')
 
         if app:
             self.init_app(app)
@@ -27,7 +27,7 @@ class TaskRegistry(object):
             self.pipe = self.connection.pipeline()
 
     def is_valid_query(self, query):
-        return bool(re.match(self.filename_pattern, query))
+        return bool(self.filename_pattern.match(query))
 
     def key_for(self, taskid):
         return u'{key_prefix}:{taskid}'.format(key_prefix=self.key_prefix, taskid=taskid)
