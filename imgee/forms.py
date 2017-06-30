@@ -6,8 +6,8 @@ from wtforms.validators import Required, ValidationError, Length
 from wtforms import (FileField, TextField, HiddenField, SelectField)
 
 from imgee import app
-from imgee.models import Label
-from imgee.utils import is_file_allowed
+from .models import Label
+from .utils import is_file_allowed
 
 
 def valid_file(form, field):

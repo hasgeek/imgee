@@ -1,11 +1,11 @@
 import unittest
 import requests
+from werkzeug.datastructures import FileStorage
 
 from imgee import app, url_for, db
 from imgee.storage import save_file, delete
 from imgee.utils import get_image_url, get_thumbnail_url
-from fixtures import ImgeeTestCase
-from werkzeug.datastructures import FileStorage
+from .fixtures import ImgeeTestCase
 
 
 class UploadTestCase(ImgeeTestCase):

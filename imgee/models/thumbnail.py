@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from coaster.sqlalchemy import BaseMixin
-from imgee.models import db
-from imgee.utils import newid
+from . import db
+from ..utils import newid
 
 
 class Thumbnail(BaseMixin, db.Model):

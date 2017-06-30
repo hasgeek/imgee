@@ -1,10 +1,10 @@
 import unittest
+from werkzeug.datastructures import FileStorage
 
 from imgee.models import StoredFile, Label
 from imgee.views.labels import utils_save_labels, utils_save_label, utils_delete_label
 from imgee.storage import save_file
-from fixtures import ImgeeTestCase
-from werkzeug.datastructures import FileStorage
+from .fixtures import ImgeeTestCase
 
 
 class LabelTestCase(ImgeeTestCase):

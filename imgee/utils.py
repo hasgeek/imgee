@@ -14,7 +14,7 @@ import magic
 from PIL import Image
 
 from uuid import uuid4
-from imgee import app
+from . import app
 
 THUMBNAIL_COMMANDS = {
     'inkscape': "inkscape -z -f {src} -e {src}.original.png && convert -quiet -thumbnail {width}x{height} {src}.original.png -colorspace sRGB -quality 75% {dest}",

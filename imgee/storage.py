@@ -12,9 +12,9 @@ from sqlalchemy import or_
 from werkzeug import secure_filename
 
 import imgee
-from imgee import app
-from imgee.models import db, Thumbnail, StoredFile
-from imgee.utils import (
+from . import app
+from .models import db, Thumbnail, StoredFile
+from .utils import (
     newid, guess_extension, get_file_type, is_animated_gif,
     path_for, get_s3_folder, get_s3_bucket,
     download_from_s3, get_width_height, ALLOWED_MIMETYPES,
