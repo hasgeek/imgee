@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from flask import flash, g, jsonify, redirect, render_template, request, url_for
-from sqlalchemy import and_
 
 from coaster.views import load_model, load_models
 from imgee import app, lastuser
@@ -8,11 +7,10 @@ from imgee.forms import (
     UploadImageForm, UpdateTitle, EditTitleForm,
     AddLabelForm, DeleteImageForm
 )
-from imgee.models import StoredFile, db, Profile
-from imgee.storage import delete, save_file
-from imgee.utils import get_media_domain
+from ..models import StoredFile, db, Profile
+from ..storage import delete, save_file
+from ..utils import get_media_domain, get_image_url
 from .index import get_prev_next_images
-import imgee.utils as utils
 
 
 def _redirect_url_frm_upload(profile_name):
@@ -53,8 +51,8 @@ def upload_file_json(profile):
         form = render_template('edit_title_form.html', form=update_form, formid='edit_title_' + stored_file.name)
         return jsonify(
             status=True, message="%s uploaded successfully" % title, form=form,
-            update_url=url_for('update_title_json', profile=profile.name, file=stored_file.name),
-            image_data=stored_file.dict_data())
+            update_url=url_for('update_title_json', profile=profile.name,
+            file=stored_file.name), image_data=stored_file.dict_data())
     else:
         response = jsonify(status=False, message=' '.join(upload_form.errors.values()))
         response.status_code = 403
@@ -69,8 +67,9 @@ def edit_title(profile):
     form = EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
-        q = and_(Profile.userid.in_(g.user.user_organizations_owned_ids()), StoredFile.name == file_name)
-        f = StoredFile.query.filter(q).first_or_404()
+        if profile.userid not in g.user.user_organizations_owned_ids():
+            abort(403)
+        f = StoredFile.query.filter_by(profile=profile, name=file_name).first_or_404()
         f.title = request.form.get('file_title')
         db.session.commit()
         return f.title
@@ -82,7 +81,7 @@ def edit_title(profile):
 @lastuser.requires_login
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
-    (StoredFile, {'name': 'file'}, 'stored_file'),
+    (StoredFile, {'name': 'file', 'profile': 'profile'}, 'stored_file'),
     permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
 def update_title_json(profile, stored_file):
     form = UpdateTitle()
@@ -113,7 +112,7 @@ def view_image(profile, img):
 @load_model(StoredFile, {'name': 'image'}, 'image')
 def get_image(image):
     size = request.args.get('size')
-    image_url = utils.get_image_url(image, size)
+    image_url = get_image_url(image, size)
     return redirect(image_url, code=301)
 
 
