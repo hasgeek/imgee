@@ -2,7 +2,7 @@
 
 # The imports in this file are order-sensitive
 
-import os
+import os.path
 
 from werkzeug.utils import secure_filename
 
