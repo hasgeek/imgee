@@ -8,12 +8,13 @@ phases:
   install:
     commands:
       - apt-get update -y
-      - apt-get -qq install redis-server zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc inkscape python-dev python-pip
+      - apt-get -qq install python-dev python-pip redis-server zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc inkscape
       - pip install -U pip
       - pip install -r requirements.txt
       - pip install -r test_requirements.txt
   pre_build:
     commands:
+      - export FLASK_ENV="testing"
       - ./manage.py init  # creates the test upload directory
   build:
     commands:
