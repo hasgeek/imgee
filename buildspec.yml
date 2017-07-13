@@ -1,0 +1,31 @@
+version: 0.1
+
+env:
+  variables:
+    FLASK_ENV: "testing"
+
+phases:
+  install:
+    commands:
+      - apt-get update -y
+      - apt-get -qq install redis-server zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc inkscape python-dev python-pip
+      - pip install -U pip
+      - pip install -r requirements.txt
+      - pip install -r test_requirements.txt
+  pre_build:
+    commands:
+      - ./manage.py init  # creates the test upload directory
+  build:
+    commands:
+      - echo Build started on `date`
+      - ./runtests.sh
+  # post_build:
+  #   commands:
+  #     - command
+  #     - command
+# artifacts:
+#   files:
+#     - location
+#     - location
+#   discard-paths: yes
+#   base-directory: location
