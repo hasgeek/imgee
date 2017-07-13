@@ -107,7 +107,7 @@ def save_tn_in_db(img, tn_name, size):
     """
     Save thumbnail info in db.
 
-    tn_name: Name of the thumbnaim file.
+    tn_name: Name of the thumbnail file.
         e.g. eecffa912ef111e787d65f851b2b7883_w75_h45
 
     size: A tuple in the format (width, height)
