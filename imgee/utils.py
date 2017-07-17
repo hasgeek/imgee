@@ -248,6 +248,10 @@ def get_no_previews_url(size):
         return '/static/img/no-preview-800.png'
 
 
+def get_loading_spinner_url():
+    return '/static/img/spinner.gif'
+
+
 def get_image_url(image, size=None):
     from imgee import storage
     extn = image.extn
@@ -256,7 +260,7 @@ def get_image_url(image, size=None):
             return get_no_previews_url(size)
         img_name = storage.get_resized_image(image, size)
         if not img_name:
-            return get_no_previews_url(size)
+            return get_loading_spinner_url()
     else:
         img_name = image.name
     if size and 'thumb_extn' in ALLOWED_MIMETYPES[image.mimetype]:
