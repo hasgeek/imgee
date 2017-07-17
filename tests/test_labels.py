@@ -1,9 +1,10 @@
 import unittest
+from werkzeug.datastructures import FileStorage
 
-from imgee import storage
-from imgee.models import StoredFile, Label, db
-from fixtures import ImgeeTestCase
-import test_utils
+from imgee.models import StoredFile, Label
+from imgee.views.labels import utils_save_labels, utils_save_label, utils_delete_label
+from imgee.storage import save_file
+from .fixtures import ImgeeTestCase
 
 
 class LabelTestCase(ImgeeTestCase):
@@ -14,61 +15,50 @@ class LabelTestCase(ImgeeTestCase):
         self.test_labels = ['logos', 'banners', 'profile-photos']
 
     def upload(self, path=None):
-        return test_utils.upload(self.client, path or self.test_files[0], '/%s/new' % self.test_user_name)
-
-    def create_label(self, label=None):
-        label = label or self.test_labels[0]
-        response = self.client.post('/%s/newlabel' % self.test_user_name, data={'label': label}, follow_redirects=True)
-        return response
+        profile = self.get_test_profile()
+        sf = None
+        with open(path or self.test_files[0]) as fp:
+            fs = FileStorage(fp)
+            title, sf = save_file(fs, profile)
+        return sf
 
     def test_empty(self):
-        r = self.client.get('/%s' % self.test_user_name)
-        self.assertEquals(r.status_code, 200)
         self.assertEquals(len(Label.query.all()), 0)
 
     def test_create_label(self):
-        label = self.test_labels[0]
-        r = self.create_label(label)
-        self.assertEquals(r.status_code, 200)
-        self.assertEquals(len(Label.query.filter_by(title=label).all()), 1)
+        label_title = self.test_labels[0]
+        utils_save_label(label_title, self.get_test_profile())
+        self.assertEquals(len(Label.query.filter_by(title=label_title).all()), 1)
 
     def test_add_remove_label(self):
         # upload image
-        img_title, r = self.upload()
-        img = StoredFile.query.filter_by(title=img_title).one()
-        img_id, img_name = img.id, img.name
+        img = self.upload()
+        img_id = img.id
         self.assertFalse(img.labels)
 
         # create label
         label = self.test_labels[0]
-        self.create_label(label)
         # attach label to image
-        save_label_url = '/%s/save_labels/%s' % (self.test_user_name, img_name)
-        r = self.client.post(save_label_url, data={'labels': label})
+        total_saved, msg = utils_save_labels(label, img, self.get_test_profile())
+        self.assertEqual(total_saved, 1)
 
         img = StoredFile.query.get(img_id)
         self.assertEquals(len(img.labels), 1)
 
-        r = self.client.get('/%s/%s' % (self.test_user_name, label))
-        self.assertEquals(r.status_code, 200)
+        self.assertEqual(len(self.get_test_profile().labels), 1)
 
         # remove the label from image
-        r = self.client.post(save_label_url, data={'labels': ''})
+        total_saved, msg = utils_save_labels([], img, self.get_test_profile())
         img = StoredFile.query.get(img_id)
         self.assertEquals(len(img.labels), 0)
 
     def test_delete_label(self):
-        label = self.test_labels[0]
-        r = self.create_label(label)
-        r = self.client.get('/%s/%s' % (self.test_user_name, label))
-        self.assertEquals(r.status_code, 200)
-        delete_url = '/%s/%s/delete' % (self.test_user_name, label)
-        r = self.client.post(delete_url, data={})
-        self.assertTrue(r.status_code, 200)
-        r = self.client.get('/%s/%s', self.test_user_name, label)
-        self.assertEquals(r.status_code, 404)
-
-
+        label_title = self.test_labels[0]
+        # create label
+        utils_save_label(label_title, self.get_test_profile())
+        # delete label
+        utils_delete_label(label_title)
+        self.assertEquals(len(Label.query.filter_by(title=label_title).all()), 0)
 
 
 if __name__ == '__main__':

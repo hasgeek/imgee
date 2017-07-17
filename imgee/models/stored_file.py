@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from flask import url_for
 
 from coaster.sqlalchemy import BaseNameMixin, BaseScopedNameMixin
-import imgee
-from imgee.models import db
-from imgee.utils import newid, guess_extension
+from .. import app
+from . import db
+from ..utils import newid, guess_extension
 
 
 image_labels = db.Table('image_labels',
@@ -58,7 +59,34 @@ class StoredFile(BaseNameMixin, db.Model):
     def extn(self):
         return guess_extension(self.mimetype, self.orig_extn) or ''
 
-    def is_queued_for_deletion(self):
-        if imgee.app.config.get('CELERY_ALWAYS_EAGER'):
-            return False
-        return imgee.registry.is_queued_for_deletion(self.name+self.extn)
+    @property
+    def filename(self):
+        return self.name + self.extn
+
+    def dict_data(self):
+        return dict(
+            title=self.title,
+            uploaded=self.created_at.isoformat() + 'Z',
+            filesize=app.jinja_env.filters['filesizeformat'](self.size),
+            imgsize=u'%s×%s px' % (self.width, self.height),
+            url=url_for('view_image', profile=self.profile.name, image=self.name),
+            thumb_url=url_for('get_image', image=self.name, size=app.config.get('THUMBNAIL_SIZE'))
+        )
+
+    def add_labels(self, labels):
+        status = {
+            '+': [],
+            '-': [],
+            '': []
+        }
+
+        new_labels = set(labels)
+        old_labels = set(self.labels)
+        if new_labels != old_labels:
+            self.labels = labels
+
+        status['+'] = new_labels - old_labels  # added labels
+        status['-'] = old_labels - new_labels  # removed labels
+        status[''] = old_labels.intersection(new_labels)  # unchanged labels
+
+        return status

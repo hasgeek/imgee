@@ -1,5 +1,8 @@
 from os import environ
-UPLOADED_FILES_DEST = 'imgee/static/test_uploads'
+
+# this will sit inside `app.static_folder`
+UPLOADED_FILES_DIR = 'test_uploads'
+
 AWS_FOLDER = 'test/'
 
 UNKNOWN_FILE_THUMBNAIL = 'unknown.jpeg'
@@ -14,5 +17,5 @@ MEDIA_DOMAIN = 'https://%s.s3.amazonaws.com' % AWS_BUCKET
 
 SQLALCHEMY_DATABASE_URI = 'sqlite://'
 WTF_CSRF_ENABLED = False
-CELERY_ALWAYS_EAGER = True
 
+THUMBNAIL_SIZE = '75x75'

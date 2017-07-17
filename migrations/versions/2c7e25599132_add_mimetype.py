@@ -32,8 +32,9 @@ def upgrade():
     sf = StoredFile.__table__
     result = connection.execute(select([sf.c.id, sf.c.title]))
     mimetypes = [dict(sfid=r[0], mimetype=guess_type(r[1])[0]) for r in result]
-    updt_stmt = sf.update().where(sf.c.id == bindparam('sfid')).values(mimetype=bindparam('mimetype'))
-    connection.execute(updt_stmt, mimetypes)
+    if len(mimetypes) > 0:
+        updt_stmt = sf.update().where(sf.c.id == bindparam('sfid')).values(mimetype=bindparam('mimetype'))
+        connection.execute(updt_stmt, mimetypes)
 
 
 def downgrade():

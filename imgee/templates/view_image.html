@@ -19,16 +19,16 @@
       {% endfor %}
     </div>
   </div>
-{% endblock %} 
+{% endblock %}
 
 {% block maincontent %}
   <div class="tucked-corners-top">
-    <div class="tucked-corners-bottom"> 
+    <div class="tucked-corners-bottom">
       <p>
         <div class="row">
           {% set img_url= url_for('get_image', image=img.name, _external=True) %}
           <div class="span8">
-            
+
             <div class="heading editable_title" id="{{img.name}}">{{img.title}}</div>
             <div class="btn-group">
               {% if next %}
@@ -38,8 +38,8 @@
               {% if prev %}
                 {% set p = prev | first %}
                 <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
-              {% endif %}          
-            </div>              
+              {% endif %}
+            </div>
             <div class="image-display">
               <!-- picturefill -->
               <div id="img" data-picture data-alt="{{ img.title }}">
@@ -74,12 +74,12 @@
               </div>
             </div>
           </div>
-        </div><!-- /row -->    
+        </div><!-- /row -->
         <hr>
         <div class="row">
           <div class="span8">
             <div id="share">
-              
+
               <div class="block">
                 <div class="block-title"><i class="icon-share"></i>&nbsp;&nbsp;{% if img.extn == ".svg" %}Share image{% else %}Resize and Share{% endif %}</div>
                 {% if img.extn != ".svg" %}
@@ -121,7 +121,7 @@
 
               </div>
             </div>
-            <br />  
+            <br />
           </div><!-- /span8 -->
           <div class="span4">
             {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
@@ -139,7 +139,7 @@
           </div><!-- /span4 -->
           <div class="span4">
             <ul class="labels">
-              {% if img.labels %}     
+              {% if img.labels %}
                 <li>Labels:</li>
                 {% for label in img.labels %}
                   <li><span class="label">
@@ -149,8 +149,8 @@
             {% endif %}
             </ul>
             <div class="delete-button">
-            <a class="btn btn-danger" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete image</a> 
-          </div>
+              <a class="btn btn-danger" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete image</a>
+            </div>
           </div><!-- /span4 -->
         </div><!-- /row -->
 
@@ -196,7 +196,7 @@
 
     if((current_direct_link.search('size')) != '-1' ){
       current_direct_link = current_direct_link.split('?size=')[0];
-    }  
+    }
     var new_link = current_direct_link+'?size='+text;
 
     $("input:text[name='direct-link']").val(new_link);
@@ -208,7 +208,7 @@
 
     if((current_direct_link.search('size')) != '-1' ){
       current_direct_link = current_direct_link.split('?size=')[0];
-    }  
+    }
     var new_link = current_direct_link;
 
     $("input:text[name='direct-link']").val(new_link);

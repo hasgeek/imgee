@@ -9,7 +9,7 @@
 
 {% block sidebar_labels %}
   <ul class="nav nav-list" id="expandable1">
-    <li class="nav-header">Labels</li> 
+    <li class="nav-header">Labels</li>
     <!-- List labels -->
     {% if profile.labels %}
       {% for l in profile.labels |sort(attribute='name')%}
@@ -31,7 +31,7 @@
     {% endif %}
     </a></li>
     <!-- //Unlabelled archive-->
-  </ul>   
+  </ul>
   <div id="hideThisFromNonJs" style="display:none">
     <!-- Create new label -->
     <a class="hide-mob" href="#labelModal" role="button" title="Upload image" class="" data-toggle="modal"><i class="icon-plus"></i>&nbsp;New label</a>
@@ -42,15 +42,15 @@
               <h3>Create Label</h3>
           </div>
           <div class="modal-body">
-              <div class="create-box well">     
+              <div class="create-box well">
                   <form action="{{ url_for('create_label', profile=profile.name) }}" method="POST">
                     {{ renderform(cl_form) }}
-                  </form> 
-              </div>                        
+                  </form>
+              </div>
           </div>
       </div>
     {%- endif %}
-    <!-- //Create new label --> 
+    <!-- //Create new label -->
   </div>
   <noscript>
     <a class="" title="Create new label" href="{{url_for('create_label', profile=profile.name )}}"><i class="icon-plus"></i>&nbsp;&nbsp;Add label</a>
@@ -65,11 +65,14 @@
       {{form.hidden_tag()}}
       <div class="span7">
         <div class="heading">Images with label "<span class="editable_label" id="{{label.id}}">{{label.name}}</span>"</div>
+        <br>
       </div>
       <div class="span2">
+        {% if g.user %}
         <a class="btn btn-danger pull-right" href="{{url_for('delete_label', profile=profile.name ,label=label.name)}}" title='Delete label "{{label.name}}"'><i class="icon-trash"></i>&nbsp;<span id="delete">Delete Label</span></a>
+        {% endif %}
       </div>
-    </div>        
+    </div>
     <div class="gallery well">
       {%if not files %}
         <div class="span9">
