@@ -1,13 +1,16 @@
 Flask
 https://github.com/hasgeek/coaster/zipball/master
 https://github.com/hasgeek/baseframe/zipball/master
+SQLAlchemy
+SQLAlchemy-Utils
 Flask-SQLAlchemy
+psycopg2
 https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/jace/flask-alembic/archive/master.zip
 boto
 redis
-celery
 xml4h
 python-magic
 defusedxml
 Flask-Migrate
+pillow

@@ -33,7 +33,7 @@ ADMINS = []
 #: Log file
 LOGFILE = 'error.log'
 #: File uploads
-UPLOADED_FILES_DEST = 'imgee/static/uploads'
+UPLOADED_FILES_DIR = 'uploads'  # this will sit inside `app.static_folder`
 #: S3 Configuration
 AWS_ACCESS_KEY = 'Set aws access key here'
 AWS_SECRET_KEY = 'Set aws secret key here'
@@ -44,12 +44,8 @@ MEDIA_DOMAIN = 'http://%s.s3.amazonaws.com' % AWS_BUCKET
 THUMBNAIL_SIZE = '75x75'   # WxH in px
 UNKNOWN_FILE_THUMBNAIL = 'set name of unknown file thumbnail on media_domain'
 
-#: Celery settings
 REDIS_URL = 'redis://localhost:6379/0'
-BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND = REDIS_URL
-# Enables celery error emails
-CELERY_SEND_TASK_ERROR_EMAILS = True
+
 SERVER_EMAIL = DEFAULT_MAIL_SENDER
 EMAIL_HOST = MAIL_SERVER
 
