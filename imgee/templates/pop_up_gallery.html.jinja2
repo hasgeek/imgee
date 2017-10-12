@@ -1,5 +1,5 @@
-{% extends "layout.html" %}
-{% from 'baseframe/forms.html' import renderform %}
+{% extends "layout.html.jinja2" %}
+{% from 'baseframe/forms.html.jinja2' import renderform %}
 
 {% block footerscripts %}
 <script type="text/javascript" src="{{url_for('static', filename='js/jquery.ba-postmessage.min.js')}}"></script>
@@ -85,7 +85,7 @@
         $(this).find(".select-img").hide();
         $(this).find(".zoom-btn").hide();
       });
-    });    
+    });
   </script>
   <script type="text/javascript">
     $(function() {
@@ -110,7 +110,7 @@
           {% block content %}
             <div class="row popup-container">
               <div class="span3">
-                {% block sidebar %}                    
+                {% block sidebar %}
                   <div class="side-tab">
                     <div class="tabbable tabs-left row">
                       <ul class="nav nav-tabs span3">
@@ -132,7 +132,7 @@
                           </div>
                           <form action="{{ url_for('upload_file', profile=profile.name) }}" class="dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
                             {{ uploadform.hidden_tag() }}
-                          </form>                 
+                          </form>
                         </div>
                         <div id="tab-pane2" class="tab-pane">
                           <div class="form-box">
@@ -160,7 +160,7 @@
                                           <button class="select-img btn btn-warning" name="" value="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}`{{img.title}}`{{ img.created_at.strftime('%B %d, %Y') }}">Select</button><br />
                                           <a class="zoom-btn" href="{{ url_for('get_image', image=img.name) }}" target="_blank"><i class="icon-zoom-in"></i></a>
                                           <a class="delete-btn" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i></a>
-                                        </div> 
+                                        </div>
                                       </section>
                                       <section class="right">
                                         <div class="title editable_title" id="{{img.name}}">{{img.title}}</div>
@@ -176,17 +176,17 @@
                                   <img id="preview-thumb" src="" /><br />
                                   <li class="nav-header">Uploaded on</li>
                                   <li id="preview-date" class="date"><em>No images selected</em></li>
-                                </ul>                                
+                                </ul>
                               </div>
                             {% else %}
                               <div class="well span9">There are no images uploaded yet.<a href="">Upload one.</a></div>
                             {% endif %}
-                          </div>                            
+                          </div>
                         </div>
                       </div><!-- /.tab-content -->
                     </div><!-- /.tabbable -->
                   </div>
-                {% endblock %} 
+                {% endblock %}
               </div>
             </div>
           {% endblock %}
