@@ -17,7 +17,7 @@ def global_vars():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html.jinja2')
 
 
 @app.route('/<profile>/popup')
@@ -33,7 +33,7 @@ def pop_up_gallery(profile):
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
-    return render_template('pop_up_gallery.html', files=files, label=label,
+    return render_template('pop_up_gallery.html.jinja2', files=files, label=label,
                 profile=profile, uploadform=form, cp_form=cp_form)
 
 
@@ -43,7 +43,7 @@ def profile_view(profile):
     files = profile.stored_files.order_by(db.desc(StoredFile.created_at)).all()
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
-    return render_template('profile.html', profile=profile, files=files, uploadform=upload_form, title_form=title_form, mimetypes=ALLOWED_MIMETYPES.keys())
+    return render_template('profile.html.jinja2', profile=profile, files=files, uploadform=upload_form, title_form=title_form, mimetypes=ALLOWED_MIMETYPES.keys())
 
 
 @app.route('/<profile>/archive')
@@ -53,7 +53,7 @@ def unlabelled_images(profile):
     """Get all unlabelled images owned by profile"""
     files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by('created_at desc').all()
     title_form = forms.EditTitleForm()
-    return render_template('profile.html', profile=profile, files=files, title_form=title_form, unlabelled=True)
+    return render_template('profile.html.jinja2', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
 
 def get_prev_next_images(profile, img, limit=2):
@@ -72,4 +72,4 @@ def purge_cache():
     if form.is_submitted():
         removed = clean_local_cache(app.config.get('CACHE_PURGE_PERIOD', 24))
         flash('%s files are deleted from the cache.' % removed)
-    return render_template('purge_cache.html', form=form)
+    return render_template('purge_cache.html.jinja2', form=form)
