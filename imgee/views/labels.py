@@ -16,7 +16,7 @@ from imgee.models import Label, StoredFile, Profile, db
 def show_label(profile, label):
     files = label.stored_files.order_by(db.desc(StoredFile.created_at)).all()
     form = forms.EditLabelForm()
-    return render_template('show_label.html', form=form, label=label, files=files, profile=profile)
+    return render_template('show_label.html.jinja2', form=form, label=label, files=files, profile=profile)
 
 
 @app.route('/<profile>/newlabel', methods=['GET', 'POST'])
@@ -33,7 +33,7 @@ def create_label(profile):
         utils_save_label(label, profile)
         flash('The label "%s" was created.' % label)
         return redirect(url_for('profile_view', profile=profile.name))
-    return render_template('create_label.html', form=form, profile=profile)
+    return render_template('create_label.html.jinja2', form=form, profile=profile)
 
 
 @app.route('/<profile>/<label>/delete', methods=['GET', 'POST'])
@@ -48,7 +48,7 @@ def delete_label(profile, label):
         utils_delete_label(label)
         flash('The label "%s" was deleted.' % label.name)
         return redirect(url_for('profile_view', profile=profile.name))
-    return render_template('delete_label.html', form=form, label=label, profile=profile)
+    return render_template('delete_label.html.jinja2', form=form, label=label, profile=profile)
 
 
 @app.route('/<profile>/<label>/edit', methods=['POST'])
@@ -84,7 +84,7 @@ def manage_labels(profile, img):
         if msg:
             flash(msg)
         return redirect(url_for('view_image', profile=profile.name, image=img.name))
-    return render_template('view_image.html', form=form, img=img)
+    return render_template('view_image.html.jinja2', form=form, img=img)
 
 
 def utils_save_labels(form_label_data, img, profile):

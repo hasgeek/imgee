@@ -21,7 +21,7 @@ class ImgeeForm(Form):
 @app.route('/')
 def index():
     form = ImgeeForm()
-    return render_template('index.html', form=form, imgee_url=imgee_url)
+    return render_template('index.html.jinja2', form=form, imgee_url=imgee_url)
 
 
 def init_for(env):
