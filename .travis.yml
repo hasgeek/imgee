@@ -17,6 +17,8 @@ python:
   - 2.7
 services:
   - redis-server
+before_install:
+  - sudo rm -f /etc/boto.cfg  # https://github.com/travis-ci/travis-ci/issues/7940#issuecomment-310759657
 install:
   - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc inkscape
   - pip install -r requirements.txt
