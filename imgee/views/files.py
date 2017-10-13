@@ -34,7 +34,7 @@ def upload_file(profile):
         title, stored_file = save_file(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
-    return render_template('form.html', form=upload_form, profile=profile)
+    return render_template('form.html.jinja2', form=upload_form, profile=profile)
 
 
 @app.route('/<profile>/new.json', methods=['POST'])
@@ -48,7 +48,7 @@ def upload_file_json(profile):
         title, stored_file = save_file(file_, profile=profile)
         update_form = UpdateTitle()
         update_form.title.data = stored_file.title
-        form = render_template('edit_title_form.html', form=update_form, formid='edit_title_' + stored_file.name)
+        form = render_template('edit_title_form.html.jinja2', form=update_form, formid='edit_title_' + stored_file.name)
         return jsonify(
             status=True, message="%s uploaded successfully" % title, form=form,
             update_url=url_for('update_title_json', profile=profile.name,
@@ -91,7 +91,7 @@ def update_title_json(profile, stored_file):
         db.session.commit()
         return jsonify(status=True, message="Title for %s has been updated to %s" % (old_title, stored_file.title), image_data=stored_file.dict_data())
     else:
-        update_form = render_template('edit_title_form.html', form=form, formid='edit_title_' + stored_file.name)
+        update_form = render_template('edit_title_form.html.jinja2', form=form, formid='edit_title_' + stored_file.name)
         return jsonify(status=False, form=update_form, update_url=url_for('update_title_json', profile=profile.name, file=stored_file.name))
 
 
@@ -104,7 +104,7 @@ def view_image(profile, img):
     prev, next = get_prev_next_images(profile, img)
     form = AddLabelForm(stored_file_id=img.name)
     media_domain = get_media_domain()
-    return render_template('view_image.html', profile=profile, form=form, img=img,
+    return render_template('view_image.html.jinja2', profile=profile, form=form, img=img,
                     prev=prev, next=next, domain=media_domain)
 
 
@@ -128,5 +128,5 @@ def delete_file(profile, img):
         delete(img)
         flash("%s is deleted" % img.title)
     else:
-        return render_template('delete.html', form=form, file=img, profile=profile)
+        return render_template('delete.html.jinja2', form=form, file=img, profile=profile)
     return redirect(url_for('profile_view', profile=profile.name))

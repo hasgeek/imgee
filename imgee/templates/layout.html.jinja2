@@ -1,6 +1,6 @@
-{% extends "baseframe.html" %}
-{% from "baseframe/components.html" import networkbar with context %}
-{% from "baseframe/forms.html" import renderfield, renderform %}
+{% extends "baseframe.html.jinja2" %}
+{% from "baseframe/components.html.jinja2" import networkbar with context %}
+{% from "baseframe/forms.html.jinja2" import renderfield, renderform %}
 
 {% block basecontent %}
   {% block content %}
@@ -13,7 +13,7 @@
           <div class="well">
             {% block sidebar_labels %}
             <ul class="nav nav-list" id="expandable1">
-              <li class="nav-header">Labels</li> 
+              <li class="nav-header">Labels</li>
               <!-- List labels -->
               {% if profile.labels %}
                 {% for label in profile.labels |sort(attribute='name')%}
@@ -35,7 +35,7 @@
               {% endif %}
               </a></li>
               <!-- //Unlabelled archive-->
-            </ul>   
+            </ul>
             <div id="hideThisFromNonJs" style="display:none">
               <!-- Create new label -->
               <a class="hide-mob" href="#labelModal" role="button" title="Upload image" class="" data-toggle="modal"><i class="icon-plus"></i>&nbsp;New label</a>
@@ -46,15 +46,15 @@
                         <h3>Create Label</h3>
                     </div>
                     <div class="modal-body">
-                        <div class="create-box well">     
+                        <div class="create-box well">
                             <form action="{{ url_for('create_label', profile=profile.name) }}" method="POST">
                               {{ renderform(cl_form) }}
-                            </form> 
-                        </div>                        
+                            </form>
+                        </div>
                     </div>
                 </div>
               {%- endif %}
-              <!-- //Create new label --> 
+              <!-- //Create new label -->
             </div>
             <noscript>
               <a class="" title="Create new label" href="{{url_for('create_label', profile=profile.name )}}"><i class="icon-plus"></i>&nbsp;&nbsp;Add label</a>
@@ -63,7 +63,7 @@
             {% endblock %}
             <hr>
             <ul class="nav nav-list org-list" id="expandable2">
-              <li class="nav-header">Profile And Organizations</li> 
+              <li class="nav-header">Profile And Organizations</li>
               <li><a class="{% if g.user.username == profile.name %}active{% endif %}" title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
               {% if g.user %}
                   {%- for org in g.user.organizations_owned() %}
@@ -75,13 +75,13 @@
           </div><!-- /sidebar well-->
           {% block extendedsidebar %}
           {% endblock %}
-        {% endblock %} 
-      </div><!-- /span3 --> 
+        {% endblock %}
+      </div><!-- /span3 -->
       <div class="span9 maincontent">
-        
+
         {% block maincontent %}
         {% endblock %}
-      </div>  
+      </div>
     </div><!-- /row -->
   {% endblock %}
 {% endblock %}
@@ -107,9 +107,9 @@
           $('#more2').show();
           $('#expandable2').css('height', hlimit);
       }
-  }); 
+  });
 
-   $("#more1").click(function(){    
+   $("#more1").click(function(){
     var txtval = $(this).children("i").attr("class");
     if (txtval == "icon-ellipsis-horizontal") {
       $("#expandable1").css('height', '100%');
@@ -120,7 +120,7 @@
     }
     return false;
   });
-   $("#more2").click(function(){    
+   $("#more2").click(function(){
     var txtval = $(this).children("i").attr("class");
     if (txtval == "icon-ellipsis-horizontal") {
       $("#expandable2").css('height', '100%');
@@ -134,7 +134,7 @@
 
 </script>
 <script type="text/javascript">
-  $(".hide-sidebar-btn").click(function(){    
+  $(".hide-sidebar-btn").click(function(){
     var txtval = $(this).children("i").attr("class");
     if (txtval == "icon-plus-sign") {
       $(this).children("i").attr("class", "icon-remove-sign");
@@ -151,7 +151,7 @@
       var click = 0;
       $(".hide-sidebar-btn").click(function(){
         $(".sidebar").toggleClass("shift0");
-        $(".maincontent").toggleClass("shift90");     
+        $(".maincontent").toggleClass("shift90");
       })
     })
   </script>

@@ -1,0 +1,10 @@
+{% extends "layout.html.jinja2" %}
+{% from 'baseframe/forms.html.jinja2' import renderform %}
+
+{% block maincontent %}
+	<div class="well">
+		<div class="form-title"><i class="icon-tag"></i>&nbsp;&nbsp;Create label</div><hr />
+		{% set cancel_url=url_for('profile_view', profile=profile.name) %}
+		{{ renderform(form, "Create", cancel_url=cancel_url)}}
+	</div>
+{% endblock %}
