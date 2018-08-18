@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask.ext.babelex import gettext, ngettext
+from flask_babelex import gettext, ngettext
 from flask import (render_template, request, url_for, redirect, flash)
 from coaster.views import load_models, load_model
 
