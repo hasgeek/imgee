@@ -51,7 +51,7 @@ def profile_view(profile):
     permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
 def unlabelled_images(profile):
     """Get all unlabelled images owned by profile"""
-    files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by('created_at desc').all()
+    files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by(StoredFile.created_at.desc()).all()
     title_form = forms.EditTitleForm()
     return render_template('profile.html.jinja2', profile=profile, files=files, title_form=title_form, unlabelled=True)
 
