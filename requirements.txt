@@ -10,7 +10,7 @@ https://github.com/jace/flask-alembic/archive/master.zip
 boto
 redis
 xml4h
-python-magic
+python-magic==0.4.15
 defusedxml
 Flask-Migrate
 pillow
