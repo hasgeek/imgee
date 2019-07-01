@@ -11,6 +11,6 @@ boto
 redis
 xml4h
 python-magic
-defusedxml
+defusedxml==0.6.0
 Flask-Migrate
 pillow
