@@ -13,4 +13,4 @@ xml4h
 python-magic
 defusedxml
 Flask-Migrate
-pillow
+pillow==6.0.0
