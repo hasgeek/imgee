@@ -1,4 +1,4 @@
-Flask
+Flask==1.0.3
 https://github.com/hasgeek/coaster/zipball/master
 https://github.com/hasgeek/baseframe/zipball/master
 SQLAlchemy==1.3.5
