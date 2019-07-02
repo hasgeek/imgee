@@ -2,7 +2,7 @@ Flask
 https://github.com/hasgeek/coaster/zipball/master
 https://github.com/hasgeek/baseframe/zipball/master
 SQLAlchemy
-SQLAlchemy-Utils
+SQLAlchemy-Utils==0.34.0
 Flask-SQLAlchemy==2.4.0
 psycopg2==2.8.3
 https://github.com/hasgeek/flask-lastuser/zipball/master
