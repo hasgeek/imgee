@@ -13,6 +13,7 @@ from flask import request
 import magic
 from PIL import Image
 
+from baseframe import cache
 from uuid import uuid4
 from . import app
 
@@ -179,6 +180,7 @@ def get_s3_folder(f=''):
     return f or ''
 
 
+@cache.memoize(timeout=86400)
 def exists_in_s3(thumb):
     folder = get_s3_folder()
     bucket = get_s3_bucket()

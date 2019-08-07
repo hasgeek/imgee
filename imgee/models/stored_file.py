@@ -53,7 +53,7 @@ class StoredFile(BaseNameMixin, db.Model):
             self.name = newid()
 
     def __repr__(self):
-        return "StoredFile <%s>" % (self.title)
+        return "StoredFile <%s>" % (self.name)
 
     @property
     def extn(self):
