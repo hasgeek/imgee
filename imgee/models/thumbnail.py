@@ -23,3 +23,6 @@ class Thumbnail(BaseMixin, db.Model):
         super(Thumbnail, self).__init__(**kwargs)
         if not self.name:
             self.name = newid()
+
+    def __repr__(self):
+        return "Thumbnail <%s>" % (self.name)
