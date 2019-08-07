@@ -24,6 +24,5 @@ class Thumbnail(BaseMixin, db.Model):
         if not self.name:
             self.name = newid()
 
-
     def __repr__(self):
         return "Thumbnail <%s>" % (self.name)
