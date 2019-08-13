@@ -7,9 +7,12 @@ class Profile(ProfileMixin, BaseNameMixin, db.Model):
     __tablename__ = 'profile'
 
     userid = db.Column(db.Unicode(22), nullable=False, unique=True)
-    stored_files = db.relationship('StoredFile',
-        backref=db.backref('profile'), lazy='dynamic',
-        cascade='all, delete-orphan')
+    stored_files = db.relationship(
+        'StoredFile',
+        backref=db.backref('profile'),
+        lazy='dynamic',
+        cascade='all, delete-orphan',
+    )
 
     def permissions(self, user, inherited=None):
         perms = super(Profile, self).permissions(user, inherited)

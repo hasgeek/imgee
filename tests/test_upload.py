@@ -49,7 +49,13 @@ class UploadTestCase(ImgeeTestCase):
     def test_resize(self):
         with app.test_request_context('/'):
             for file in self.files:
-                resp = self.client.get(url_for('get_image', image=file.name, size=app.config.get('THUMBNAIL_SIZE')))
+                resp = self.client.get(
+                    url_for(
+                        'get_image',
+                        image=file.name,
+                        size=app.config.get('THUMBNAIL_SIZE'),
+                    )
+                )
                 self.assertEquals(resp.status_code, 301)
                 self.assertEquals(resp.headers.get('Location'), get_thumbnail_url(file))
 
@@ -62,7 +68,9 @@ class UploadTestCase(ImgeeTestCase):
         for file in self.files:
             with app.test_request_context('/'):
                 resp = requests.get(get_image_url(file))
-                self.assertEquals(resp.status_code, 403)  # S3 throws 403 for non existing files
+                self.assertEquals(
+                    resp.status_code, 403
+                )  # S3 throws 403 for non existing files
 
 
 if __name__ == '__main__':

@@ -38,10 +38,10 @@ UPLOADED_FILES_DIR = 'uploads'  # this will sit inside `app.static_folder`
 AWS_ACCESS_KEY = 'Set aws access key here'
 AWS_SECRET_KEY = 'Set aws secret key here'
 AWS_BUCKET = 'set your bucketname here'
-AWS_FOLDER = ''     # set this if you want all files to be uploaded to a particular folder eg., 'test/'
+AWS_FOLDER = ''  # set this if you want all files to be uploaded to a particular folder eg., 'test/'
 #: Domain name for files
 MEDIA_DOMAIN = 'http://%s.s3.amazonaws.com' % AWS_BUCKET
-THUMBNAIL_SIZE = '75x75'   # WxH in px
+THUMBNAIL_SIZE = '75x75'  # WxH in px
 UNKNOWN_FILE_THUMBNAIL = 'set name of unknown file thumbnail on media_domain'
 
 REDIS_URL = 'redis://localhost:6379/0'

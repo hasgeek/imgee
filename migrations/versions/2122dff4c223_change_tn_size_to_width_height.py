@@ -14,9 +14,11 @@ from alembic import op
 import sqlalchemy as sa
 
 import sys
+
 sys.path.append('../../')
 from sqlalchemy.sql import select, bindparam, column
 from imgee.models import Thumbnail
+
 
 def upgrade():
     op.add_column('thumbnail', sa.Column('width', sa.Integer(), nullable=True))
@@ -25,9 +27,16 @@ def upgrade():
     connection = op.get_bind()
     tn = Thumbnail.__table__
     result = connection.execute(select([column('id'), column('size')], from_obj=tn))
-    w_h = [dict(tnid=r.id, w=int(r.size.split('x')[0]), h=int(r.size.split('x')[1])) for r in result]
+    w_h = [
+        dict(tnid=r.id, w=int(r.size.split('x')[0]), h=int(r.size.split('x')[1]))
+        for r in result
+    ]
     if len(w_h) > 0:
-        updt_stmt = tn.update().where(tn.c.id == bindparam('tnid')).values(width=bindparam('w'), height=bindparam('h'))
+        updt_stmt = (
+            tn.update()
+            .where(tn.c.id == bindparam('tnid'))
+            .values(width=bindparam('w'), height=bindparam('h'))
+        )
         connection.execute(updt_stmt, w_h)
 
 

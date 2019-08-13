@@ -16,6 +16,7 @@ def mkdir_p(dirname):
 def init():
     mkdir_p(app.upload_folder)
 
+
 if __name__ == "__main__":
     db.init_app(app)
     init_manager(app, db)

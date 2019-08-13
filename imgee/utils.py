@@ -21,7 +21,7 @@ THUMBNAIL_COMMANDS = {
     'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio=TRUE --format={format} {src} > {dest}",
     'convert': "convert -quiet -thumbnail {width}x{height} {src} -colorspace sRGB -quality 75% {dest}",
     'convert-pdf': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% -background white -flatten {dest}",
-    'convert-layered': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% {dest}"
+    'convert-layered': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% {dest}",
 }
 
 ALLOWED_MIMETYPES = {
@@ -30,46 +30,202 @@ ALLOWED_MIMETYPES = {
     'image/jpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/pjpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
     'image/png': {'allowed_extns': [u'.png'], 'extn': u'.png'},
-    'image/gif': {'allowed_extns': [u'.gif'], 'extn': u'.gif', 'processor': 'convert-layered'},
-    'image/vnd.adobe.photoshop': {'allowed_extns': [u'.psd'], 'extn': u'.psd', 'thumb_extn': '.jpeg', 'processor': 'convert-layered'},
-    'application/pdf': {'allowed_extns': [u'.pdf', u'.ai'], 'extn': [u'.pdf', u'.ai'], 'thumb_extn': u'.png', 'processor': 'convert-pdf'},
-    'application/illustrator': {'allowed_extns': [u'.ai'], 'extn': u'.ai', 'thumb_extn': u'.png'},
-    'application/postscript': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
-    'image/svg+xml': {'allowed_extns': [u'.svg'], 'extn': u'.svg', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
-    'application/x-gzip': {'allowed_extns': [u'.svgz'], 'extn': u'.svgz', 'thumb_extn': u'.png', 'processor': 'rsvg-convert'},
+    'image/gif': {
+        'allowed_extns': [u'.gif'],
+        'extn': u'.gif',
+        'processor': 'convert-layered',
+    },
+    'image/vnd.adobe.photoshop': {
+        'allowed_extns': [u'.psd'],
+        'extn': u'.psd',
+        'thumb_extn': '.jpeg',
+        'processor': 'convert-layered',
+    },
+    'application/pdf': {
+        'allowed_extns': [u'.pdf', u'.ai'],
+        'extn': [u'.pdf', u'.ai'],
+        'thumb_extn': u'.png',
+        'processor': 'convert-pdf',
+    },
+    'application/illustrator': {
+        'allowed_extns': [u'.ai'],
+        'extn': u'.ai',
+        'thumb_extn': u'.png',
+    },
+    'application/postscript': {
+        'allowed_extns': [u'.eps'],
+        'extn': u'.eps',
+        'thumb_extn': u'.png',
+    },
+    'image/svg+xml': {
+        'allowed_extns': [u'.svg'],
+        'extn': u'.svg',
+        'thumb_extn': u'.png',
+        'processor': 'rsvg-convert',
+    },
+    'application/x-gzip': {
+        'allowed_extns': [u'.svgz'],
+        'extn': u'.svgz',
+        'thumb_extn': u'.png',
+        'processor': 'rsvg-convert',
+    },
     'image/bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'image/x-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'image/x-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'image/x-xbitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'image/x-win-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'image/x-windows-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'image/ms-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'image/x-ms-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'application/bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'application/x-bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'application/x-win-bitmap': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
-    'application/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
-    'application/coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
-    'application/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
-    'application/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
-    'application/vnd.corel-draw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
-    'image/cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
-    'image/x-cdr': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
-    'image/x-coreldraw': {'allowed_extns': [u'.cdr'], 'extn': u'.cdr', 'thumb_extn': '.png', 'processor': 'inkscape'},
-    'application/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
-    'application/x-eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
+    'image/x-bmp': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'image/x-bitmap': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'image/x-xbitmap': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'image/x-win-bitmap': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'image/x-windows-bmp': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'image/ms-bmp': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'image/x-ms-bmp': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'application/bmp': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'application/x-bmp': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'application/x-win-bitmap': {
+        'allowed_extns': [u'.bmp'],
+        'extn': u'.bmp',
+        'thumb_extn': u'.jpeg',
+    },
+    'application/cdr': {
+        'allowed_extns': [u'.cdr'],
+        'extn': u'.cdr',
+        'thumb_extn': '.png',
+        'processor': 'inkscape',
+    },
+    'application/coreldraw': {
+        'allowed_extns': [u'.cdr'],
+        'extn': u'.cdr',
+        'thumb_extn': '.png',
+        'processor': 'inkscape',
+    },
+    'application/x-cdr': {
+        'allowed_extns': [u'.cdr'],
+        'extn': u'.cdr',
+        'thumb_extn': '.png',
+        'processor': 'inkscape',
+    },
+    'application/x-coreldraw': {
+        'allowed_extns': [u'.cdr'],
+        'extn': u'.cdr',
+        'thumb_extn': '.png',
+        'processor': 'inkscape',
+    },
+    'application/vnd.corel-draw': {
+        'allowed_extns': [u'.cdr'],
+        'extn': u'.cdr',
+        'thumb_extn': '.png',
+        'processor': 'inkscape',
+    },
+    'image/cdr': {
+        'allowed_extns': [u'.cdr'],
+        'extn': u'.cdr',
+        'thumb_extn': '.png',
+        'processor': 'inkscape',
+    },
+    'image/x-cdr': {
+        'allowed_extns': [u'.cdr'],
+        'extn': u'.cdr',
+        'thumb_extn': '.png',
+        'processor': 'inkscape',
+    },
+    'image/x-coreldraw': {
+        'allowed_extns': [u'.cdr'],
+        'extn': u'.cdr',
+        'thumb_extn': '.png',
+        'processor': 'inkscape',
+    },
+    'application/eps': {
+        'allowed_extns': [u'.eps'],
+        'extn': u'.eps',
+        'thumb_extn': u'.png',
+    },
+    'application/x-eps': {
+        'allowed_extns': [u'.eps'],
+        'extn': u'.eps',
+        'thumb_extn': u'.png',
+    },
     'image/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
     'image/x-eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
-    'image/tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'image/x-tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'image/tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'image/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'application/tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'application/x-tif': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'application/tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'application/x-tiff': {'allowed_extns': [u'.tif', u'.tiff'], 'extn': [u'.tif', u'.tiff'], 'thumb_extn': u'.png'},
-    'image/webp': {'allowed_extns': [u'.webp'], 'extn': '.webp', 'thumb_extn': u'.jpeg'},
-    'image/x-xcf': {'allowed_extns': [u'.xcf'], 'extn': '.xcf', 'thumb_extn': u'.jpeg'}
+    'image/tif': {
+        'allowed_extns': [u'.tif', u'.tiff'],
+        'extn': [u'.tif', u'.tiff'],
+        'thumb_extn': u'.png',
+    },
+    'image/x-tif': {
+        'allowed_extns': [u'.tif', u'.tiff'],
+        'extn': [u'.tif', u'.tiff'],
+        'thumb_extn': u'.png',
+    },
+    'image/tiff': {
+        'allowed_extns': [u'.tif', u'.tiff'],
+        'extn': [u'.tif', u'.tiff'],
+        'thumb_extn': u'.png',
+    },
+    'image/x-tiff': {
+        'allowed_extns': [u'.tif', u'.tiff'],
+        'extn': [u'.tif', u'.tiff'],
+        'thumb_extn': u'.png',
+    },
+    'application/tif': {
+        'allowed_extns': [u'.tif', u'.tiff'],
+        'extn': [u'.tif', u'.tiff'],
+        'thumb_extn': u'.png',
+    },
+    'application/x-tif': {
+        'allowed_extns': [u'.tif', u'.tiff'],
+        'extn': [u'.tif', u'.tiff'],
+        'thumb_extn': u'.png',
+    },
+    'application/tiff': {
+        'allowed_extns': [u'.tif', u'.tiff'],
+        'extn': [u'.tif', u'.tiff'],
+        'thumb_extn': u'.png',
+    },
+    'application/x-tiff': {
+        'allowed_extns': [u'.tif', u'.tiff'],
+        'extn': [u'.tif', u'.tiff'],
+        'thumb_extn': u'.png',
+    },
+    'image/webp': {
+        'allowed_extns': [u'.webp'],
+        'extn': '.webp',
+        'thumb_extn': u'.jpeg',
+    },
+    'image/x-xcf': {'allowed_extns': [u'.xcf'], 'extn': '.xcf', 'thumb_extn': u'.jpeg'},
 }
 
 
@@ -101,6 +257,7 @@ def path_for(img_name):
 
 
 # -- mimetypes and content types
+
 
 def guess_extension(mimetype, orig_extn):
     if mimetype in ALLOWED_MIMETYPES:
@@ -208,12 +365,16 @@ def download_from_s3(img_name):
 
 # -- image details --
 
+
 def get_width_height(img_path):
     name, extn = os.path.splitext(img_path)
     w, h = 0, 0
     try:
         if extn in ['.pdf', '.gif']:
-            o = check_output('identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path), shell=True)
+            o = check_output(
+                'identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path),
+                shell=True,
+            )
             w, h = o.split('x')
         elif extn in ['.cdr']:
             wo = check_output('inkscape -z -W {}'.format(img_path), shell=True)
@@ -228,7 +389,9 @@ def get_width_height(img_path):
                 wo, ho = possible_size[0].split(' x ')
                 w, h = int(round(float(wo))), int(round(float(ho)))
         else:
-            o = check_output('identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True)
+            o = check_output(
+                'identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True
+            )
             w, h = o.split('x')
         return (w, h)
     except CalledProcessError:
@@ -254,6 +417,7 @@ def get_loading_spinner_url():
 
 def get_image_url(image, size=None):
     from imgee import storage
+
     extn = image.extn
     if size and extn in EXTNS:
         if image.no_previews:

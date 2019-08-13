@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import (flash, g, render_template, request)
+from flask import flash, g, render_template, request
 from sqlalchemy import not_
 
 from coaster.views import load_model
@@ -22,8 +22,13 @@ def index():
 
 @app.route('/<profile>/popup')
 @lastuser.requires_login
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+@load_model(
+    Profile,
+    {'name': 'profile'},
+    'profile',
+    permission=['view', 'siteadmin'],
+    addlperms=lastuser.permissions,
+)
 def pop_up_gallery(profile):
     label = request.args.get('label')
     files = profile.stored_files
@@ -33,8 +38,14 @@ def pop_up_gallery(profile):
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
-    return render_template('pop_up_gallery.html.jinja2', files=files, label=label,
-                profile=profile, uploadform=form, cp_form=cp_form)
+    return render_template(
+        'pop_up_gallery.html.jinja2',
+        files=files,
+        label=label,
+        profile=profile,
+        uploadform=form,
+        cp_form=cp_form,
+    )
 
 
 @app.route('/<profile>')
@@ -43,24 +54,60 @@ def profile_view(profile):
     files = profile.stored_files.order_by(db.desc(StoredFile.created_at)).all()
     title_form = forms.EditTitleForm()
     upload_form = forms.UploadImageForm()
-    return render_template('profile.html.jinja2', profile=profile, files=files, uploadform=upload_form, title_form=title_form, mimetypes=ALLOWED_MIMETYPES.keys())
+    return render_template(
+        'profile.html.jinja2',
+        profile=profile,
+        files=files,
+        uploadform=upload_form,
+        title_form=title_form,
+        mimetypes=ALLOWED_MIMETYPES.keys(),
+    )
 
 
 @app.route('/<profile>/archive')
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+@load_model(
+    Profile,
+    {'name': 'profile'},
+    'profile',
+    permission=['view', 'siteadmin'],
+    addlperms=lastuser.permissions,
+)
 def unlabelled_images(profile):
     """Get all unlabelled images owned by profile"""
-    files = profile.stored_files.filter(not_(StoredFile.labels.any())).order_by(StoredFile.created_at.desc()).all()
+    files = (
+        profile.stored_files.filter(not_(StoredFile.labels.any()))
+        .order_by(StoredFile.created_at.desc())
+        .all()
+    )
     title_form = forms.EditTitleForm()
-    return render_template('profile.html.jinja2', profile=profile, files=files, title_form=title_form, unlabelled=True)
+    return render_template(
+        'profile.html.jinja2',
+        profile=profile,
+        files=files,
+        title_form=title_form,
+        unlabelled=True,
+    )
 
 
 def get_prev_next_images(profile, img, limit=2):
     # query for "all" images though we need just the `limit`
     # bcoz we don't know how many are there in deleteQ.
-    prev = profile.stored_files.filter(StoredFile.created_at <= img.created_at, StoredFile.id != img.id).order_by(db.desc(StoredFile.created_at)).limit(limit).all()
-    next = profile.stored_files.filter(StoredFile.created_at >= img.created_at, StoredFile.id != img.id).order_by(db.asc(StoredFile.created_at)).limit(limit).all()
+    prev = (
+        profile.stored_files.filter(
+            StoredFile.created_at <= img.created_at, StoredFile.id != img.id
+        )
+        .order_by(db.desc(StoredFile.created_at))
+        .limit(limit)
+        .all()
+    )
+    next = (
+        profile.stored_files.filter(
+            StoredFile.created_at >= img.created_at, StoredFile.id != img.id
+        )
+        .order_by(db.asc(StoredFile.created_at))
+        .limit(limit)
+        .all()
+    )
     return prev, next
 
 

@@ -29,7 +29,11 @@ def upgrade():
     connection = op.get_bind()
     Session = sessionmaker(bind=connection.engine)
     session = Session(bind=connection)
-    imgs = session.query(StoredFile).filter_by(size=None).options(load_only("id", "name", "title"))
+    imgs = (
+        session.query(StoredFile)
+        .filter_by(size=None)
+        .options(load_only("id", "name", "title"))
+    )
 
     for img in imgs:
         path = path_for(img.name) + '.*'

@@ -39,7 +39,10 @@ registry.init_app(app)
 def error403(error):
     return redirect(url_for('login'))
 
+
 if app.config.get('MEDIA_DOMAIN', '').lower().startswith(('http://', 'https://')):
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
 
-app.upload_folder = os.path.join(app.static_folder, secure_filename(app.config.get('UPLOADED_FILES_DIR')))
+app.upload_folder = os.path.join(
+    app.static_folder, secure_filename(app.config.get('UPLOADED_FILES_DIR'))
+)

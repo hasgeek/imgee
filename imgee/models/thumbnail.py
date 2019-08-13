@@ -12,6 +12,7 @@ class Thumbnail(BaseMixin, db.Model):
     image types. Unrecognized types are always served as the original
     file.
     """
+
     __tablename__ = 'thumbnail'
 
     name = db.Column(db.Unicode(64), nullable=False, unique=True, index=True)

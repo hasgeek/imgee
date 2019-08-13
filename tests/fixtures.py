@@ -11,10 +11,15 @@ class ImgeeTestCase(unittest.TestCase):
         u = User.query.filter_by(username=unicode(name)).first()
         if not u:
             userid = ''.join(random.sample(string.letters, 22))
-            u = User(username=unicode(name), userid=unicode(userid),
-                    lastuser_token_scope=u'id email organizations', lastuser_token_type=u'bearer',
-                    lastuser_token=u'last-user-token',
-                    fullname=unicode(name.capitalize()), id=id)
+            u = User(
+                username=unicode(name),
+                userid=unicode(userid),
+                lastuser_token_scope=u'id email organizations',
+                lastuser_token_type=u'bearer',
+                lastuser_token=u'last-user-token',
+                fullname=unicode(name.capitalize()),
+                id=id,
+            )
             db.session.add(u)
             db.session.commit()
         return u
