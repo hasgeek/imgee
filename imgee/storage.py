@@ -1,34 +1,34 @@
 # -*- coding: utf-8 -*-
 
+import os
+import os.path
+import re
+import time
 from datetime import datetime, timedelta
 from glob import glob
-import os.path
-import os
-import re
-from subprocess import check_call, CalledProcessError
-import time
+from subprocess import CalledProcessError, check_call
 
 from sqlalchemy import or_
 from werkzeug import secure_filename
 
 import imgee
-from . import app
-from .models import db, Thumbnail, StoredFile
-from .utils import (
-    newid,
-    guess_extension,
-    get_file_type,
-    is_animated_gif,
-    path_for,
-    get_s3_folder,
-    get_s3_bucket,
-    download_from_s3,
-    get_width_height,
-    ALLOWED_MIMETYPES,
-    exists_in_s3,
-    THUMBNAIL_COMMANDS,
-)
 
+from . import app
+from .models import StoredFile, Thumbnail, db
+from .utils import (
+    ALLOWED_MIMETYPES,
+    THUMBNAIL_COMMANDS,
+    download_from_s3,
+    exists_in_s3,
+    get_file_type,
+    get_s3_bucket,
+    get_s3_folder,
+    get_width_height,
+    guess_extension,
+    is_animated_gif,
+    newid,
+    path_for,
+)
 
 # -- functions used in views --
 
