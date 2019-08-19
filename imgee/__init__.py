@@ -14,10 +14,7 @@ from flask_lastuser.sqlalchemy import UserManager
 from baseframe import Version, assets, baseframe
 import coaster.app
 
-from . import models, views  # NOQA
 from ._version import __version__
-from .models import db
-from .tasks import TaskRegistry
 
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
@@ -25,6 +22,9 @@ lastuser = Lastuser()
 
 assets['imgee.css'][version] = 'css/app.css'
 
+from . import models, views  # NOQA # isort:skip
+from .models import db  # NOQA # isort:skip
+from .tasks import TaskRegistry  # NOQA # isort:skip
 
 registry = TaskRegistry()
 
