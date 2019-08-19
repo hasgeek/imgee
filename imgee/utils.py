@@ -15,6 +15,8 @@ from PIL import Image
 import defusedxml.cElementTree as cElementTree
 import magic
 
+from baseframe import cache
+
 from . import app
 
 THUMBNAIL_COMMANDS = {
@@ -337,6 +339,7 @@ def get_s3_folder(f=''):
     return f or ''
 
 
+@cache.memoize(timeout=86400)
 def exists_in_s3(thumb):
     folder = get_s3_folder()
     bucket = get_s3_bucket()
