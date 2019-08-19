@@ -12,7 +12,7 @@ from boto import connect_s3
 from boto.s3.bucket import Bucket
 from boto.s3.key import Key
 from PIL import Image
-import defusedxml.cElementTree as cElementTree
+import defusedxml.cElementTree as ElementTree
 import magic
 
 from baseframe import cache
@@ -282,10 +282,10 @@ def is_svg(fp):
     fp.seek(0)
     tag = None
     try:
-        for event, el in cElementTree.iterparse(fp, ('start',)):
+        for event, el in ElementTree.iterparse(fp, ('start',)):
             tag = el.tag
             break
-    except cElementTree.ParseError:
+    except ElementTree.ParseError:
         pass
     fp.seek(0)
     return tag == '{http://www.w3.org/2000/svg}svg'
