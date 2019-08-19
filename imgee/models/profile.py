@@ -1,5 +1,8 @@
-from coaster.sqlalchemy import BaseNameMixin
+# -*- coding: utf-8 -*-
 from flask_lastuser.sqlalchemy import ProfileMixin
+
+from coaster.sqlalchemy import BaseNameMixin
+
 from . import db
 
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import imgee.views.index
-import imgee.views.files
-import imgee.views.login
-import imgee.views.labels
+import imgee.views.files  # NOQA
+import imgee.views.index  # NOQA
+import imgee.views.labels  # NOQA
+import imgee.views.login  # NOQA

@@ -46,4 +46,3 @@ $(".editable_label").each(function (){
           }
     });
 });
-

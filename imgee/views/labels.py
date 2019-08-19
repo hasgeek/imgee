@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from flask_babelex import gettext, ngettext
-from flask import render_template, request, url_for, redirect, flash
-from coaster.views import load_models, load_model
+from flask import abort, flash, redirect, render_template, request, url_for
 
+from flask_babelex import gettext, ngettext
+
+from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
-from imgee.models import Label, StoredFile, Profile, db
+from imgee.models import Label, Profile, StoredFile, db
 
 
 @app.route('/<profile>/<label>')
@@ -110,12 +111,12 @@ def utils_save_labels(form_label_data, img, profile):
     form_lns = set()
 
     if form_label_data:
-        form_lns = set(l.strip() for l in form_label_data.split(','))
-    profile_lns = set(l.title for l in profile.labels)
+        form_lns = {l.strip() for l in form_label_data.split(',')}
+    profile_lns = {l.title for l in profile.labels}
     labels = [l for l in profile.labels if l.title in form_lns]
     for lname in form_lns - profile_lns:
-        l = utils_save_label(lname, profile, commit=False)
-        labels.append(l)
+        label = utils_save_label(lname, profile, commit=False)
+        labels.append(label)
     status = img.add_labels(labels)
 
     if status['+'] or status['-']:

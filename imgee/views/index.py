@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from flask import flash, g, render_template, request
 from sqlalchemy import not_
+
+from flask import flash, g, render_template, request
 
 from coaster.views import load_model
 from imgee import app, forms, lastuser
-from imgee.models import StoredFile, Profile, Label, db
+from imgee.models import Label, Profile, StoredFile, db
 from imgee.storage import clean_local_cache
 from imgee.utils import ALLOWED_MIMETYPES
 
@@ -92,7 +93,7 @@ def unlabelled_images(profile):
 def get_prev_next_images(profile, img, limit=2):
     # query for "all" images though we need just the `limit`
     # bcoz we don't know how many are there in deleteQ.
-    prev = (
+    prev_img = (
         profile.stored_files.filter(
             StoredFile.created_at <= img.created_at, StoredFile.id != img.id
         )
@@ -100,7 +101,7 @@ def get_prev_next_images(profile, img, limit=2):
         .limit(limit)
         .all()
     )
-    next = (
+    next_img = (
         profile.stored_files.filter(
             StoredFile.created_at >= img.created_at, StoredFile.id != img.id
         )
@@ -108,7 +109,7 @@ def get_prev_next_images(profile, img, limit=2):
         .limit(limit)
         .all()
     )
-    return prev, next
+    return prev_img, next_img
 
 
 @app.route('/_admin/purge-cache', methods=['GET', 'POST'])

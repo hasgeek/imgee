@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 import time
 import unittest
-from werkzeug.datastructures import FileStorage
 
 from imgee import registry
+
 from .fixtures import ImgeeTestCase
 
 

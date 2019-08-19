@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import re
-import os.path
-from subprocess import check_output, CalledProcessError
+from subprocess import CalledProcessError, check_output
 from urlparse import urljoin
+from uuid import uuid4
+import os.path
+import re
+
+from flask import request
 
 from boto import connect_s3
 from boto.s3.bucket import Bucket
 from boto.s3.key import Key
-import defusedxml.cElementTree as elementtree
-from flask import request
-import magic
 from PIL import Image
+import defusedxml.cElementTree as cElementTree
+import magic
 
-from uuid import uuid4
 from . import app
 
 THUMBNAIL_COMMANDS = {
@@ -279,10 +280,10 @@ def is_svg(fp):
     fp.seek(0)
     tag = None
     try:
-        for event, el in elementtree.iterparse(fp, ('start',)):
+        for event, el in cElementTree.iterparse(fp, ('start',)):
             tag = el.tag
             break
-    except elementtree.ParseError:
+    except cElementTree.ParseError:
         pass
     fp.seek(0)
     return tag == '{http://www.w3.org/2000/svg}svg'

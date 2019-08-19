@@ -4,15 +4,20 @@
 
 import os.path
 
+from flask import Flask, redirect, url_for
+from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 
-from flask import Flask, redirect, url_for
 from flask_lastuser import Lastuser
 from flask_lastuser.sqlalchemy import UserManager
-from baseframe import baseframe, assets, Version
-from flask_migrate import Migrate
+
+from baseframe import Version, assets, baseframe
 import coaster.app
+
+from . import models, views  # NOQA
 from ._version import __version__
+from .models import db
+from .tasks import TaskRegistry
 
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
@@ -20,9 +25,6 @@ lastuser = Lastuser()
 
 assets['imgee.css'][version] = 'css/app.css'
 
-from . import models, views
-from .models import db
-from .tasks import TaskRegistry
 
 registry = TaskRegistry()
 

@@ -1,13 +1,14 @@
-import unittest
+# -*- coding: utf-8 -*-
 import random
 import string
+import unittest
 
 from imgee import app, storage
-from imgee.models import db, User, Profile, StoredFile
+from imgee.models import Profile, StoredFile, User, db
 
 
 class ImgeeTestCase(unittest.TestCase):
-    def get_test_user(self, name='testuser', id=1):
+    def get_test_user(self, name='testuser', uid=1):
         u = User.query.filter_by(username=unicode(name)).first()
         if not u:
             userid = ''.join(random.sample(string.letters, 22))
@@ -18,7 +19,7 @@ class ImgeeTestCase(unittest.TestCase):
                 lastuser_token_type=u'bearer',
                 lastuser_token=u'last-user-token',
                 fullname=unicode(name.capitalize()),
-                id=id,
+                id=uid,
             )
             db.session.add(u)
             db.session.commit()

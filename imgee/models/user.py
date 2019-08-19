@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from flask import url_for
-from flask_lastuser.sqlalchemy import UserBase
 from werkzeug.utils import cached_property
+
+from flask_lastuser.sqlalchemy import UserBase
+
 from . import db
 from .profile import Profile
 

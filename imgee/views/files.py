@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-from flask import flash, g, jsonify, redirect, render_template, request, url_for
+from flask import abort, flash, g, jsonify, redirect, render_template, request, url_for
 
 from coaster.views import load_model, load_models
 from imgee import app, lastuser
 from imgee.forms import (
-    UploadImageForm,
-    UpdateTitle,
-    EditTitleForm,
     AddLabelForm,
     DeleteImageForm,
+    EditTitleForm,
+    UpdateTitle,
+    UploadImageForm,
 )
-from ..models import StoredFile, db, Profile
+
+from ..models import Profile, StoredFile, db
 from ..storage import delete, save_file
-from ..utils import get_media_domain, get_image_url
+from ..utils import get_image_url, get_media_domain
 from .index import get_prev_next_images
 
 
@@ -38,7 +39,7 @@ def _redirect_url_frm_upload(profile_name):
 def upload_file(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
-        file_ = request.files['file']
+        file_ = request.files['file_obj']
         title, stored_file = save_file(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
@@ -57,7 +58,7 @@ def upload_file(profile):
 def upload_file_json(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
-        file_ = request.files['file']
+        file_ = request.files['file_obj']
         title, stored_file = save_file(file_, profile=profile)
         update_form = UpdateTitle()
         update_form.title.data = stored_file.title
@@ -147,7 +148,7 @@ def update_title_json(profile, stored_file):
     addlperms=lastuser.permissions,
 )
 def view_image(profile, img):
-    prev, next = get_prev_next_images(profile, img)
+    prev_img, next_img = get_prev_next_images(profile, img)
     form = AddLabelForm(stored_file_id=img.name)
     media_domain = get_media_domain()
     return render_template(
@@ -155,8 +156,8 @@ def view_image(profile, img):
         profile=profile,
         form=form,
         img=img,
-        prev=prev,
-        next=next,
+        prev=prev_img,
+        next=next_img,
         domain=media_domain,
     )
 

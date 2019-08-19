@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime, timedelta
+from glob import glob
+from subprocess import CalledProcessError, check_call
 import os
 import os.path
 import re
 import time
-from datetime import datetime, timedelta
-from glob import glob
-from subprocess import CalledProcessError, check_call
 
 from sqlalchemy import or_
+
 from werkzeug import secure_filename
 
 import imgee
@@ -267,17 +268,17 @@ def resize_and_save(img, size, is_thumbnail=False):
     src_path = download_from_s3(img.filename)
 
     if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:
-        format = ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
+        file_format = ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
     else:
-        format = img.extn
-    format = format.lstrip('.')
+        file_format = img.extn
+    file_format = file_format.lstrip('.')
     resized_filename = get_resized_filename(img, size)
     if not resize_img(
         src_path,
         path_for(resized_filename),
         size,
         img.mimetype,
-        format,
+        file_format,
         is_thumbnail=is_thumbnail,
     ):
         img.no_previews = True
@@ -289,7 +290,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     return save_tn_in_db(img, resized_filename, size)
 
 
-def resize_img(src, dest, size, mimetype, format, is_thumbnail):
+def resize_img(src, dest, size, mimetype, file_format, is_thumbnail):
     """
     Resize image using ImageMagick.
     `size` is a tuple (width, height)
@@ -304,7 +305,7 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     processor = ALLOWED_MIMETYPES[mimetype].get('processor', 'convert')
     command = THUMBNAIL_COMMANDS.get(processor)
     prepared_command = command.format(
-        width=size[0], height=size[1], format=format, src=src, dest=dest
+        width=size[0], height=size[1], format=file_format, src=src, dest=dest
     )
     try:
         check_call(prepared_command, shell=True)

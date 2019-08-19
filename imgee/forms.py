@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from coaster.utils import make_name
-from baseframe.forms import Form
-from wtforms.validators import Required, ValidationError, Length
-from wtforms import FileField, TextField, HiddenField, SelectField
+from wtforms import FileField, HiddenField, SelectField, TextField
+from wtforms.validators import Length, Required, ValidationError
 
+from baseframe.forms import Form
+from coaster.utils import make_name
 from imgee import app
+
 from .models import Label
 from .utils import is_file_allowed
 
@@ -18,7 +19,7 @@ def valid_file(form, field):
 
 
 class UploadImageForm(Form):
-    file = FileField("File", validators=[Required(), valid_file])
+    file_obj = FileField("File", validators=[Required(), valid_file])
 
 
 class DeleteImageForm(Form):

@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 import unittest
+
 from werkzeug.datastructures import FileStorage
 
-from imgee.models import StoredFile, Label
-from imgee.views.labels import utils_save_labels, utils_save_label, utils_delete_label
+from imgee.models import Label, StoredFile
 from imgee.storage import save_file
+from imgee.views.labels import utils_delete_label, utils_save_label, utils_save_labels
+
 from .fixtures import ImgeeTestCase
 
 

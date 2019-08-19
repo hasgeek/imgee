@@ -1,8 +1,11 @@
-from flask import render_template, Flask
-from baseframe.forms.fields import ImgeeField
-from flask_wtf import Form
+# -*- coding: utf-8 -*-
+from flask import Flask, render_template
 from wtforms.validators import Required
+
+from flask_wtf import Form
+
 from baseframe import baseframe
+from baseframe.forms.fields import ImgeeField
 
 app = Flask(__name__)
 
