@@ -1,10 +1,14 @@
+# -*- coding: utf-8 -*-
 import unittest
-import requests
+
 from werkzeug.datastructures import FileStorage
 
-from imgee import app, url_for, db
-from imgee.storage import save_file, delete
+import requests
+
+from imgee import app, db, url_for
+from imgee.storage import delete, save_file
 from imgee.utils import get_image_url, get_thumbnail_url
+
 from .fixtures import ImgeeTestCase
 
 
@@ -25,9 +29,9 @@ class UploadTestCase(ImgeeTestCase):
         super(UploadTestCase, self).tearDown()
 
     def upload_all(self):
-        files = list()
-        for file in self.test_files:
-            files.append(self.upload(file))
+        files = []
+        for test_file in self.test_files:
+            files.append(self.upload(test_file))
         return files
 
     def upload(self, path=None):
@@ -41,28 +45,40 @@ class UploadTestCase(ImgeeTestCase):
 
     def test_save_file(self):
         with app.test_request_context('/'):
-            for file in self.files:
-                resp = requests.get(get_image_url(file))
+            for test_file in self.files:
+                resp = requests.get(get_image_url(test_file))
                 self.assertEquals(resp.status_code, 200)
-                self.assertEquals(resp.headers.get('Content-Type', ''), file.mimetype)
+                self.assertEquals(
+                    resp.headers.get('Content-Type', ''), test_file.mimetype
+                )
 
     def test_resize(self):
         with app.test_request_context('/'):
-            for file in self.files:
-                resp = self.client.get(url_for('get_image', image=file.name, size=app.config.get('THUMBNAIL_SIZE')))
+            for test_file in self.files:
+                resp = self.client.get(
+                    url_for(
+                        'get_image',
+                        image=test_file.name,
+                        size=app.config.get('THUMBNAIL_SIZE'),
+                    )
+                )
                 self.assertEquals(resp.status_code, 301)
-                self.assertEquals(resp.headers.get('Location'), get_thumbnail_url(file))
+                self.assertEquals(
+                    resp.headers.get('Location'), get_thumbnail_url(test_file)
+                )
 
     def test_delete_file(self):
-        for file in self.files:
-            delete(file, commit=False)
+        for test_file in self.files:
+            delete(test_file, commit=False)
 
         db.session.commit()
 
-        for file in self.files:
+        for test_file in self.files:
             with app.test_request_context('/'):
-                resp = requests.get(get_image_url(file))
-                self.assertEquals(resp.status_code, 403)  # S3 throws 403 for non existing files
+                resp = requests.get(get_image_url(test_file))
+                self.assertEquals(
+                    resp.status_code, 403
+                )  # S3 throws 403 for non existing files
 
 
 if __name__ == '__main__':

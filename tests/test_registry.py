@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 import time
 import unittest
-from werkzeug.datastructures import FileStorage
 
 from imgee import registry
+
 from .fixtures import ImgeeTestCase
 
 
@@ -34,7 +35,9 @@ class RegistryTestCase(ImgeeTestCase):
 
     def test_search(self):
         registry.add(self.test_key)
-        assert len(registry.search(self.test_key[:4])) == 1  # searching for a part of the key
+        assert (
+            len(registry.search(self.test_key[:4])) == 1
+        )  # searching for a part of the key
 
     def test_key_removal(self):
         registry.add(self.test_key)

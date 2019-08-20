@@ -10,7 +10,7 @@ $(document).ready(function(){
             //if currently active option do nothing
             return false;
         } else {
-            
+
             if(selectedOptionId == 'listview') {
                 $(this).addClass('active');
                 $('#gridview').removeClass('active');
@@ -24,13 +24,13 @@ $(document).ready(function(){
             else if(selectedOptionId == 'gridview') {
                 $(this).addClass('active');
                 $('#listview').removeClass('active');
-                
+
                 showcase.removeClass('list');
                 showcase.addClass('grid');
                 $('.left').removeClass('span1');
                 $('#row-ctrl').removeClass('row');
             }
 
-        } 
+        }
     });
 });

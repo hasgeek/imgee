@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from coaster.sqlalchemy import BaseMixin
-from . import db
+
 from ..utils import newid
+from . import db
 
 
 class Thumbnail(BaseMixin, db.Model):
@@ -12,6 +13,7 @@ class Thumbnail(BaseMixin, db.Model):
     image types. Unrecognized types are always served as the original
     file.
     """
+
     __tablename__ = 'thumbnail'
 
     name = db.Column(db.Unicode(64), nullable=False, unique=True, index=True)

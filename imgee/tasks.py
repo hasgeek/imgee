@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import re
+
 import redis
 
 
@@ -30,7 +32,9 @@ class TaskRegistry(object):
         return bool(self.filename_pattern.match(query))
 
     def key_for(self, taskid):
-        return u'{key_prefix}:{taskid}'.format(key_prefix=self.key_prefix, taskid=taskid)
+        return u'{key_prefix}:{taskid}'.format(
+            key_prefix=self.key_prefix, taskid=taskid
+        )
 
     def __contains__(self, taskid):
         return len(self.connection.keys(self.key_for(taskid))) > 0
@@ -45,7 +49,9 @@ class TaskRegistry(object):
     def search(self, query):
         # >> KEYS imgee:registry:default:*query*
         if not self.is_valid_query(query):
-            raise InvalidRedisQueryException(u'Invalid query for searching redis keys: {}'.format(query))
+            raise InvalidRedisQueryException(
+                u'Invalid query for searching redis keys: {}'.format(query)
+            )
         return self.connection.keys(self.key_for('*{}*'.format(query)))
 
     def get_all_keys(self):
@@ -57,7 +63,11 @@ class TaskRegistry(object):
         # chances are that we'll use this function to find the
         # thumbnail keys, which look like "name_wNN_hNN", hence the _
         if not self.is_valid_query(query):
-            raise InvalidRedisQueryException(u'Invalid query for searching redis keys, starting with: {}'.format(query))
+            raise InvalidRedisQueryException(
+                u'Invalid query for searching redis keys, starting with: {}'.format(
+                    query
+                )
+            )
         return self.connection.keys(self.key_for('{}_*'.format(query)))
 
     def remove(self, taskid):

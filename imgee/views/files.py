@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
-from flask import flash, g, jsonify, redirect, render_template, request, url_for
+from flask import abort, flash, g, jsonify, redirect, render_template, request, url_for
 
 from coaster.views import load_model, load_models
 from imgee import app, lastuser
 from imgee.forms import (
-    UploadImageForm, UpdateTitle, EditTitleForm,
-    AddLabelForm, DeleteImageForm
+    AddLabelForm,
+    DeleteImageForm,
+    EditTitleForm,
+    UpdateTitle,
+    UploadImageForm,
 )
-from ..models import StoredFile, db, Profile
+
+from ..models import Profile, StoredFile, db
 from ..storage import delete, save_file
-from ..utils import get_media_domain, get_image_url
+from ..utils import get_image_url, get_media_domain
 from .index import get_prev_next_images
 
 
@@ -25,12 +29,17 @@ def _redirect_url_frm_upload(profile_name):
 
 @app.route('/<profile>/new', methods=['GET', 'POST'])
 @lastuser.requires_login
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
+@load_model(
+    Profile,
+    {'name': 'profile'},
+    'profile',
+    permission=['new-file', 'siteadmin'],
+    addlperms=lastuser.permissions,
+)
 def upload_file(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
-        file_ = request.files['file']
+        file_ = request.files['upload_file']
         title, stored_file = save_file(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
@@ -39,20 +48,34 @@ def upload_file(profile):
 
 @app.route('/<profile>/new.json', methods=['POST'])
 @lastuser.requires_login
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['new-file', 'siteadmin'], addlperms=lastuser.permissions)
+@load_model(
+    Profile,
+    {'name': 'profile'},
+    'profile',
+    permission=['new-file', 'siteadmin'],
+    addlperms=lastuser.permissions,
+)
 def upload_file_json(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
-        file_ = request.files['file']
+        file_ = request.files['upload_file']
         title, stored_file = save_file(file_, profile=profile)
         update_form = UpdateTitle()
         update_form.title.data = stored_file.title
-        form = render_template('edit_title_form.html.jinja2', form=update_form, formid='edit_title_' + stored_file.name)
+        form = render_template(
+            'edit_title_form.html.jinja2',
+            form=update_form,
+            formid='edit_title_' + stored_file.name,
+        )
         return jsonify(
-            status=True, message="%s uploaded successfully" % title, form=form,
-            update_url=url_for('update_title_json', profile=profile.name,
-            file=stored_file.name), image_data=stored_file.dict_data())
+            status=True,
+            message="%s uploaded successfully" % title,
+            form=form,
+            update_url=url_for(
+                'update_title_json', profile=profile.name, file=stored_file.name
+            ),
+            image_data=stored_file.dict_data(),
+        )
     else:
         response = jsonify(status=False, message=' '.join(upload_form.errors.values()))
         response.status_code = 403
@@ -61,8 +84,13 @@ def upload_file_json(profile):
 
 @app.route('/<profile>/edit_title', methods=['POST'])
 @lastuser.requires_login
-@load_model(Profile, {'name': 'profile'}, 'profile',
-    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+@load_model(
+    Profile,
+    {'name': 'profile'},
+    'profile',
+    permission=['edit', 'siteadmin'],
+    addlperms=lastuser.permissions,
+)
 def edit_title(profile):
     form = EditTitleForm()
     if form.validate_on_submit():
@@ -82,30 +110,56 @@ def edit_title(profile):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'file', 'profile': 'profile'}, 'stored_file'),
-    permission=['edit', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['edit', 'siteadmin'],
+    addlperms=lastuser.permissions,
+)
 def update_title_json(profile, stored_file):
     form = UpdateTitle()
     if form.validate_on_submit():
         old_title = stored_file.title
         form.populate_obj(stored_file)
         db.session.commit()
-        return jsonify(status=True, message="Title for %s has been updated to %s" % (old_title, stored_file.title), image_data=stored_file.dict_data())
+        return jsonify(
+            status=True,
+            message="Title for %s has been updated to %s"
+            % (old_title, stored_file.title),
+            image_data=stored_file.dict_data(),
+        )
     else:
-        update_form = render_template('edit_title_form.html.jinja2', form=form, formid='edit_title_' + stored_file.name)
-        return jsonify(status=False, form=update_form, update_url=url_for('update_title_json', profile=profile.name, file=stored_file.name))
+        update_form = render_template(
+            'edit_title_form.html.jinja2',
+            form=form,
+            formid='edit_title_' + stored_file.name,
+        )
+        return jsonify(
+            status=False,
+            form=update_form,
+            update_url=url_for(
+                'update_title_json', profile=profile.name, file=stored_file.name
+            ),
+        )
 
 
 @app.route('/<profile>/view/<image>')
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['view', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['view', 'siteadmin'],
+    addlperms=lastuser.permissions,
+)
 def view_image(profile, img):
-    prev, next = get_prev_next_images(profile, img)
+    prev_img, next_img = get_prev_next_images(profile, img)
     form = AddLabelForm(stored_file_id=img.name)
     media_domain = get_media_domain()
-    return render_template('view_image.html.jinja2', profile=profile, form=form, img=img,
-                    prev=prev, next=next, domain=media_domain)
+    return render_template(
+        'view_image.html.jinja2',
+        profile=profile,
+        form=form,
+        img=img,
+        prev=prev_img,
+        next=next_img,
+        domain=media_domain,
+    )
 
 
 @app.route('/embed/file/<image>')
@@ -121,12 +175,16 @@ def get_image(image):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['delete', 'siteadmin'], addlperms=lastuser.permissions)
+    permission=['delete', 'siteadmin'],
+    addlperms=lastuser.permissions,
+)
 def delete_file(profile, img):
     form = DeleteImageForm()
     if form.validate_on_submit():
         delete(img)
         flash("%s is deleted" % img.title)
     else:
-        return render_template('delete.html.jinja2', form=form, file=img, profile=profile)
+        return render_template(
+            'delete.html.jinja2', form=form, file=img, profile=profile
+        )
     return redirect(url_for('profile_view', profile=profile.name))

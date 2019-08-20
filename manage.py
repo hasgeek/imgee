@@ -1,10 +1,10 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 
-from coaster.manage import manager, init_manager
-
-from imgee.models import db
+from coaster.manage import init_manager, manager
 from imgee import app
+from imgee.models import db
 
 
 def mkdir_p(dirname):
@@ -15,6 +15,7 @@ def mkdir_p(dirname):
 @manager.command
 def init():
     mkdir_p(app.upload_folder)
+
 
 if __name__ == "__main__":
     db.init_app(app)
