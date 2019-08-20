@@ -39,7 +39,7 @@ def _redirect_url_frm_upload(profile_name):
 def upload_file(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
-        file_ = request.files['file_obj']
+        file_ = request.files['upload_file']
         title, stored_file = save_file(file_, profile=profile)
         flash('"%s" uploaded successfully.' % title)
         return redirect(_redirect_url_frm_upload(profile.name))
@@ -58,7 +58,7 @@ def upload_file(profile):
 def upload_file_json(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
-        file_ = request.files['file_obj']
+        file_ = request.files['upload_file']
         title, stored_file = save_file(file_, profile=profile)
         update_form = UpdateTitle()
         update_form.title.data = stored_file.title
