@@ -2,27 +2,37 @@
 
 from datetime import datetime, timedelta
 from glob import glob
-import os.path
+from subprocess import CalledProcessError, check_call
 import os
+import os.path
 import re
-from subprocess import check_call, CalledProcessError
 import time
 
 from sqlalchemy import or_
+
 from werkzeug import secure_filename
 
 import imgee
+
 from . import app
-from .models import db, Thumbnail, StoredFile
+from .models import StoredFile, Thumbnail, db
 from .utils import (
-    newid, guess_extension, get_file_type, is_animated_gif,
-    path_for, get_s3_folder, get_s3_bucket,
-    download_from_s3, get_width_height, ALLOWED_MIMETYPES,
-    exists_in_s3, THUMBNAIL_COMMANDS
+    ALLOWED_MIMETYPES,
+    THUMBNAIL_COMMANDS,
+    download_from_s3,
+    exists_in_s3,
+    get_file_type,
+    get_s3_bucket,
+    get_s3_folder,
+    get_width_height,
+    guess_extension,
+    is_animated_gif,
+    newid,
+    path_for,
 )
 
-
 # -- functions used in views --
+
 
 def get_resized_image(img, size, is_thumbnail=False):
     """
@@ -40,7 +50,10 @@ def get_resized_image(img, size, is_thumbnail=False):
             return img.name
 
     size_t = parse_size(size)
-    if (size_t and size_t[0] != img.width and size_t[1] != img.height) or ('thumb_extn' in ALLOWED_MIMETYPES[img.mimetype] and ALLOWED_MIMETYPES[img.mimetype]['thumb_extn'] != img.extn):
+    if (size_t and size_t[0] != img.width and size_t[1] != img.height) or (
+        'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]
+        and ALLOWED_MIMETYPES[img.mimetype]['thumb_extn'] != img.extn
+    ):
         w_or_h = or_(Thumbnail.width == size_t[0], Thumbnail.height == size_t[1])
         scaled = Thumbnail.query.filter(w_or_h, Thumbnail.stored_file == img).first()
         if scaled and exists_in_s3(scaled):
@@ -80,13 +93,20 @@ def save_file(fp, profile, title=None):
     with open(local_path, 'w') as img:
         img.write(fp.read())
 
-    stored_file = save_img_in_db(name=id_, title=title, local_path=local_path,
-                    profile=profile, mimetype=content_type, orig_extn=extn)
+    stored_file = save_img_in_db(
+        name=id_,
+        title=title,
+        local_path=local_path,
+        profile=profile,
+        mimetype=content_type,
+        orig_extn=extn,
+    )
     save_on_s3(img_name, content_type=content_type)
     return title, stored_file
 
 
 # -- actual saving of image/thumbnail and data in the db and on S3.
+
 
 def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     """
@@ -94,9 +114,20 @@ def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     """
     size_in_bytes = os.path.getsize(local_path)
     width, height = get_width_height(local_path)
-    stored_file = StoredFile(name=name, title=unicode(title), profile=profile, orig_extn=unicode(orig_extn),
-                    size=size_in_bytes, width=width, height=height, mimetype=unicode(mimetype))
-    if 'thumb_extn' in ALLOWED_MIMETYPES[mimetype] and ALLOWED_MIMETYPES[mimetype]['thumb_extn'] is False:
+    stored_file = StoredFile(
+        name=name,
+        title=unicode(title),
+        profile=profile,
+        orig_extn=unicode(orig_extn),
+        size=size_in_bytes,
+        width=width,
+        height=height,
+        mimetype=unicode(mimetype),
+    )
+    if (
+        'thumb_extn' in ALLOWED_MIMETYPES[mimetype]
+        and ALLOWED_MIMETYPES[mimetype]['thumb_extn'] is False
+    ):
         stored_file.no_previews = True
     db.session.add(stored_file)
     db.session.commit()
@@ -131,18 +162,19 @@ def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
 
     with open(path_for(filename)) as fp:
         filename = remotename or filename
-        k = b.new_key(folder+filename)
+        k = b.new_key(folder + filename)
         headers = {
             'Cache-Control': 'max-age=31536000',  # 60*60*24*365
             'Content-Type': get_file_type(fp, filename),
             # once cached, it is set to expire after a year
-            'Expires': datetime.utcnow() + timedelta(days=365)
+            'Expires': datetime.utcnow() + timedelta(days=365),
         }
         k.set_contents_from_file(fp, policy='public-read', headers=headers)
     return filename
 
 
 # -- size calculations --
+
 
 def parse_size(size):
     """
@@ -195,16 +227,16 @@ def get_fitting_size(original_size, size):
     elif size[0] == 0 and size[1] == 0 and orig_w > 0 and orig_h > 0:
         w, h = orig_w, orig_h
     elif size[0] == 0:
-        w, h = orig_w*size[1]/float(orig_h), size[1]
+        w, h = orig_w * size[1] / float(orig_h), size[1]
     elif size[1] == 0:
-        w, h = size[0], orig_h*size[0]/float(orig_w)
+        w, h = size[0], orig_h * size[0] / float(orig_w)
     else:
-        w, h = size[0], orig_h*size[0]/float(orig_w)
+        w, h = size[0], orig_h * size[0] / float(orig_w)
         if h > size[1]:
-            w, h = w*size[1]/float(h), size[1]
+            w, h = w * size[1] / float(h), size[1]
 
     size = int(w), int(h)
-    size = map(lambda x: max(x, 1), size)   # let the width or height be atleast 1px.
+    size = map(lambda x: max(x, 1), size)  # let the width or height be atleast 1px.
     return size
 
 
@@ -236,12 +268,19 @@ def resize_and_save(img, size, is_thumbnail=False):
     src_path = download_from_s3(img.filename)
 
     if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:
-        format = ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
+        file_format = ALLOWED_MIMETYPES[img.mimetype]['thumb_extn']
     else:
-        format = img.extn
-    format = format.lstrip('.')
+        file_format = img.extn
+    file_format = file_format.lstrip('.')
     resized_filename = get_resized_filename(img, size)
-    if not resize_img(src_path, path_for(resized_filename), size, img.mimetype, format, is_thumbnail=is_thumbnail):
+    if not resize_img(
+        src_path,
+        path_for(resized_filename),
+        size,
+        img.mimetype,
+        file_format,
+        is_thumbnail=is_thumbnail,
+    ):
         img.no_previews = True
         db.session.add(img)
         db.session.commit()
@@ -251,7 +290,7 @@ def resize_and_save(img, size, is_thumbnail=False):
     return save_tn_in_db(img, resized_filename, size)
 
 
-def resize_img(src, dest, size, mimetype, format, is_thumbnail):
+def resize_img(src, dest, size, mimetype, file_format, is_thumbnail):
     """
     Resize image using ImageMagick.
     `size` is a tuple (width, height)
@@ -265,7 +304,9 @@ def resize_img(src, dest, size, mimetype, format, is_thumbnail):
     # get processor value, if none specified, use convert
     processor = ALLOWED_MIMETYPES[mimetype].get('processor', 'convert')
     command = THUMBNAIL_COMMANDS.get(processor)
-    prepared_command = command.format(width=size[0], height=size[1], format=format, src=src, dest=dest)
+    prepared_command = command.format(
+        width=size[0], height=size[1], format=file_format, src=src, dest=dest
+    )
     try:
         check_call(prepared_command, shell=True)
         return True
@@ -279,7 +320,7 @@ def clean_local_cache(expiry=24):
     which are NOT accessed in the last `expiry` hours.
     """
     cache_path = os.path.join(app.upload_folder, '*')
-    min_atime = time.time() - expiry*60*60
+    min_atime = time.time() - expiry * 60 * 60
 
     n = 0
     for f in glob(cache_path):
@@ -326,4 +367,5 @@ def delete(stored_file, commit=True):
 
 if __name__ == '__main__':
     import doctest
+
     doctest.testmod()

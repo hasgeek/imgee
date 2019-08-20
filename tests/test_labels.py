@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 import unittest
+
 from werkzeug.datastructures import FileStorage
 
-from imgee.models import StoredFile, Label
-from imgee.views.labels import utils_save_labels, utils_save_label, utils_delete_label
+from imgee.models import Label, StoredFile
 from imgee.storage import save_file
+from imgee.views.labels import utils_delete_label, utils_save_label, utils_save_labels
+
 from .fixtures import ImgeeTestCase
 
 
@@ -11,7 +14,7 @@ class LabelTestCase(ImgeeTestCase):
     def setUp(self):
         super(LabelTestCase, self).setUp()
         self.img_id = None
-        self.test_files = ['../imgee/static/img/imgee.png', ]
+        self.test_files = ['../imgee/static/img/imgee.png']
         self.test_labels = ['logos', 'banners', 'profile-photos']
 
     def upload(self, path=None):

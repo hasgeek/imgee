@@ -4,14 +4,16 @@
 
 import os.path
 
+from flask import Flask, redirect, url_for
+from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 
-from flask import Flask, redirect, url_for
 from flask_lastuser import Lastuser
 from flask_lastuser.sqlalchemy import UserManager
-from baseframe import baseframe, assets, Version
-from flask_migrate import Migrate
+
+from baseframe import Version, assets, baseframe
 import coaster.app
+
 from ._version import __version__
 
 version = Version(__version__)
@@ -20,9 +22,9 @@ lastuser = Lastuser()
 
 assets['imgee.css'][version] = 'css/app.css'
 
-from . import models, views
-from .models import db
-from .tasks import TaskRegistry
+from . import models, views  # NOQA # isort:skip
+from .models import db  # NOQA # isort:skip
+from .tasks import TaskRegistry  # NOQA # isort:skip
 
 registry = TaskRegistry()
 
@@ -39,7 +41,10 @@ registry.init_app(app)
 def error403(error):
     return redirect(url_for('login'))
 
+
 if app.config.get('MEDIA_DOMAIN', '').lower().startswith(('http://', 'https://')):
     app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
 
-app.upload_folder = os.path.join(app.static_folder, secure_filename(app.config.get('UPLOADED_FILES_DIR')))
+app.upload_folder = os.path.join(
+    app.static_folder, secure_filename(app.config.get('UPLOADED_FILES_DIR'))
+)

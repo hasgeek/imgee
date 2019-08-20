@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from flask import Response, redirect, flash, g
-from coaster.views import get_next_url
+from flask import Response, flash, g, redirect
 
+from coaster.views import get_next_url
 from imgee import app, lastuser
-from imgee.models import db, Profile
+from imgee.models import Profile, db
 
 
 @app.route('/login')
@@ -40,7 +40,9 @@ def lastuser_error(error, error_description=None, error_uri=None):
     if error == 'access_denied':
         flash("You denied the request to login", category='error')
         return redirect(get_next_url())
-    return Response(u"Error: %s\n"
-                    u"Description: %s\n"
-                    u"URI: %s" % (error, error_description, error_uri),
-                    mimetype="text/plain")
+    return Response(
+        u"Error: %s\n"
+        u"Description: %s\n"
+        u"URI: %s" % (error, error_description, error_uri),
+        mimetype="text/plain",
+    )

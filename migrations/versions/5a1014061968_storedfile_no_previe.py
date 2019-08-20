@@ -15,7 +15,10 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.add_column('stored_file', sa.Column('no_previews', sa.Boolean(), nullable=False, server_default='False'))
+    op.add_column(
+        'stored_file',
+        sa.Column('no_previews', sa.Boolean(), nullable=False, server_default='False'),
+    )
     op.alter_column('stored_file', 'no_previews', server_default=None)
 
 

@@ -15,7 +15,9 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.add_column('stored_file', sa.Column('orig_extn', sa.Unicode(length=15), nullable=True))
+    op.add_column(
+        'stored_file', sa.Column('orig_extn', sa.Unicode(length=15), nullable=True)
+    )
 
 
 def downgrade():
