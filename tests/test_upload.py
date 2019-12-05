@@ -47,8 +47,8 @@ class UploadTestCase(ImgeeTestCase):
         with app.test_request_context('/'):
             for test_file in self.files:
                 resp = requests.get(get_image_url(test_file))
-                self.assertEquals(resp.status_code, 200)
-                self.assertEquals(
+                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(
                     resp.headers.get('Content-Type', ''), test_file.mimetype
                 )
 
@@ -62,8 +62,8 @@ class UploadTestCase(ImgeeTestCase):
                         size=app.config.get('THUMBNAIL_SIZE'),
                     )
                 )
-                self.assertEquals(resp.status_code, 301)
-                self.assertEquals(
+                self.assertEqual(resp.status_code, 301)
+                self.assertEqual(
                     resp.headers.get('Location'), get_thumbnail_url(test_file)
                 )
 
@@ -76,7 +76,7 @@ class UploadTestCase(ImgeeTestCase):
         for test_file in self.files:
             with app.test_request_context('/'):
                 resp = requests.get(get_image_url(test_file))
-                self.assertEquals(
+                self.assertEqual(
                     resp.status_code, 403
                 )  # S3 throws 403 for non existing files
 

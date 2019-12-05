@@ -43,9 +43,9 @@ def upgrade():
             img.width, img.height = get_width_height(gpath[0])
             img.size = os.path.getsize(gpath[0])
 
-            print 'updated attributes of %s\n' % img.title,  # NOQA
+            print('updated attributes of %s\n' % img.title, end=' ')  # NOQA
         else:
-            print 'local file not found for %s\n' % img.title,  # NOQA
+            print('local file not found for %s\n' % img.title, end=' ')  # NOQA
     session.commit()
 
 
