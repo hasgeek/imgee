@@ -162,7 +162,7 @@ def utils_save_label(label_name, profile, commit=True):
 
 
 def utils_delete_label(label):
-    if isinstance(label, basestring):
+    if isinstance(label, str):
         label = Label.query.filter_by(title=label).first()
     db.session.delete(label)
     db.session.commit()

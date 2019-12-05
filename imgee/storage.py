@@ -116,13 +116,13 @@ def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     width, height = get_width_height(local_path)
     stored_file = StoredFile(
         name=name,
-        title=unicode(title),
+        title=str(title),
         profile=profile,
-        orig_extn=unicode(orig_extn),
+        orig_extn=str(orig_extn),
         size=size_in_bytes,
         width=width,
         height=height,
-        mimetype=unicode(mimetype),
+        mimetype=str(mimetype),
     )
     if (
         'thumb_extn' in ALLOWED_MIMETYPES[mimetype]
@@ -181,7 +181,7 @@ def parse_size(size):
     Calculate and return (w, h) from the query parameter `size`.
     Returns None if not formattable.
     """
-    if isinstance(size, (str, unicode)):
+    if isinstance(size, str):
         # return (w, h) if size is 'wxh'
         r = r'^(\d+)(x(\d+))?$'
         matched = re.match(r, size)
@@ -236,7 +236,7 @@ def get_fitting_size(original_size, size):
             w, h = w * size[1] / float(h), size[1]
 
     size = int(w), int(h)
-    size = map(lambda x: max(x, 1), size)  # let the width or height be atleast 1px.
+    size = [max(x, 1) for x in size]  # let the width or height be atleast 1px.
     return size
 
 
