@@ -7,9 +7,8 @@ Flask-SQLAlchemy==2.4.1
 psycopg2==2.8.4
 https://github.com/hasgeek/flask-lastuser/zipball/master
 https://github.com/jace/flask-alembic/archive/master.zip
-boto==2.49.0
+boto3==1.10.46
 redis==3.3.11
-xml4h==0.2.0
 python-magic==0.4.15
 defusedxml==0.6.0
 Flask-Migrate==2.5.2

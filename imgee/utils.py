@@ -8,9 +8,8 @@ import re
 
 from flask import request
 
-from boto import connect_s3
-from boto.s3.bucket import Bucket
-from boto.s3.key import Key
+import boto3
+import botocore
 from PIL import Image
 import defusedxml.cElementTree as ElementTree
 import magic
@@ -18,6 +17,7 @@ import magic
 from baseframe import cache
 
 from . import app
+
 
 THUMBNAIL_COMMANDS = {
     'inkscape': "inkscape -z -f {src} -e {src}.original.png && convert -quiet -thumbnail {width}x{height} {src}.original.png -colorspace sRGB -quality 75% {dest}",
@@ -303,9 +303,8 @@ def is_animated_gif(local_path):
 
 def get_file_type(fp, filename=None):
     fp.seek(0)
-    data = fp.read(1024)  # https://github.com/ahupp/python-magic#usage
+    result = magic.from_buffer(fp.read(), mime=True)
     fp.seek(0)
-    result = magic.from_buffer(data, mime=True)
     if result in ('text/plain', 'text/xml', 'application/xml'):
         if is_svg(fp):
             return 'image/svg+xml'
@@ -322,14 +321,18 @@ def is_file_allowed(fp, provided_mimetype=None, filename=None):
 
 
 # -- s3 related --
-def get_s3_connection():
-    return connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
+
+
+def get_s3_client():
+    return boto3.resource(
+        's3',
+        aws_access_key_id=app.config['AWS_ACCESS_KEY'],
+        aws_secret_access_key=app.config['AWS_SECRET_KEY'],
+    )
 
 
 def get_s3_bucket():
-    conn = get_s3_connection()
-    bucket = Bucket(conn, app.config['AWS_BUCKET'])
-    return bucket
+    return get_s3_client().Bucket(app.config['AWS_BUCKET'])
 
 
 def get_s3_folder(f=''):
@@ -347,12 +350,10 @@ def exists_in_s3(thumb):
     if 'thumb_extn' in ALLOWED_MIMETYPES[thumb.stored_file.mimetype]:
         extn = ALLOWED_MIMETYPES[thumb.stored_file.mimetype]['thumb_extn']
     key = os.path.join(folder, thumb.name + extn)
-    # print("checking whether exists in s3: {}".format(key))
-    resp = bucket.get_key(key)
-    if not resp:
-        # print("does not exist")
+    try:
+        bucket.Object(key).load()
+    except botocore.exceptions.ClientError:
         return False
-    # print("exists")
     return True
 
 
@@ -361,9 +362,8 @@ def download_from_s3(img_name):
     if not os.path.exists(local_path):
         bucket = get_s3_bucket()
         folder = get_s3_folder()
-        k = Key(bucket)
-        k.key = os.path.join(folder, img_name)
-        k.get_contents_to_filename(local_path)
+        key = os.path.join(folder, img_name)
+        bucket.Object(key).download_file(local_path)
     return local_path
 
 
@@ -378,6 +378,7 @@ def get_width_height(img_path):
             o = check_output(
                 'identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path),
                 shell=True,
+                universal_newlines=True
             )
             w, h = o.split('x')
         elif extn in ['.cdr']:
@@ -394,7 +395,8 @@ def get_width_height(img_path):
                 w, h = int(round(float(wo))), int(round(float(ho)))
         else:
             o = check_output(
-                'identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True
+                'identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True,
+                universal_newlines=True
             )
             w, h = o.split('x')
         return (w, h)
