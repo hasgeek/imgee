@@ -9,16 +9,16 @@ from imgee.models import Profile, StoredFile, User, db
 
 class ImgeeTestCase(unittest.TestCase):
     def get_test_user(self, name='testuser', uid=1):
-        u = User.query.filter_by(username=str(name)).first()
+        u = User.query.filter_by(username=name).first()
         if not u:
             userid = ''.join(random.sample(string.ascii_letters, 22))
             u = User(
-                username=str(name),
-                userid=str(userid),
+                username=name,
+                userid=userid,
                 lastuser_token_scope='id email organizations',
                 lastuser_token_type='bearer',
                 lastuser_token='last-user-token',
-                fullname=str(name.capitalize()),
+                fullname=name.capitalize(),
                 id=uid,
             )
             db.session.add(u)
