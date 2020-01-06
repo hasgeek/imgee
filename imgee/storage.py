@@ -116,13 +116,13 @@ def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     width, height = get_width_height(local_path)
     stored_file = StoredFile(
         name=name,
-        title=str(title),
+        title=title,
         profile=profile,
-        orig_extn=str(orig_extn),
+        orig_extn=orig_extn,
         size=size_in_bytes,
         width=width,
         height=height,
-        mimetype=str(mimetype),
+        mimetype=mimetype,
     )
     if (
         'thumb_extn' in ALLOWED_MIMETYPES[mimetype]

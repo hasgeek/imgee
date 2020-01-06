@@ -61,7 +61,7 @@ def profile_view(profile):
         files=files,
         uploadform=upload_form,
         title_form=title_form,
-        mimetypes=list(ALLOWED_MIMETYPES.keys()),
+        mimetypes=ALLOWED_MIMETYPES.keys(),
     )
 
 
