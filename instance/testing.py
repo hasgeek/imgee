@@ -8,12 +8,12 @@ AWS_FOLDER = 'test/'
 UNKNOWN_FILE_THUMBNAIL = 'unknown.jpeg'
 
 #: S3 Configuration; AWS credentials with restricted access
-AWS_ACCESS_KEY = environ.get('AWS_ACCESS_KEY')
-AWS_SECRET_KEY = environ.get('AWS_SECRET_KEY')
-AWS_BUCKET = environ.get('AWS_BUCKET', 'imgee-testing')
+#: S3 Configuration
+AWS_ACCESS_KEY = 'AKIAIRIRVOH3RE5SKR4A'
+AWS_SECRET_KEY = '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'
+AWS_BUCKET = 'imgee'
 AWS_FOLDER = 'test'
-
-MEDIA_DOMAIN = 'https://%s.s3.amazonaws.com' % AWS_BUCKET
+MEDIA_DOMAIN = 'http://%s.s3.amazonaws.com/' % AWS_BUCKET
 
 SQLALCHEMY_DATABASE_URI = 'sqlite://'
 WTF_CSRF_ENABLED = False

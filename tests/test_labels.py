@@ -14,13 +14,13 @@ class LabelTestCase(ImgeeTestCase):
     def setUp(self):
         super(LabelTestCase, self).setUp()
         self.img_id = None
-        self.test_files = ['../imgee/static/img/imgee.png']
+        self.test_files = ['imgee/static/img/imgee.png']
         self.test_labels = ['logos', 'banners', 'profile-photos']
 
     def upload(self, path=None):
         profile = self.get_test_profile()
         sf = None
-        with open(path or self.test_files[0]) as fp:
+        with open(path or self.test_files[0], 'rb') as fp:
             fs = FileStorage(fp)
             title, sf = save_file(fs, profile)
         return sf

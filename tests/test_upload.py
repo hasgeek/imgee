@@ -17,10 +17,10 @@ class UploadTestCase(ImgeeTestCase):
         super(UploadTestCase, self).setUp()
         self.img_id = None
         self.test_files = [
-            '../imgee/static/img/imgee.png',
-            '../imgee/static/img/imgee.jpeg',
-            '../imgee/static/img/imgee.svg',
-            '../imgee/static/img/loading.gif',
+            'imgee/static/img/imgee.png',
+            'imgee/static/img/imgee.jpeg',
+            'imgee/static/img/imgee.svg',
+            'imgee/static/img/loading.gif',
         ]
         self.test_labels = ['logos', 'banners', 'profile-photos']
         self.files = self.upload_all()
@@ -38,7 +38,7 @@ class UploadTestCase(ImgeeTestCase):
         profile = self.get_test_profile()
         sf = None
         if path:
-            with open(path) as fp:
+            with open(path, 'rb') as fp:
                 fs = FileStorage(fp)
                 title, sf = save_file(fs, profile)
             return sf
