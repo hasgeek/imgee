@@ -11,7 +11,7 @@ class ImgeeTestCase(unittest.TestCase):
     def get_test_user(self, name='testuser', uid=1):
         u = User.query.filter_by(username=str(name)).first()
         if not u:
-            userid = ''.join(random.sample(string.letters, 22))
+            userid = ''.join(random.sample(string.ascii_letters, 22))
             u = User(
                 username=str(name),
                 userid=str(userid),
