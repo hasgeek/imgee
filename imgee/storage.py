@@ -90,7 +90,7 @@ def save_file(fp, profile, title=None):
     img_name = "%s%s" % (id_, extn)
     local_path = path_for(img_name)
 
-    with open(local_path, 'w') as img:
+    with open(local_path, 'wb') as img:
         img.write(fp.read())
 
     stored_file = save_img_in_db(
@@ -153,23 +153,24 @@ def save_tn_in_db(img, tn_name, size):
     return name
 
 
-def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
+def save_on_s3(filename, remotename='', content_type=''):
     """
     Save contents from file named `filename` to `remotename` on S3.
     """
-    b = bucket or get_s3_bucket()
-    folder = get_s3_folder(folder)
+    bucket = get_s3_bucket()
+    folder = get_s3_folder()
+    key = os.path.join(folder, filename)
 
-    with open(path_for(filename)) as fp:
+    with open(path_for(filename), 'rb') as fp:
         filename = remotename or filename
-        k = b.new_key(folder + filename)
-        headers = {
-            'Cache-Control': 'max-age=31536000',  # 60*60*24*365
-            'Content-Type': get_file_type(fp, filename),
-            # once cached, it is set to expire after a year
-            'Expires': datetime.utcnow() + timedelta(days=365),
-        }
-        k.set_contents_from_file(fp, policy='public-read', headers=headers)
+        bucket.put_object(
+            ACL='public-read',
+            Key=key,
+            Body=fp.read(),
+            CacheControl='max-age=31536000',
+            ContentType=content_type or get_file_type(fp, filename),
+            Expires=datetime.utcnow() + timedelta(days=365),
+        )
     return filename
 
 
@@ -353,7 +354,9 @@ def delete(stored_file, commit=True):
     keys = [(get_s3_folder() + thumbnail.name + extn) for thumbnail in thumbnails]
     keys.append(get_s3_folder() + stored_file.name + extn)
     bucket = get_s3_bucket()
-    bucket.delete_keys(keys)
+    bucket.delete_objects(
+        Delete={'Objects': [{'Key': key} for key in keys], 'Quiet': True}
+    )
 
     # remove from the db
     # remove thumbnails explicitly.
