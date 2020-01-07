@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from subprocess import CalledProcessError, check_output
-from urlparse import urljoin
+from urllib.parse import urljoin
 from uuid import uuid4
 import os.path
 import re
 
 from flask import request
 
-from boto import connect_s3
-from boto.s3.bucket import Bucket
-from boto.s3.key import Key
+import boto3
+import botocore
 from PIL import Image
 import defusedxml.cElementTree as ElementTree
 import magic
@@ -18,6 +17,7 @@ import magic
 from baseframe import cache
 
 from . import app
+
 
 THUMBNAIL_COMMANDS = {
     'inkscape': "inkscape -z -f {src} -e {src}.original.png && convert -quiet -thumbnail {width}x{height} {src}.original.png -colorspace sRGB -quality 75% {dest}",
@@ -28,212 +28,212 @@ THUMBNAIL_COMMANDS = {
 }
 
 ALLOWED_MIMETYPES = {
-    'image/jpg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
-    'image/jpe': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
-    'image/jpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
-    'image/pjpeg': {'allowed_extns': [u'.jpe', u'.jpg', u'.jpeg'], 'extn': u'.jpeg'},
-    'image/png': {'allowed_extns': [u'.png'], 'extn': u'.png'},
+    'image/jpg': {'allowed_extns': ['.jpe', '.jpg', '.jpeg'], 'extn': '.jpeg'},
+    'image/jpe': {'allowed_extns': ['.jpe', '.jpg', '.jpeg'], 'extn': '.jpeg'},
+    'image/jpeg': {'allowed_extns': ['.jpe', '.jpg', '.jpeg'], 'extn': '.jpeg'},
+    'image/pjpeg': {'allowed_extns': ['.jpe', '.jpg', '.jpeg'], 'extn': '.jpeg'},
+    'image/png': {'allowed_extns': ['.png'], 'extn': '.png'},
     'image/gif': {
-        'allowed_extns': [u'.gif'],
-        'extn': u'.gif',
+        'allowed_extns': ['.gif'],
+        'extn': '.gif',
         'processor': 'convert-layered',
     },
     'image/vnd.adobe.photoshop': {
-        'allowed_extns': [u'.psd'],
-        'extn': u'.psd',
+        'allowed_extns': ['.psd'],
+        'extn': '.psd',
         'thumb_extn': '.jpeg',
         'processor': 'convert-layered',
     },
     'application/pdf': {
-        'allowed_extns': [u'.pdf', u'.ai'],
-        'extn': [u'.pdf', u'.ai'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.pdf', '.ai'],
+        'extn': ['.pdf', '.ai'],
+        'thumb_extn': '.png',
         'processor': 'convert-pdf',
     },
     'application/illustrator': {
-        'allowed_extns': [u'.ai'],
-        'extn': u'.ai',
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.ai'],
+        'extn': '.ai',
+        'thumb_extn': '.png',
     },
     'application/postscript': {
-        'allowed_extns': [u'.eps'],
-        'extn': u'.eps',
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.eps'],
+        'extn': '.eps',
+        'thumb_extn': '.png',
     },
     'image/svg+xml': {
-        'allowed_extns': [u'.svg'],
-        'extn': u'.svg',
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.svg'],
+        'extn': '.svg',
+        'thumb_extn': '.png',
         'processor': 'rsvg-convert',
     },
     'application/x-gzip': {
-        'allowed_extns': [u'.svgz'],
-        'extn': u'.svgz',
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.svgz'],
+        'extn': '.svgz',
+        'thumb_extn': '.png',
         'processor': 'rsvg-convert',
     },
-    'image/bmp': {'allowed_extns': [u'.bmp'], 'extn': u'.bmp', 'thumb_extn': u'.jpeg'},
+    'image/bmp': {'allowed_extns': ['.bmp'], 'extn': '.bmp', 'thumb_extn': '.jpeg'},
     'image/x-bmp': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'image/x-bitmap': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'image/x-xbitmap': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'image/x-win-bitmap': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'image/x-windows-bmp': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'image/ms-bmp': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'image/x-ms-bmp': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'application/bmp': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'application/x-bmp': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'application/x-win-bitmap': {
-        'allowed_extns': [u'.bmp'],
-        'extn': u'.bmp',
-        'thumb_extn': u'.jpeg',
+        'allowed_extns': ['.bmp'],
+        'extn': '.bmp',
+        'thumb_extn': '.jpeg',
     },
     'application/cdr': {
-        'allowed_extns': [u'.cdr'],
-        'extn': u'.cdr',
+        'allowed_extns': ['.cdr'],
+        'extn': '.cdr',
         'thumb_extn': '.png',
         'processor': 'inkscape',
     },
     'application/coreldraw': {
-        'allowed_extns': [u'.cdr'],
-        'extn': u'.cdr',
+        'allowed_extns': ['.cdr'],
+        'extn': '.cdr',
         'thumb_extn': '.png',
         'processor': 'inkscape',
     },
     'application/x-cdr': {
-        'allowed_extns': [u'.cdr'],
-        'extn': u'.cdr',
+        'allowed_extns': ['.cdr'],
+        'extn': '.cdr',
         'thumb_extn': '.png',
         'processor': 'inkscape',
     },
     'application/x-coreldraw': {
-        'allowed_extns': [u'.cdr'],
-        'extn': u'.cdr',
+        'allowed_extns': ['.cdr'],
+        'extn': '.cdr',
         'thumb_extn': '.png',
         'processor': 'inkscape',
     },
     'application/vnd.corel-draw': {
-        'allowed_extns': [u'.cdr'],
-        'extn': u'.cdr',
+        'allowed_extns': ['.cdr'],
+        'extn': '.cdr',
         'thumb_extn': '.png',
         'processor': 'inkscape',
     },
     'image/cdr': {
-        'allowed_extns': [u'.cdr'],
-        'extn': u'.cdr',
+        'allowed_extns': ['.cdr'],
+        'extn': '.cdr',
         'thumb_extn': '.png',
         'processor': 'inkscape',
     },
     'image/x-cdr': {
-        'allowed_extns': [u'.cdr'],
-        'extn': u'.cdr',
+        'allowed_extns': ['.cdr'],
+        'extn': '.cdr',
         'thumb_extn': '.png',
         'processor': 'inkscape',
     },
     'image/x-coreldraw': {
-        'allowed_extns': [u'.cdr'],
-        'extn': u'.cdr',
+        'allowed_extns': ['.cdr'],
+        'extn': '.cdr',
         'thumb_extn': '.png',
         'processor': 'inkscape',
     },
     'application/eps': {
-        'allowed_extns': [u'.eps'],
-        'extn': u'.eps',
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.eps'],
+        'extn': '.eps',
+        'thumb_extn': '.png',
     },
     'application/x-eps': {
-        'allowed_extns': [u'.eps'],
-        'extn': u'.eps',
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.eps'],
+        'extn': '.eps',
+        'thumb_extn': '.png',
     },
-    'image/eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
-    'image/x-eps': {'allowed_extns': [u'.eps'], 'extn': u'.eps', 'thumb_extn': u'.png'},
+    'image/eps': {'allowed_extns': ['.eps'], 'extn': '.eps', 'thumb_extn': '.png'},
+    'image/x-eps': {'allowed_extns': ['.eps'], 'extn': '.eps', 'thumb_extn': '.png'},
     'image/tif': {
-        'allowed_extns': [u'.tif', u'.tiff'],
-        'extn': [u'.tif', u'.tiff'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.tif', '.tiff'],
+        'extn': ['.tif', '.tiff'],
+        'thumb_extn': '.png',
     },
     'image/x-tif': {
-        'allowed_extns': [u'.tif', u'.tiff'],
-        'extn': [u'.tif', u'.tiff'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.tif', '.tiff'],
+        'extn': ['.tif', '.tiff'],
+        'thumb_extn': '.png',
     },
     'image/tiff': {
-        'allowed_extns': [u'.tif', u'.tiff'],
-        'extn': [u'.tif', u'.tiff'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.tif', '.tiff'],
+        'extn': ['.tif', '.tiff'],
+        'thumb_extn': '.png',
     },
     'image/x-tiff': {
-        'allowed_extns': [u'.tif', u'.tiff'],
-        'extn': [u'.tif', u'.tiff'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.tif', '.tiff'],
+        'extn': ['.tif', '.tiff'],
+        'thumb_extn': '.png',
     },
     'application/tif': {
-        'allowed_extns': [u'.tif', u'.tiff'],
-        'extn': [u'.tif', u'.tiff'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.tif', '.tiff'],
+        'extn': ['.tif', '.tiff'],
+        'thumb_extn': '.png',
     },
     'application/x-tif': {
-        'allowed_extns': [u'.tif', u'.tiff'],
-        'extn': [u'.tif', u'.tiff'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.tif', '.tiff'],
+        'extn': ['.tif', '.tiff'],
+        'thumb_extn': '.png',
     },
     'application/tiff': {
-        'allowed_extns': [u'.tif', u'.tiff'],
-        'extn': [u'.tif', u'.tiff'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.tif', '.tiff'],
+        'extn': ['.tif', '.tiff'],
+        'thumb_extn': '.png',
     },
     'application/x-tiff': {
-        'allowed_extns': [u'.tif', u'.tiff'],
-        'extn': [u'.tif', u'.tiff'],
-        'thumb_extn': u'.png',
+        'allowed_extns': ['.tif', '.tiff'],
+        'extn': ['.tif', '.tiff'],
+        'thumb_extn': '.png',
     },
     'image/webp': {
-        'allowed_extns': [u'.webp'],
+        'allowed_extns': ['.webp'],
         'extn': '.webp',
-        'thumb_extn': u'.jpeg',
+        'thumb_extn': '.jpeg',
     },
-    'image/x-xcf': {'allowed_extns': [u'.xcf'], 'extn': '.xcf', 'thumb_extn': u'.jpeg'},
+    'image/x-xcf': {'allowed_extns': ['.xcf'], 'extn': '.xcf', 'thumb_extn': '.jpeg'},
 }
 
 
 EXTNS = []
-for mimetype, data in ALLOWED_MIMETYPES.iteritems():
+for mimetype, data in ALLOWED_MIMETYPES.items():
     if type(data['extn']) == list:
         for extn in data['extn']:
             EXTNS.append(extn)
@@ -243,7 +243,7 @@ EXTNS = list(set(EXTNS))
 
 
 def newid():
-    return unicode(uuid4().hex)
+    return str(uuid4().hex)
 
 
 def get_media_domain(scheme=None):
@@ -303,9 +303,8 @@ def is_animated_gif(local_path):
 
 def get_file_type(fp, filename=None):
     fp.seek(0)
-    data = fp.read(1024)  # https://github.com/ahupp/python-magic#usage
+    result = magic.from_buffer(fp.read(), mime=True)
     fp.seek(0)
-    result = magic.from_buffer(data, mime=True)
     if result in ('text/plain', 'text/xml', 'application/xml'):
         if is_svg(fp):
             return 'image/svg+xml'
@@ -322,14 +321,18 @@ def is_file_allowed(fp, provided_mimetype=None, filename=None):
 
 
 # -- s3 related --
-def get_s3_connection():
-    return connect_s3(app.config['AWS_ACCESS_KEY'], app.config['AWS_SECRET_KEY'])
+
+
+def get_s3_client():
+    return boto3.resource(
+        's3',
+        aws_access_key_id=app.config['AWS_ACCESS_KEY'],
+        aws_secret_access_key=app.config['AWS_SECRET_KEY'],
+    )
 
 
 def get_s3_bucket():
-    conn = get_s3_connection()
-    bucket = Bucket(conn, app.config['AWS_BUCKET'])
-    return bucket
+    return get_s3_client().Bucket(app.config['AWS_BUCKET'])
 
 
 def get_s3_folder(f=''):
@@ -347,12 +350,10 @@ def exists_in_s3(thumb):
     if 'thumb_extn' in ALLOWED_MIMETYPES[thumb.stored_file.mimetype]:
         extn = ALLOWED_MIMETYPES[thumb.stored_file.mimetype]['thumb_extn']
     key = os.path.join(folder, thumb.name + extn)
-    # print("checking whether exists in s3: {}".format(key))
-    resp = bucket.get_key(key)
-    if not resp:
-        # print("does not exist")
+    try:
+        bucket.Object(key).load()
+    except botocore.exceptions.ClientError:
         return False
-    # print("exists")
     return True
 
 
@@ -361,9 +362,8 @@ def download_from_s3(img_name):
     if not os.path.exists(local_path):
         bucket = get_s3_bucket()
         folder = get_s3_folder()
-        k = Key(bucket)
-        k.key = os.path.join(folder, img_name)
-        k.get_contents_to_filename(local_path)
+        key = os.path.join(folder, img_name)
+        bucket.Object(key).download_file(local_path)
     return local_path
 
 
@@ -378,6 +378,7 @@ def get_width_height(img_path):
             o = check_output(
                 'identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path),
                 shell=True,
+                universal_newlines=True
             )
             w, h = o.split('x')
         elif extn in ['.cdr']:
@@ -394,7 +395,8 @@ def get_width_height(img_path):
                 w, h = int(round(float(wo))), int(round(float(ho)))
         else:
             o = check_output(
-                'identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True
+                'identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True,
+                universal_newlines=True
             )
             w, h = o.split('x')
         return (w, h)

@@ -32,7 +32,7 @@ class TaskRegistry(object):
         return bool(self.filename_pattern.match(query))
 
     def key_for(self, taskid):
-        return u'{key_prefix}:{taskid}'.format(
+        return '{key_prefix}:{taskid}'.format(
             key_prefix=self.key_prefix, taskid=taskid
         )
 
@@ -50,7 +50,7 @@ class TaskRegistry(object):
         # >> KEYS imgee:registry:default:*query*
         if not self.is_valid_query(query):
             raise InvalidRedisQueryException(
-                u'Invalid query for searching redis keys: {}'.format(query)
+                'Invalid query for searching redis keys: {}'.format(query)
             )
         return self.connection.keys(self.key_for('*{}*'.format(query)))
 
@@ -64,7 +64,7 @@ class TaskRegistry(object):
         # thumbnail keys, which look like "name_wNN_hNN", hence the _
         if not self.is_valid_query(query):
             raise InvalidRedisQueryException(
-                u'Invalid query for searching redis keys, starting with: {}'.format(
+                'Invalid query for searching redis keys, starting with: {}'.format(
                     query
                 )
             )
