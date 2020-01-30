@@ -2,7 +2,7 @@
 
 from flask import abort, flash, redirect, render_template, request, url_for
 
-from flask_babelex import gettext, ngettext
+from flask_babel2 import gettext, ngettext
 
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
