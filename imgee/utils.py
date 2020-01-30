@@ -303,7 +303,7 @@ def is_animated_gif(local_path):
 
 def get_file_type(fp, filename=None):
     fp.seek(0)
-    result = magic.from_buffer(fp.read(), mime=True)
+    result = magic.from_buffer(fp.read(2048), mime=True)
     fp.seek(0)
     if result in ('text/plain', 'text/xml', 'application/xml'):
         if is_svg(fp):
