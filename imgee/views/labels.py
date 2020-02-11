@@ -2,7 +2,7 @@
 
 from flask import abort, flash, redirect, render_template, request, url_for
 
-from flask_babelex import gettext, ngettext
+from flask_babel2 import gettext, ngettext
 
 from coaster.views import load_model, load_models
 from imgee import app, forms, lastuser
@@ -162,7 +162,7 @@ def utils_save_label(label_name, profile, commit=True):
 
 
 def utils_delete_label(label):
-    if isinstance(label, basestring):
+    if isinstance(label, str):
         label = Label.query.filter_by(title=label).first()
     db.session.delete(label)
     db.session.commit()

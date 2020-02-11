@@ -17,10 +17,10 @@ class UploadTestCase(ImgeeTestCase):
         super(UploadTestCase, self).setUp()
         self.img_id = None
         self.test_files = [
-            '../imgee/static/img/imgee.png',
-            '../imgee/static/img/imgee.jpeg',
-            '../imgee/static/img/imgee.svg',
-            '../imgee/static/img/loading.gif',
+            'imgee/static/img/imgee.png',
+            'imgee/static/img/imgee.jpeg',
+            'imgee/static/img/imgee.svg',
+            'imgee/static/img/loading.gif',
         ]
         self.test_labels = ['logos', 'banners', 'profile-photos']
         self.files = self.upload_all()
@@ -38,7 +38,7 @@ class UploadTestCase(ImgeeTestCase):
         profile = self.get_test_profile()
         sf = None
         if path:
-            with open(path) as fp:
+            with open(path, 'rb') as fp:
                 fs = FileStorage(fp)
                 title, sf = save_file(fs, profile)
             return sf
@@ -47,8 +47,8 @@ class UploadTestCase(ImgeeTestCase):
         with app.test_request_context('/'):
             for test_file in self.files:
                 resp = requests.get(get_image_url(test_file))
-                self.assertEquals(resp.status_code, 200)
-                self.assertEquals(
+                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(
                     resp.headers.get('Content-Type', ''), test_file.mimetype
                 )
 
@@ -62,8 +62,8 @@ class UploadTestCase(ImgeeTestCase):
                         size=app.config.get('THUMBNAIL_SIZE'),
                     )
                 )
-                self.assertEquals(resp.status_code, 301)
-                self.assertEquals(
+                self.assertEqual(resp.status_code, 301)
+                self.assertEqual(
                     resp.headers.get('Location'), get_thumbnail_url(test_file)
                 )
 
@@ -76,7 +76,7 @@ class UploadTestCase(ImgeeTestCase):
         for test_file in self.files:
             with app.test_request_context('/'):
                 resp = requests.get(get_image_url(test_file))
-                self.assertEquals(
+                self.assertEqual(
                     resp.status_code, 403
                 )  # S3 throws 403 for non existing files
 

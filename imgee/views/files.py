@@ -39,10 +39,11 @@ def _redirect_url_frm_upload(profile_name):
 def upload_file(profile):
     upload_form = UploadImageForm()
     if upload_form.validate_on_submit():
-        file_ = request.files['upload_file']
-        title, stored_file = save_file(file_, profile=profile)
-        flash('"%s" uploaded successfully.' % title)
-        return redirect(_redirect_url_frm_upload(profile.name))
+        imgfile = request.files['upload_file']
+        if imgfile.filename != '':
+            title, stored_file = save_file(imgfile, profile=profile)
+            flash('"%s" uploaded successfully.' % title)
+            return redirect(_redirect_url_frm_upload(profile.name))
     return render_template('form.html.jinja2', form=upload_form, profile=profile)
 
 

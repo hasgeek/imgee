@@ -90,7 +90,7 @@ def save_file(fp, profile, title=None):
     img_name = "%s%s" % (id_, extn)
     local_path = path_for(img_name)
 
-    with open(local_path, 'w') as img:
+    with open(local_path, 'wb') as img:
         img.write(fp.read())
 
     stored_file = save_img_in_db(
@@ -116,13 +116,13 @@ def save_img_in_db(name, title, local_path, profile, mimetype, orig_extn):
     width, height = get_width_height(local_path)
     stored_file = StoredFile(
         name=name,
-        title=unicode(title),
+        title=title,
         profile=profile,
-        orig_extn=unicode(orig_extn),
+        orig_extn=orig_extn,
         size=size_in_bytes,
         width=width,
         height=height,
-        mimetype=unicode(mimetype),
+        mimetype=mimetype,
     )
     if (
         'thumb_extn' in ALLOWED_MIMETYPES[mimetype]
@@ -153,23 +153,24 @@ def save_tn_in_db(img, tn_name, size):
     return name
 
 
-def save_on_s3(filename, remotename='', content_type='', bucket='', folder=''):
+def save_on_s3(filename, remotename='', content_type=''):
     """
     Save contents from file named `filename` to `remotename` on S3.
     """
-    b = bucket or get_s3_bucket()
-    folder = get_s3_folder(folder)
+    bucket = get_s3_bucket()
+    folder = get_s3_folder()
+    key = os.path.join(folder, filename)
 
-    with open(path_for(filename)) as fp:
+    with open(path_for(filename), 'rb') as fp:
         filename = remotename or filename
-        k = b.new_key(folder + filename)
-        headers = {
-            'Cache-Control': 'max-age=31536000',  # 60*60*24*365
-            'Content-Type': get_file_type(fp, filename),
-            # once cached, it is set to expire after a year
-            'Expires': datetime.utcnow() + timedelta(days=365),
-        }
-        k.set_contents_from_file(fp, policy='public-read', headers=headers)
+        bucket.put_object(
+            ACL='public-read',
+            Key=key,
+            Body=fp.read(),
+            CacheControl='max-age=31536000',
+            ContentType=content_type or get_file_type(fp, filename),
+            Expires=datetime.utcnow() + timedelta(days=365),
+        )
     return filename
 
 
@@ -181,7 +182,7 @@ def parse_size(size):
     Calculate and return (w, h) from the query parameter `size`.
     Returns None if not formattable.
     """
-    if isinstance(size, (str, unicode)):
+    if isinstance(size, str):
         # return (w, h) if size is 'wxh'
         r = r'^(\d+)(x(\d+))?$'
         matched = re.match(r, size)
@@ -236,7 +237,7 @@ def get_fitting_size(original_size, size):
             w, h = w * size[1] / float(h), size[1]
 
     size = int(w), int(h)
-    size = map(lambda x: max(x, 1), size)  # let the width or height be atleast 1px.
+    size = [max(x, 1) for x in size]  # let the width or height be atleast 1px.
     return size
 
 
@@ -353,7 +354,9 @@ def delete(stored_file, commit=True):
     keys = [(get_s3_folder() + thumbnail.name + extn) for thumbnail in thumbnails]
     keys.append(get_s3_folder() + stored_file.name + extn)
     bucket = get_s3_bucket()
-    bucket.delete_keys(keys)
+    bucket.delete_objects(
+        Delete={'Objects': [{'Key': key} for key in keys], 'Quiet': True}
+    )
 
     # remove from the db
     # remove thumbnails explicitly.

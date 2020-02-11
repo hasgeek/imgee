@@ -14,13 +14,13 @@ env:
   - FLASK_ENV=TESTING
 language: python
 python:
-  - 2.7
+  - 3.7
 services:
   - redis-server
 before_install:
   - sudo rm -f /etc/boto.cfg  # https://github.com/travis-ci/travis-ci/issues/7940#issuecomment-310759657
 install:
-  - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff4-dev librsvg2-dev ghostscript imagemagick pandoc inkscape librsvg2-bin
+  - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff5-dev librsvg2-dev ghostscript imagemagick pandoc inkscape librsvg2-bin
   - pip install -r requirements.txt
   - pip install -r test_requirements.txt
 before_script:
@@ -29,6 +29,3 @@ script:
   - ./runtests.sh
 notifications:
   email: false
-  slack:
-    - hasgeek:HDCoMDj3T4ICB59qFFVorCG8
-    - friendsofhasgeek:3bLViYSzhfaThJovFYCVD3fX
