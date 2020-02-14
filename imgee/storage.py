@@ -10,7 +10,7 @@ import time
 
 from sqlalchemy import or_
 
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 
 import imgee
 
