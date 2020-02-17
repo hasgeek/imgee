@@ -6,11 +6,11 @@
 	{% endblock %}
 	{% block maincontent %}
 	{% endblock %}
-	<div class="alert alert-error">
-		<h5><i class="icon-trash"></i>&nbsp;&nbsp;Confirm delete</h5><hr />
-		<p>Are you sure you want to delete "<strong>{{file.title}}</strong>"?</p>
+	<div class="alert alert--error">
+		<p class="mui--text-title">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--subhead " aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#trash-alt"></use></svg>{% endassets %} Confirm delete</p><hr/>
+		<p class="mui--text-subhead">Are you sure you want to delete "<strong>{{file.title}}</strong>"?</p>
 		<p id="warning">
-			<i class="icon-warning-sign"></i>&nbsp;<strong>Warning: If you delete it, you will lose all the links wherever this image appears.</strong>
+			{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#info-circle"></use></svg>{% endassets %}&nbsp;<strong>Warning: If you delete it, you will lose all the links wherever this image appears.</strong>
 		</p>
 		<img src="{{url_for('get_image', image=file.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
 		{% set cancel_url=url_for('view_image', profile=profile.name, image=file.name) %}

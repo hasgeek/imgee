@@ -1,0 +1,221 @@
+a.no-hover:hover,
+a.no-hover:focus,
+a.no-hover:active {
+  text-decoration: none;
+}
+
+.zero-bottom-margin {
+  margin-bottom: 0 !important;
+}
+
+.zero-top-margin {
+  margin-top: 0 !important;
+}
+
+.mui-btn--nomargin {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.left-padding {
+  padding-left: 15px;
+}
+
+.right-padding {
+  padding-right: 15px;
+}
+
+.grid-no-left-padding {
+  margin-left: -15px;
+}
+
+.grid-no-right-padding {
+  margin-right: -15px;
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.top-margin {
+  margin-top: 15px;
+}
+
+.bottom-margin {
+  margin-top: 15px;
+}
+
+.page-content {
+  margin-top: 40px;
+}
+
+//Font awesome 5
+.fa5-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.fa5--align-baseline {
+  position: relative;
+  top: 0.09em;
+}
+
+.mui-btn .fa5--align-baseline {
+  position: relative;
+  top: 0.12em;
+}
+
+.fa5-icon--caption {
+  width: 12px;
+  height: 12px;
+}
+
+.fa5-icon--subhead {
+  width: 16px;
+  height: 16px;
+}
+
+.fa5-icon--title {
+  width: 18px;
+  height: 18px;
+}
+
+.fa5-icon--headline {
+  width: 24px;
+  height: 24px;
+}
+
+.fa5-icon--display1 {
+  width: 32px;
+  height: 32px;
+}
+
+.expandable {
+  margin-bottom: 15px;
+  width: 100%;
+
+  .expandable__content {
+    max-height: 48px; /* height of mui--text-subhead x 2 */
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+
+  .expandable__content--gallery {
+    max-height: 350px;
+  }
+
+  .expandable__content--full-height {
+    max-height: 100% !important;
+  }
+
+  .expandable__control {
+    display: block;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(158, 158, 158, 0.12),
+      0 1px 2px rgba(158, 158, 158, 0.24);
+    background: #eff2f7;
+  }
+}
+
+.sidebar-menu {
+  position: fixed;
+  z-index: 999999999;
+  background-color: #ffffff;
+  top: 50px;
+  left: 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0, 1);
+  -webkit-transform: translate(-100%, 0);
+  transform: translate(-100%, 0);
+  width: 80%;
+  padding: 20px 15px 20px;
+  bottom: 0;
+  overflow-y: scroll;
+}
+.sidebar-menu.sidebar-menu--open {
+  -webkit-transform: translate(0, 0);
+  transform: translate(0, 0);
+}
+
+@media (min-width: 1200px) {
+  .sidebar-menu {
+    transform: translate(0, 0);
+    -webkit-transform: translate(0%, 0);
+    position: static;
+    width: 25%;
+  }
+  .sidebar-control {
+    display: none;
+  }
+}
+
+.images {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
+  .images__thumbnail {
+    width: 35px;
+    height: 35px;
+    opacity: 0.8;
+    margin: 10px 0;
+    overflow: hidden;
+
+    .images__thumbnail__img {
+      width: 100%;
+    }
+  }
+  .images__thumbnail:nth-child(4) {
+    width: 45px;
+    height: 45px;
+    box-shadow: 0 0 3px #ccc;
+  }
+  .images__thumbnail:nth-child(5) {
+    box-shadow: 0 0 3px #ccc;
+  }
+  .images__thumbnail--active {
+    box-shadow: 0 0 5px #f0a40c;
+    width: 55px;
+    height: 55px;
+  }
+}
+
+.editable_title,
+.editable_label {
+  color: #4a90e2;
+  margin-right: 15px;
+  position: relative;
+  padding-right: 2px;
+}
+
+.editable_title:after,
+.editable_label:after {
+  content: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><defs><style>.hyperlink{fill: cornflowerblue}</style></defs><path d="M402.3 344.9l32-32c5-5 13.7-1.5 13.7 5.7V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h273.5c7.1 0 10.7 8.6 5.7 13.7l-32 32c-1.5 1.5-3.5 2.3-5.7 2.3H48v352h352V350.5c0-2.1.8-4.1 2.3-5.6zm156.6-201.8L296.3 405.7l-90.4 10c-26.2 2.9-48.5-19.2-45.6-45.6l10-90.4L432.9 17.1c22.9-22.9 59.9-22.9 82.7 0l43.2 43.2c22.9 22.9 22.9 60 .1 82.8zM460.1 174L402 115.9 216.2 301.8l-7.3 65.3 65.3-7.3L460.1 174zm64.8-79.7l-43.2-43.2c-4.1-4.1-10.8-4.1-14.8 0L436 82l58.1 58.1 30.9-30.9c4-4.2 4-10.8-.1-14.9z" class="hyperlink"/></svg>');
+  position: absolute;
+  top: 50%;
+  right: -15px;
+  width: 13px;
+  transform: translate(0%, -50%);
+}
+
+.editable_title,
+.editable_label {
+  input {
+    min-width: 80px;
+  }
+  button {
+    height: 25px;
+    line-height: 25px;
+    padding: 0 16px;
+    font-size: 13px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    background-image: none;
+    text-align: center;
+    margin: 0 5px;
+  }
+}

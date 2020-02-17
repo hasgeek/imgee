@@ -4,17 +4,19 @@
 {% block title %}{{ img.title }}{% endblock %}
 
 {% block extendedsidebar %}
-  <div class="sidebar row">
-    <div class="span3 browse-img">
-      <h5><a href="{{url_for('profile_view', profile=profile.name)}}">Browse your gallery</a></h5>
+  <div class="card zero-bottom-margin">
+    <div class="card__header">
+      <h5 class="mui--text-title mui--text-bold"><a href="{{url_for('profile_view', profile=profile.name)}}">{% trans %}Browse your gallery{% endtrans %}</a></h5>
+    </div>
+    <div class="card__body no-padding images">
       {% set images = [None] * (2 - next|length) + next + [img] + prev + [None] * (2 - prev|length) %}
       {% for image in images %}
         {% if image %}
-          <a class="image-thumb{{ ' active' if loop.index == 3 }}" href="{{url_for('view_image', profile=profile.name, image=image.name)}}" title="view image">
-            <img src="{{url_for('get_image', image=image.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
+          <a class="images__thumbnail {{ ' images__thumbnail--active ' if loop.index == 3 }}" href="{{url_for('view_image', profile=profile.name, image=image.name)}}" title="view image">
+            <img class="images__thumbnail__img" src="{{ url_for('get_image', image=image.name, size=config.get('THUMBNAIL_SIZE')) }}"/>
           </a>
         {% else %}
-          <div class="image-thumb"></div>
+          <div class="images__thumbnail"></div>
         {% endif %}
       {% endfor %}
     </div>
@@ -22,213 +24,169 @@
 {% endblock %}
 
 {% block maincontent %}
-  <div class="tucked-corners-top">
-    <div class="tucked-corners-bottom">
-      <p>
-        <div class="row">
-          {% set img_url= url_for('get_image', image=img.name, _external=True) %}
-          <div class="span8">
+  <section class="image-view">
+    <div class="card">
+      <div class="card__header mui--clearfix">
+        <h3 class="mui--text-title heading mui--pull-left {% if g.user %}editable_title{% endif %}" id="{{img.name}}">{{img.title}}</h3><span class="delete-icon">{% if g.user %}<a href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--subhead fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#trash-alt"></use></svg>{% endassets %}</a>{% endif %}</span>
+        <div class="mui--pull-right">
+          {% if prev %}
+            {% set p = prev | first %}
+            <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" class="mui-btn mui-btn--small">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#angle-left"></use></svg>{% endassets %}</a>
+          {% endif %}
+          {% if next %}
+            {% set n = next | last %}
+            <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" class="mui-btn mui-btn--small">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#angle-right"></use></svg>{% endassets %}</a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card__body">
+        {% set img_url= url_for('get_image', image=img.name, _external=True) %}
+        <div id="img" data-picture data-alt="{{ img.title }}" class="mui--text-center">
+          <div data-src="{{ img_url }}"></div>
+          <div data-src="{{ img_url }}?size={% if img.width < 250 %}{{img.width}}{% else %}250{% endif %}" data-media="(max-width: 480px)"></div>
+          <div data-src="{{ img_url }}?size={% if img.width < 400 %}{{img.width}}{% else %}400{% endif %}" data-media="(min-width: 480px)"></div>
+          <div data-src="{{ img_url }}?size={% if img.width < 430 %}{{img.width}}{% else %}430{% endif %}" data-media="(min-width: 768px)"></div>
+          <div data-src="{{ img_url }}?size={% if img.width < 600 %}{{img.width}}{% else %}600{% endif %}" data-media="(min-width: 980px)"></div>
+          <div data-src="{{ img_url }}?size={% if img.width < 770 %}{{img.width}}{% else %}770{% endif %}" data-media="(min-width: 1200px)"></div>
+          <!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
+          <noscript>
+            <img class="image" src="{{ img_url }}" alt="{{ img.title }}">
+          </noscript>
+        </div>
+      </div>
+      <div class="mui-divider"></div>
+      <div class="card__footer">
+        <p class="mui--text-body1 zero-bottom-margin">Uploaded on: <em>{{ img.created_at.strftime('%B %d, %Y') }}</em></p>
+        <p class="mui--text-body1 zero-bottom-margin">Type: <em>{{(img.extn)[1:]}}</em></p>
+        <p class="mui--text-body1 zero-bottom-margin">File size: <em> {{img.size | filesizeformat}}</em></p>
+        <p class="mui--text-body1">Image size: <em>
+        {% if img.extn != ".svg" %}
+        {% if (img.width==0 and img.height==0) %}unknown
+        {% else %}{{ img.width }} x {{ img.height }} px
+        {% endif %}
+        {% endif %}</em>
+        </p>
+      </div>
+    </div>
+    <hr>
+    <div class="card zero-bottom-margin">
+      <div class="card__body">
+        <div id="share">
+          <p class="mui--text-headline mui--text-bold zero-bottom-margin">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--title" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#share-square"></use></svg>{% endassets %}&nbsp;{% if img.extn == ".svg" %}Share image{% else %}Resize and Share{% endif %}</p>
+          {% if img.extn != ".svg" %}
+            <p class="mui--text-caption mui--text-light"><em>Resize to (max width) x (max height)</em></p>
+            <ul id="resize" class="mui-list--unstyled resize">
+              <li id="img-size-original" class="resize__control">
+                <p class="mui--text-subhead">Original</p>
+                <button class="mui-btn mui-btn--small">{{ img.width }}x{{ img.height }}</button>
+              </li>
+              <li class="resize__control">
+                <p class="mui--text-subhead">Avatar</p>
+                <button class="mui-btn mui-btn--small">150x150</button>
+              </li>
+              <li class="resize__control">
+                <p class="mui--text-subhead">Thumbnail</p>
+                <button class="mui-btn mui-btn--small">100x75</button>
+              </li>
+              <li class="resize__control">
+                <p class="mui--text-subhead">Small</p>
+                <button class="mui-btn mui-btn--small">320x240</button>
+              </li>
+              <li class="resize__control">
+                <p class="mui--text-subhead">Medium</p>
+                <button class="mui-btn mui-btn--small">640x480</button>
+              </li>
+              <li class="resize__control">
+                <p class="mui--text-subhead">Large</p>
+                <button class="mui-btn mui-btn--small">1024x768</button>
+              </li>
+              <li id="img-size-custom" class="resize__control">
+                <p class="mui--text-subhead">Custom</p>
+                <input id='img_width' placeholder="w" class="mui--d-inlineblock"/>
+                &nbsp;<span class="mui--text-caption">X</span>&nbsp;
+                <input id='img_height' placeholder="h" class="mui--d-inlineblock"/>
+                <a href='{{img_url}}' id='img_link' class="mui--d-block">here</a>
+              </li>
+            </ul>
+          {% endif %}
 
-            <div class="heading {% if g.user %}editable_title{% endif %}" id="{{img.name}}">{{img.title}}</div>
-            <div class="btn-group">
-              {% if next %}
-                {% set n = next | last %}
-                <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" class="btn"><i class="icon-chevron-left"></i></a>
-              {% endif %}
-              {% if prev %}
-                {% set p = prev | first %}
-                <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" class="btn"><i class="icon-chevron-right"></i></a>
-              {% endif %}
-            </div>
-            <div class="image-display">
-              <!-- picturefill -->
-              <div id="img" data-picture data-alt="{{ img.title }}">
-                <div data-src="{{ img_url }}"></div>
-                <div data-src="{{ img_url }}?size={% if img.width < 250 %}{{img.width}}{% else %}250{% endif %}" data-media="(max-width: 480px)"></div>
-                <div data-src="{{ img_url }}?size={% if img.width < 400 %}{{img.width}}{% else %}400{% endif %}" data-media="(min-width: 480px)"></div>
-                <div data-src="{{ img_url }}?size={% if img.width < 430 %}{{img.width}}{% else %}430{% endif %}" data-media="(min-width: 768px)"></div>
-                <div data-src="{{ img_url }}?size={% if img.width < 600 %}{{img.width}}{% else %}600{% endif %}" data-media="(min-width: 980px)"></div>
-                <div data-src="{{ img_url }}?size={% if img.width < 770 %}{{img.width}}{% else %}770{% endif %}" data-media="(min-width: 1200px)"></div>
-                <!-- Fallback content for non-JS browsers. Same img src as the initial, unqualified source element. -->
-                <noscript>
-                  <img class="image" src="{{ img_url }}" alt="{{ img.title }}">
-                </noscript>
+          <div id="share-links">
+            <div class="img-share">
+              <div class="img-share__type">
+                <label for=""><strong>Direct Link</strong></label>
               </div>
-            <!-- //picturefill -->
+              <div class="img-share__content">
+                <div class="mui-textfield">
+                  <input type="text" name="direct-link" value="{{img_url}}" onClick="this.select();"/>
+                </div>
+              </div>
             </div>
-
-            <div class="">
-              <div class="img-attr">
-                <ul>
-                  <li>Uploaded on: <em>{{ img.created_at.strftime('%B %d, %Y') }}</em></li>
-                  <li>Type: <em>{{(img.extn)[1:]}}</em></li>
-                  <li>File size: <em> {{img.size | filesizeformat}}</em></li>
-                  <li>Image size: <em>
-                    {% if img.extn != ".svg" %}
-                      {% if (img.width==0 and img.height==0) %}unknown
-                      {% else %}{{ img.width }} x {{ img.height }} px
-                      {% endif %}
-                    {% endif %}</em>
-                  </li>
-                </ul>
+            <div class="img-share">
+              <div class="img-share__type">
+                <label for=""><strong>Embed HTML</strong></label>
+              </div>
+              <div class="img-share__content">
+                <div class="mui-textfield">
+                  <input type="text" name="html-code" value="<img src=&quot;{{img_url}}&quot; /></a>" onClick="this.select();">
+                </div>
               </div>
             </div>
           </div>
-        </div><!-- /row -->
-        <hr>
-        <div class="row">
-          <div class="span8">
-            <div id="share">
-
-              <div class="block">
-                <div class="block-title"><i class="icon-share"></i>&nbsp;&nbsp;{% if img.extn == ".svg" %}Share image{% else %}Resize and Share{% endif %}</div>
-                {% if img.extn != ".svg" %}
-                  <ul id="resize">
-                    <h6>Resize to (max width) x (max height)</h6><br/>
-                    <li id="img-size-original">
-                      <h6>Original</h6>
-                      <br>
-                      <button>{{ img.width }}x{{ img.height }}</button>
-                    </li>
-                    <li><h6>Avatar</h6><br /><button>150x150</button></li>
-                    <li><h6>Thumbnail</h6><br /><button>100x75</button></li>
-                    <li><h6>Small</h6><br /><button>320x240</button></li>
-                    <li><h6>Medium</h6><br /><button>640x480</button></li>
-                    <li><h6>Large</h6><br /><button>1024x768</button></li>
-                    <li id="img-size-custom">
-                      <h6>Custom</h6>
-                      <br>
-                      <h5><input id='img_width' placeholder="w" />X<input id='img_height' placeholder="h" />
-                      <a href='{{img_url}}' id='img_link'>here</a></h5>
-                    </li>
-                  </ul>
-                {% endif %}
-
-                <div id="share-links">
-                  <div class="row">
-                    <div class="span2"><label for=""><strong>Direct Link</strong></label></div>
-                    <div class="span5"><input type="text" name="direct-link" value="{{img_url}}" onClick="this.select();"/></div>
-                  </div>
-                  <div class="row">
-                    <div class="span2"><label for=""><strong>Embed HTML</strong></label></div>
-                    <div class="span5"><input type="text" name="html-code" value="<img src=&quot;{{img_url}}&quot; /></a>" onClick="this.select();"></div>
-                  </div>
-                </div>
-                <!--  add style to it and uncomment
-                 {% for tn in img.thumbnails %}
-                   <a href="{{url_for('get_image', size=config.get('THUMBNAIL_SIZE'), image=tn.name)}}">{{tn.size}}</a> <br />
-                {% endfor %} -->
-
-              </div>
-            </div>
-            <br />
-          </div><!-- /span8 -->
-          {% if g.user %}
-            <div class="span4">
-              {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
-              <div class="block block-2">
-                <div class="block-title"><i class="icon-tag"></i>&nbsp;&nbsp;Manage labels</div>
-                <div>
-                  <form action='{{action_url}}' method='POST'>
-                    {{form.csrf_token()}}
-                    {{form.stored_file_id()}}
-                    {{form.labels(value=img.labels|join(',', attribute='name'))}}
-                    {{rendersubmit([(None, "Submit", 'btn-primary')])}}
-                  </form>
-                </div>
-              </div>
-            </div><!-- /span4 -->
-            <div class="span4">
-              <ul class="labels">
-                {% if img.labels %}
-                  <li>Labels:</li>
-                  {% for label in img.labels %}
-                    <li><span class="label">
-                      <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}">{{label.name}}</a>
-                    </span></li>
-                  {% endfor %}
-              {% endif %}
-              </ul>
-              <div class="delete-button">
-                <a class="btn btn-danger" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}"><i class="icon-trash"></i>&nbsp;Delete image</a>
-              </div>
-            </div><!-- /span4 -->
-          {% endif %}
-        </div><!-- /row -->
-
-      </p>
+        </div>
+      </div>
     </div>
-  </div>
+    <hr>
+    {% if g.user %}
+    <div class="card zero-bottom-margin">
+      <div class="card__body image-labels">
+        <div class="grid">
+          <div class="grid__col-xs-12 grid__col-sm-6">
+            {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
+            <p class="mui--text-title">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#tag"></use></svg>{% endassets %}&nbsp;Manage labels</p>
+            <form action='{{action_url}}' method='POST' class="mui-form grid__col-xs-12 grid__col-sm-6 grid-no-left-padding ">
+              {{ form.csrf_token() }}
+              {{ form.stored_file_id() }}
+              <div class="mui-select">{{form.labels(value=img.labels|join(',', attribute='name'))}}</div>
+              {{rendersubmit([(None, "Submit", 'mui-btn--primary')])}}
+            </form>
+          </div>
+          <div class="grid__col-xs-12 grid__col-sm-6">
+            <p class="mui--text-title">Image labels</p>
+            <ul class="labels mui-list--unstyled">
+              {% if img.labels %}
+                {% for label in img.labels %}
+                  <li class="mui--text-subhead">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#tag"></use></svg>{% endassets %}&nbsp;
+                    <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}">{{label.name}}</a>
+                  </span></li>
+                {% endfor %}
+              {% else %}
+                <li class="mui--text-body1"><em>No labels assigned</em></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </section>
 {% endblock %}
 
 {% block footerscripts %}
-<script type="text/javascript" src="{{url_for('static', filename='js/jquery.jeditable.min.js')}}"></script>
-<script> var profile = '{{profile.name}}';</script>
-<script type="text/javascript" src="{{url_for('static', filename='js/edit_in_place.js')}}"></script>
-<script>
-  $('input#img_width').width(30);
-  $('input#img_height').width(30);
-  $('input#img_link').width(420);
+<script type="text/javascript">
+  window.Imgee.profile = '{{profile.name}}';
 
-  function set_resize_url(a){
-      var file_url = "{{url_for('get_image', image=img.name)}}";
-      var url_with_size = file_url + '?size=' + $('input#img_width').val() + 'x' + ($('input#img_height').val() || '0');
-      a.attr('href', url_with_size);
-  }
+  $(function() {
+    var existing_labels = [];
+    {% for label in profile.labels %}
+      existing_labels.push('{{label.name}}');
+    {% endfor %}
 
-  $('a#img_link')
-    .hover(function (){
-      set_resize_url($(this));
-    })
-    .click(function (){
-      set_resize_url($(this));
-  });
-
-  var existing_labels = [];
-  {% for label in profile.labels %}
-    existing_labels.push('{{label.name}}');
-  {% endfor %}
-  $('#labels').select2({
-      tags: existing_labels
-  });
-
-  $("#resize li button").click(function () {
-    var text = $(this).text();
-    var current_direct_link = $("input:text[name='direct-link']").val();
-
-    if((current_direct_link.search('size')) != '-1' ){
-      current_direct_link = current_direct_link.split('?size=')[0];
-    }
-    var new_link = current_direct_link+'?size='+text;
-
-    $("input:text[name='direct-link']").val(new_link);
-    $("input:text[name='html-code']").val('<a href="'+new_link+'"><img src="'+new_link+'" />');
-  });
-
-  $("#resize li#img-size-original button").click(function () {
-    var current_direct_link = $("input:text[name='direct-link']").val();
-
-    if((current_direct_link.search('size')) != '-1' ){
-      current_direct_link = current_direct_link.split('?size=')[0];
-    }
-    var new_link = current_direct_link;
-
-    $("input:text[name='direct-link']").val(new_link);
-    $("input:text[name='html-code']").val('<img src="'+new_link+'" />');
-  });
-  var images = $('.sidebar .image-thumb img');
-  function vertical_align() {
-    images.each(function(){
-      var image = $(this);
-      var border = Number(image.css('border-width').charAt(0));
-      image.css('margin-top', (image.parent().height() - image.height() - 2*border)/2);
-      image.load(function() {
-        $(this).css('margin-top', ($(this).parent().height() - $(this).height() - 2*border)/2);
-      });
+    $('#labels').select2({
+      multiple: true,
+      data: existing_labels,
+      placeholder: 'Select a label'
     });
-  };
-  vertical_align();
-  $(window).resize(vertical_align);
-
+  });
 </script>
+<script type="text/javascript" src="{{url_for('static', filename='js/view-image.js')}}"></script>
 {% endblock %}

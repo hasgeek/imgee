@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from flask_lastuser import Lastuser
 from flask_lastuser.sqlalchemy import UserManager
 
-from baseframe import Version, assets, baseframe
+from baseframe import Version, assets, baseframe, Bundle
 import coaster.app
 
 from ._version import __version__
@@ -31,10 +31,35 @@ registry = TaskRegistry()
 # Configure the application
 coaster.app.init_app(app)
 migrate = Migrate(app, db)
-baseframe.init_app(app, requires=['baseframe', 'picturefill', 'imgee'])
+baseframe.init_app(
+    app,
+    requires=['baseframe-mui', 'picturefill', 'imgee'],
+    theme='mui',
+    asset_modules=('baseframe_private_assets',),
+)
 lastuser.init_app(app)
 lastuser.init_usermanager(UserManager(db, models.User))
 registry.init_app(app)
+
+app.assets.register(
+    'js_dropzone',
+    Bundle(
+        assets.require(
+            '!jquery.js',
+            'dropzone.js',
+        ),
+        output='js/dropzone.packed.js',
+        filters='uglipyjs',
+    ),
+)
+app.assets.register(
+    'css_dropzone',
+    Bundle(
+        assets.require('dropzone.css'),
+        output='css/dropzone.packed.css',
+        filters='cssmin',
+    ),
+)
 
 
 @app.errorhandler(403)
