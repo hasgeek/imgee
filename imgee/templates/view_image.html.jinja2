@@ -172,21 +172,21 @@
 {% endblock %}
 
 {% block footerscripts %}
-<script type="text/javascript">
-  window.Imgee.profile = '{{profile.name}}';
+  <script type="text/javascript">
+    window.Imgee.profile = '{{profile.name}}';
 
-  $(function() {
-    var existing_labels = [];
-    {% for label in profile.labels %}
-      existing_labels.push('{{label.name}}');
-    {% endfor %}
+    $(function() {
+      var existing_labels = [];
+      {% for label in profile.labels %}
+        existing_labels.push('{{label.name}}');
+      {% endfor %}
 
-    $('#labels').select2({
-      multiple: true,
-      data: existing_labels,
-      placeholder: 'Select a label'
+      $('#labels').select2({
+        multiple: true,
+        data: existing_labels,
+        placeholder: 'Select a label'
+      });
     });
-  });
-</script>
-<script type="text/javascript" src="{{url_for('static', filename='js/view-image.js')}}"></script>
+  </script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/view-image.js')}}"></script>
 {% endblock %}

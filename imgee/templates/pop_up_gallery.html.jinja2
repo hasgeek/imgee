@@ -1,6 +1,12 @@
 {% extends "layout.html.jinja2" %}
 {% from 'baseframe/forms.html.jinja2' import renderform %}
 
+{% block pageheaders %}
+  {% assets "css_dropzone" -%}
+    <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}" />
+  {%- endassets -%}
+{% endblock %}
+
 {% block header -%}
 {%- endblock %}
 
@@ -108,50 +114,52 @@
 {%- endblock %}
 
 {% block footerscripts %}
-<script type="text/javascript">
-  window.Imgee.profile = '{{profile.name}}';
-  window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
-  window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
-</script>
-<script type="text/javascript" src="{{url_for('static', filename='js/dropzone.js')}}"></script>
-<script type="text/javascript" src="{{url_for('static', filename='js/profile.js')}}"></script>
+  {% assets "js_dropzone" -%}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {%- endassets -%}
+  <script type="text/javascript">
+    window.Imgee.profile = '{{profile.name}}';
+    window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
+    window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
+  </script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/profile.js')}}"></script>
 
-<script type="text/javascript">
-  $(function(){
+  <script type="text/javascript">
+    $(function(){
 
-    function parseQuery(s){
-      var s = s || window.location.search;
-      var d = {};
-      var a = s.replace('?', '').split('&');
-      for (var i=0; i<a.length; i++){
-        var x = a[i].split('=');
-        d[x[0]] = x[1];
+      function parseQuery(s){
+        var s = s || window.location.search;
+        var d = {};
+        var a = s.replace('?', '').split('&');
+        for (var i=0; i<a.length; i++){
+          var x = a[i].split('=');
+          d[x[0]] = x[1];
+        }
+        return d;
       }
-      return d;
-    }
 
-    $('div.image-thumb').click(function (){
-      var query_dict = parseQuery();
-      var to = query_dict['from'] || '';
-      to = decodeURIComponent(to);
-      var img_id = $(this).attr('id');
-      if (!img_id){
-          console.error('image id is missing in div.image-thumb');
-      }
-      window.parent.postMessage(img_id, to, window.opener);
-      console.log('sent img_id '+ img_id + ' ' + to);
-      window.close();
-    });
+      $('div.image-thumb').click(function (){
+        var query_dict = parseQuery();
+        var to = query_dict['from'] || '';
+        to = decodeURIComponent(to);
+        var img_id = $(this).attr('id');
+        if (!img_id){
+            console.error('image id is missing in div.image-thumb');
+        }
+        window.parent.postMessage(img_id, to, window.opener);
+        console.log('sent img_id '+ img_id + ' ' + to);
+        window.close();
+      });
 
-    $('select#profiles').change(function(){
-      var profile = $(this).children('option:selected').text();
-      $(this).parents('form')
-        .attr('action', function(i, a){
-          var action = a.replace("PROFILE", profile);
-          return action; })
-        .children('input#from').val(window.location.search.replace('?from=', ''))
-        .parents('form').submit();
+      $('select#profiles').change(function(){
+        var profile = $(this).children('option:selected').text();
+        $(this).parents('form')
+          .attr('action', function(i, a){
+            var action = a.replace("PROFILE", profile);
+            return action; })
+          .children('input#from').val(window.location.search.replace('?from=', ''))
+          .parents('form').submit();
+      });
     });
-  });
-</script>
+  </script>
 {% endblock %}

@@ -1,10 +1,6 @@
 {% extends "layout.html.jinja2" %}
 {% from 'baseframe/forms.html.jinja2' import renderform %}
 
-{%- block titletags %}
-<link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
-{% endblock %}
-
 {% block title %}{{ profile.title }}{% endblock %}
 
 {% block pageheaders %}
@@ -125,13 +121,13 @@
 
 
 {% block footerscripts %}
-{% assets "js_dropzone" -%}
-  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-{%- endassets -%}
-<script type="text/javascript">
-  window.Imgee.profile = '{{ profile.name }}';
-  window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
-  window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
-</script>
-<script type="text/javascript" src="{{url_for('static', filename='js/profile.js')}}"></script>
+  {% assets "js_dropzone" -%}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {%- endassets -%}
+  <script type="text/javascript">
+    window.Imgee.profile = '{{ profile.name }}';
+    window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
+    window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
+  </script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/profile.js')}}"></script>
 {% endblock %}
