@@ -125,7 +125,7 @@
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {%- endassets -%}
   <script type="text/javascript">
-    window.Imgee.profile = '{{ profile.name }}';
+    window.Imgee.profile = {{ profile.name|tojson }};
     window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
     window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
   </script>

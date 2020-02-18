@@ -91,7 +91,7 @@
                     <a class="mui-btn mui-btn--small mui-btn--dark" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#trash-alt"></use></svg>{% endassets %}</a>
                   </div>
                 </div>
-                <div class="gallery__image__thumb__details editable_label" id="{{img.name}}">{{img.title}}</div>
+                <div class="gallery__image__thumb__details editable_title" id="{{img.name}}">{{img.title}}</div>
                 <div class="gallery__image__thumb__details">{{ img.created_at.strftime('%B %d, %Y') }}</div>
                 <div class="gallery__image__thumb__details">{{ img.size | filesizeformat }}</div>
                 <div class="gallery__image__thumb__details">{{ img.width }} x {{ img.height }} px</div>
@@ -118,7 +118,7 @@
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {%- endassets -%}
   <script type="text/javascript">
-    window.Imgee.profile = '{{profile.name}}';
+    window.Imgee.profile = {{ profile.name|tojson }};
     window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
     window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
   </script>
@@ -147,7 +147,6 @@
             console.error('image id is missing in div.image-thumb');
         }
         window.parent.postMessage(img_id, to, window.opener);
-        console.log('sent img_id '+ img_id + ' ' + to);
         window.close();
       });
 

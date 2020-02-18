@@ -36,6 +36,6 @@
 
 {% block footerscripts %}
   <script type="text/javascript">
-    window.Imgee.profile = '{{profile.name}}';
+    window.Imgee.profile = {{ profile.name|tojson }};
   </script>
 {% endblock %}

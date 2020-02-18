@@ -67,7 +67,6 @@ $(document).ready(function() {
   });
 
   var make_title_editable = function(title) {
-    console.log('make_title_editable', window.Imgee.profile);
     title.editable('/' + window.Imgee.profile + '/edit_title', {
       indicator: 'Saving...',
       submitdata: {
@@ -112,7 +111,7 @@ $(document).ready(function() {
         name: 'label_name',
         callback: function(newlabel) {
           var oldlabel = this.revert;
-          History.replaceState(
+          window.history.replaceState(
             {},
             document.title,
             window.location.href.replace(oldlabel, newlabel)

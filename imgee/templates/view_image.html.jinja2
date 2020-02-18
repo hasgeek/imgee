@@ -173,12 +173,12 @@
 
 {% block footerscripts %}
   <script type="text/javascript">
-    window.Imgee.profile = '{{profile.name}}';
+    window.Imgee.profile = {{ profile.name|tojson }};
 
     $(function() {
       var existing_labels = [];
       {% for label in profile.labels %}
-        existing_labels.push('{{label.name}}');
+        existing_labels.push({{ label.name||tojson }});
       {% endfor %}
 
       $('#labels').select2({

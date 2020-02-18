@@ -33,7 +33,7 @@ coaster.app.init_app(app)
 migrate = Migrate(app, db)
 baseframe.init_app(
     app,
-    requires=['baseframe-mui', 'picturefill', 'imgee'],
+    requires=['baseframe-mui', 'picturefill', 'imgee', 'jquery_jeditable'],
     theme='mui',
     asset_modules=('baseframe_private_assets',),
 )
@@ -46,7 +46,7 @@ app.assets.register(
     Bundle(
         assets.require(
             '!jquery.js',
-            'dropzone.js',
+            'dropzone.js==5.5.0',
         ),
         output='js/dropzone.packed.js',
         filters='uglipyjs',
@@ -55,7 +55,7 @@ app.assets.register(
 app.assets.register(
     'css_dropzone',
     Bundle(
-        assets.require('dropzone.css'),
+        assets.require('dropzone.css==5.5.0'),
         output='css/dropzone.packed.css',
         filters='cssmin',
     ),
