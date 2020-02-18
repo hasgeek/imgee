@@ -74,11 +74,11 @@
       <div id="expandable3">
         <div id="showcase" class="grid">
           <div class="list-header">
-            <p class="mui--text-title">Image</p>
-            <p class="mui--text-title">Title</p>
-            <p class="mui--text-title">Uploaded at</p>
-            <p class="mui--text-title">File size</p>
-            <p class="mui--text-title">Image size</p>
+            <p class="mui--text-title list-header__item">Image</p>
+            <p class="mui--text-title list-header__item">Title</p>
+            <p class="mui--text-title list-header__item">Uploaded at</p>
+            <p class="mui--text-title list-header__item">File size</p>
+            <p class="mui--text-title list-header__item">Image size</p>
           </div>
           <div class="js-expandable-wrapper expandable">
             <ul class="gallery mui-list--unstyled js-expandable expandable__content expandable__content--gallery">
@@ -90,7 +90,7 @@
                       <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}">
                     </a>
                   </div>
-                  <p class="gallery__image__thumb__details editable_title" id="{{img.name}}">{{img.title}}</p>
+                  <p class="gallery__image__thumb__details"><span class="editable_title" id="{{img.name}}">{{img.title}}</span></p>
                   <p class="gallery__image__thumb__details">{{ img.created_at.strftime('%B %d, %Y') }}</p>
                   <p class="gallery__image__thumb__details">{{ img.size | filesizeformat }}</p>
                   <p class="gallery__image__thumb__details">{{ img.width }} x {{ img.height }} px</div>

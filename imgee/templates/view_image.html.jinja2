@@ -78,27 +78,27 @@
             <ul id="resize" class="mui-list--unstyled resize">
               <li id="img-size-original" class="resize__control">
                 <p class="mui--text-subhead">Original</p>
-                <button class="mui-btn mui-btn--small">{{ img.width }}x{{ img.height }}</button>
+                <button class="mui-btn mui-btn--small mui-btn--raised">{{ img.width }}x{{ img.height }}</button>
               </li>
               <li class="resize__control">
                 <p class="mui--text-subhead">Avatar</p>
-                <button class="mui-btn mui-btn--small">150x150</button>
+                <button class="mui-btn mui-btn--small mui-btn--raised">150x150</button>
               </li>
               <li class="resize__control">
                 <p class="mui--text-subhead">Thumbnail</p>
-                <button class="mui-btn mui-btn--small">100x75</button>
+                <button class="mui-btn mui-btn--small mui-btn--raised">100x75</button>
               </li>
               <li class="resize__control">
                 <p class="mui--text-subhead">Small</p>
-                <button class="mui-btn mui-btn--small">320x240</button>
+                <button class="mui-btn mui-btn--small mui-btn--raised">320x240</button>
               </li>
               <li class="resize__control">
                 <p class="mui--text-subhead">Medium</p>
-                <button class="mui-btn mui-btn--small">640x480</button>
+                <button class="mui-btn mui-btn--small mui-btn--raised">640x480</button>
               </li>
               <li class="resize__control">
                 <p class="mui--text-subhead">Large</p>
-                <button class="mui-btn mui-btn--small">1024x768</button>
+                <button class="mui-btn mui-btn--small mui-btn--raised">1024x768</button>
               </li>
               <li id="img-size-custom" class="resize__control">
                 <p class="mui--text-subhead">Custom</p>
@@ -178,7 +178,7 @@
     $(function() {
       var existing_labels = [];
       {% for label in profile.labels %}
-        existing_labels.push({{ label.name||tojson }});
+        existing_labels.push({{ label.name|tojson }});
       {% endfor %}
 
       $('#labels').select2({
