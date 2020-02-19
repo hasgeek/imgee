@@ -1,0 +1,46 @@
+.delete-icon {
+  position: relative;
+  top: 10px;
+  margin-left: 20px;
+}
+.resize {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  flex-wrap: wrap;
+
+  .resize__control {
+    padding: 10px;
+    background-color: #eff2f7;
+    margin: 5px 5px 5px 0;
+    min-width: 100px;
+
+    .mui-btn--small {
+      padding: 0 8px;
+    }
+
+    input {
+      max-width: 60px;
+    }
+  }
+}
+@media (min-width: 1200px) {
+  .img-share {
+    display: flex;
+    align-items: center;
+    .img-share__type {
+      padding-right: 15px;
+      width: 15%;
+    }
+    .img-share__content {
+      width: 85%;
+    }
+  }
+}
+
+.image-labels {
+  .mui-select {
+    margin: 0 0 5px;
+    padding-top: 0;
+  }
+}

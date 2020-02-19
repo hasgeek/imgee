@@ -111,7 +111,7 @@ def utils_save_labels(form_label_data, img, profile):
     form_lns = set()
 
     if form_label_data:
-        form_lns = {l.strip() for l in form_label_data.split(',')}
+        form_lns = {l.strip() for l in form_label_data.split(',') if l.strip()}
     profile_lns = {l.title for l in profile.labels}
     labels = [l for l in profile.labels if l.title in form_lns]
     for lname in form_lns - profile_lns:

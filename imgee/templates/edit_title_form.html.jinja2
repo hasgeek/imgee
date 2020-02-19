@@ -1,10 +1,11 @@
 {% from "baseframe/forms.html.jinja2" import renderform_inner, rendersubmit %}
+
 <form id="{{ formid }}" method="POST" action="javascript:void(0);" accept-charset="UTF-8">
-    {{ renderform_inner(form, formid or None) }}
-    {{ rendersubmit([(None, 'Save', 'btn-primary')]) }}
+  {{ renderform_inner(form, formid or None) }}
+  {{ rendersubmit([(None, 'Save', 'mui-btn--primary')]) }}
 </form>
 <script type="text/javascript">
-    $('#{{ formid }} button[type="submit"]').click(function() {
-      $('#{{ formid }}').find(".loading").removeClass('hidden');
-    });
+  $('#{{ formid }} button[type="submit"]').click(function() {
+    $('#{{ formid }}').find(".loading").removeClass('hidden');
+  });
 </script>

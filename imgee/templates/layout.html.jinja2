@@ -1,162 +1,131 @@
-{% extends "baseframe.html.jinja2" %}
-{% from "baseframe/components.html.jinja2" import networkbar with context %}
+{% extends "baseframe.html.jinja2" -%}
+{% from "baseframe/components.html.jinja2" import hgtopnav with context %}
 {% from "baseframe/forms.html.jinja2" import renderfield, renderform %}
 
+{%- block font_icons %}{%- endblock %}
+
+{% block header -%}
+  {% macro site_title() %}
+    <div>
+      <a href="{{ url_for('index') }}" title="Home" class="header__site-title__item js-home"><img class="header-logo" src="{{url_for('static', filename='img/logo.png')}}"></a>
+    </div>
+  {% endmacro %}
+  {{ hgtopnav(site_title=site_title()) }}
+{%- endblock %}
+
+{% block sidedrawer -%}
+{%- endblock %}
+
+{% block contenthead %}
+{% endblock %}
+
 {% block basecontent %}
-  {% block content %}
-    <div class="row">
-      <div class="hide-sidebar">
-          <a href="#" class="hide-sidebar-btn"><i class="icon-plus-sign"></i></a>
-      </div>
-      <div class="span3 sidebar">
+  <div class="page-content">
+    {% block content %}
+      <div class="grid">
         {% block sidebar %}
-          <div class="well">
-            {% block sidebar_labels %}
-            <ul class="nav nav-list" id="expandable1">
-              <li class="nav-header">Labels</li>
-              <!-- List labels -->
-              {% if profile.labels %}
-                {% for label in profile.labels |sort(attribute='name')%}
-                  <li><a href="{{url_for('show_label', profile=profile.name, label=label.name)}}"><i class="icon-tag"></i>{{label.name}}</a></li>
-                {% endfor %}
-              {% else %}
-                <li>No Labels yet.</li>
-              {% endif %}
-              <!-- //List labels -->
-            </ul><!-- /nav nav-list -->
-            <a href="#" id="more1"><i class="icon-ellipsis-horizontal"></i></a>
-            <ul class="nav nav-list">
-              <!-- Unlabelled archive -->
-              <li><a href="{{url_for('unlabelled_images', profile=profile.name)}}"><i class="icon-tag alt"></i>
-              {% if profile.labels %}
-                Unlabeled
-              {% else %}
-                Archive
-              {% endif %}
-              </a></li>
-              <!-- //Unlabelled archive-->
-            </ul>
-            <div id="hideThisFromNonJs" style="display:none">
-              <!-- Create new label -->
-              <a class="hide-mob" href="#labelModal" role="button" title="Upload image" class="" data-toggle="modal"><i class="icon-plus"></i>&nbsp;New label</a>
-              {% if profile %}
-                <div id="labelModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h3>Create Label</h3>
-                    </div>
-                    <div class="modal-body">
-                        <div class="create-box well">
+          <div class="grid__col-xs-12 grid__col-lg-3 sidebar-menu" id="js-sidebar-menu">
+            <div class="card">
+              <div class="card__header">
+                <h3 class="mui--text-title">{% trans %}Label{% endtrans %}</h3>
+              </div>
+              <div class="card__body">
+                {% block sidebar_labels %}
+                <div class="js-expandable-wrapper expandable">
+                  <ul class="mui-list--unstyled expandable__content js-expandable">
+                    {% if profile.labels %}
+                      {% for label in profile.labels |sort(attribute='name')%}
+                        <li class="mui--text-subhead"><a href="{{ url_for('show_label', profile=profile.name, label=label.name) }}">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#tag"></use></svg>{% endassets %}&nbsp;{{label.name}}</a></li>
+                      {% endfor %}
+                    {% else %}
+                      <li class="mui--text-subhead">No Labels yet.</li>
+                    {% endif %}
+                  </ul>
+                  <a href="#" class="js-expandable-control mui--text-light no-hover">
+                    <span class="js-collapsible-icon mui--text-body1">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--caption" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#caret-circle-down"></use></svg>{% endassets %} <span>Show more</span></span>
+                    <span class="js-collapsible-icon mui--hide mui--text-body1">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--caption" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#caret-circle-up"></use></svg>{% endassets %} <span>Hide</span>s</span>
+                  </a>
+                </div>
+
+                <ul class="mui-list--unstyled">
+                  <li class="mui--text-subhead"><a href="{{url_for('unlabelled_images', profile=profile.name)}}">
+                  {% if profile.labels %}
+                    {% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#tag"></use></svg>{% endassets %}&nbsp;Unlabeled
+                  {% else %}
+                    {% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#archive"></use></svg>{% endassets %}&nbsp;Archive
+                  {% endif %}
+                  </a></li>
+                </ul>
+
+                <div class="no-jshidden mui--hidden-xs mui--hidden-sm">
+                  <a href="" role="button" title="Upload image" class="js-open-form" data-toggle="modal">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#plus"></use></svg>{% endassets %}&nbsp;New label</a>
+                  {% if profile %}
+                    <div id="newlabel-form" class="modal" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true">
+                        <div class="modal__header">
+                          <a class="modal__close" href="javascript:void(0);" aria-label="{% trans %}Close{% endtrans %}" rel="modal:close">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--subhead" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#times"></use></svg>{% endassets %}</a>
+                          <h3 class="mui--text-headline">Create label</h3>
+                        </div>
+                        <div class="modal__body">
+                          <div class="mui-panel">
                             <form action="{{ url_for('create_label', profile=profile.name) }}" method="POST">
                               {{ renderform(cl_form) }}
                             </form>
+                          </div>
                         </div>
                     </div>
+                  {%- endif %}
                 </div>
-              {%- endif %}
-              <!-- //Create new label -->
-            </div>
-            <noscript>
-              <a class="" title="Create new label" href="{{url_for('create_label', profile=profile.name )}}"><i class="icon-plus"></i>&nbsp;&nbsp;Add label</a>
-            </noscript>
-            <a class="hide-desktop" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}"><i class="icon-plus"></i>&nbsp;New label</a>
-            {% endblock %}
-            <hr>
-            <ul class="nav nav-list org-list" id="expandable2">
-              <li class="nav-header">Profile And Organizations</li>
-              <li><a class="{% if g.user.username == profile.name %}active{% endif %}" title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
-              {% if g.user %}
-                  {%- for org in g.user.organizations_owned() %}
-                    <li><a class="{% if org.name == profile.name %}active{% endif %}" href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
-                  {%- endfor %}
-              {% endif %}
-            </ul>
-            <a href="#" id="more2"><i class="icon-ellipsis-horizontal"></i></a>
-          </div><!-- /sidebar well-->
-          {% block extendedsidebar %}
-          {% endblock %}
-        {% endblock %}
-      </div><!-- /span3 -->
-      <div class="span9 maincontent">
+                <noscript>
+                  <a title="Create new label" href="{{url_for('create_label', profile=profile.name )}}">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#plus"></use></svg>{% endassets %}&nbsp;Add label</a>
+                </noscript>
 
-        {% block maincontent %}
+                <a class="mui--hidden-md mui--hidden-lg mui--hidden-xl" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#plus"></use></svg>{% endassets %}&nbsp;New label</a>
+                {% endblock %}
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__header">
+                <h3 class="mui--text-title">{% trans %}Profile And Organizations{% endtrans %}</h3>
+              </div>
+              <div class="card__body">
+                <div class="js-expandable-wrapper expandable">
+                  <ul class="mui-list--unstyled expandable__content js-expandable">
+                    <li><a class="{% if g.user.username == profile.name %}active{% endif %}" title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
+                    {% if g.user %}
+                        {%- for org in g.user.organizations_owned() %}
+                          <li><a class="{% if org.name == profile.name %}active{% endif %}" href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
+                        {%- endfor %}
+                    {% endif %}
+                  </ul>
+                  <a href="#" class="js-expandable-control mui--text-light no-hover">
+                    <span class="js-collapsible-icon mui--text-body1">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--caption" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#caret-circle-down"></use></svg>{% endassets %} <span>Show more</span></span>
+                    <span class="js-collapsible-icon mui--hide mui--text-body1">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--caption" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#caret-circle-up"></use></svg>{% endassets %} <span>Hide</span>s</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% block extendedsidebar %}
+            {% endblock %}
+          </div>
         {% endblock %}
-      </div>
-    </div><!-- /row -->
-  {% endblock %}
+
+        <div class="grid__col-xs-12 grid__col-lg-9 maincontent">
+          {% if self.sidebar() %}
+            <div class="sidebar-control">
+              <a href="#" class="mui-btn mui-btn--small mui-btn--dark sidebar-control__btn" id="js-sidebar-control">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#bars"></use></svg>{% endassets %}</a>
+            </div>
+          {% endif %}
+          {% block maincontent %}
+          {% endblock %}
+        </div>
+
+      </div><!-- /row -->
+    {% endblock %}
+  </div>
 {% endblock %}
 
 {% block layoutscripts %}
-<script type="text/javascript" src="{{url_for('static', filename='js/dropzone.js')}}"></script>
-<!--<script type="text/javascript" src="{{url_for('static', filename='js/dropzone-amd-module.js')}}"></script>-->
-
-<script type="text/javascript">
-  var hlimit = 158;
-  $(document).ready(function(){
-      if($('#expandable1').height() <= hlimit){
-          $('#more1').hide();
-          $('#expandable1').css('height', '100%');
-      }else{
-          $('#more1').show();
-          $('#expandable1').css('height', hlimit);
-      }
-      if($('#expandable2').height() <= hlimit){
-          $('#more2').hide();
-          $('#expandable2').css('height', '100%');
-      }else{
-          $('#more2').show();
-          $('#expandable2').css('height', hlimit);
-      }
-  });
-
-   $("#more1").click(function(){
-    var txtval = $(this).children("i").attr("class");
-    if (txtval == "icon-ellipsis-horizontal") {
-      $("#expandable1").css('height', '100%');
-      $(this).children("i").attr("class", "icon-caret-up");
-    } else {
-      $("#expandable1").css('height', hlimit);
-      $(this).children("i").attr("class", "icon-ellipsis-horizontal");
-    }
-    return false;
-  });
-   $("#more2").click(function(){
-    var txtval = $(this).children("i").attr("class");
-    if (txtval == "icon-ellipsis-horizontal") {
-      $("#expandable2").css('height', '100%');
-      $(this).children("i").attr("class", "icon-caret-up");
-    } else {
-      $("#expandable2").css('height', hlimit);
-      $(this).children("i").attr("class", "icon-ellipsis-horizontal");
-    }
-    return false;
-  });
-
-</script>
-<script type="text/javascript">
-  $(".hide-sidebar-btn").click(function(){
-    var txtval = $(this).children("i").attr("class");
-    if (txtval == "icon-plus-sign") {
-      $(this).children("i").attr("class", "icon-remove-sign");
-    } else {
-      $(this).children("i").attr("class", "icon-plus-sign");
-    }
-    return false;
-  });
-</script>
-
-
-  <script>
-    $(document).ready(function(){
-      var click = 0;
-      $(".hide-sidebar-btn").click(function(){
-        $(".sidebar").toggleClass("shift0");
-        $(".maincontent").toggleClass("shift90");
-      })
-    })
-  </script>
-  <script type="text/javascript">
-  document.getElementById('hideThisFromNonJs').style.display='block';
-  </script>
-{% block footerscripts %}{% endblock %}
+  <script type="text/javascript" src="{{url_for('static', filename='js/app.js')}}"></script>
+  {% block footerscripts %}{% endblock %}
 {% endblock %}

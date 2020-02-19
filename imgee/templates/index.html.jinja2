@@ -1,35 +1,25 @@
 {% extends "layout.html.jinja2" %}
-{% block titletags %}
-  <title>{% block title %}{{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
-{% endblock %}
-{% block headerbox %}
-  <header>
-    {{ networkbar(siteid=config['SITE_ID'], login=true) }}
 
-  </header>
-{% endblock %}
 {% block basecontent %}
-  <div class="container">
-      <div class="row index">
-        <div class="span6">
-          <img class="pull-right index-img" src="{{ url_for('static', filename='img/index-img1.png') }}">
-        </div>
-        <div class="span6">
-          <div class="row">
-            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo.png') }}"></a>
-          </div>
-          <div class="row">
-            <p>HasGeek's image library</p><hr />
-            {% if g.user %}
-              <h5>Welcome <strong>{{ g.user.fullname }}!</strong></h5>
-              <br />
-              <a href="{{ g.user.profile_url }}" class="btn btn-primary">View your images</a></h4>
-            {% else %}
-              <a  href="{{ url_for('login') }}" class="btn btn-large">Login / Sign up</a>
-            {% endif %}
-          </div>
-        </div>
+  <div class="grid page-content">
+    <div class="grid__col-xs-12 grid__col-sm-6">
+      <div class="">
+        <img class="banner mui--pull-right" src="{{ url_for('static', filename='img/index-img1.png') }}">
       </div>
     </div>
+    <div class="grid__col-xs-12 grid__col-sm-6">
+      <div>
+        <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo.png') }}"></a>
+      </div>
+      <div>
+        <p class="mui--text-title">HasGeek's image library</p><hr />
+        {% if g.user %}
+          <p class="mui--text-subhead">Welcome <strong>{{ g.user.fullname }}!</strong></p>
+          <a href="{{ g.user.profile_url }}" class="mui-btn mui-btn--primary mui-btn--raised">View your images</a></h4>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="mui-btn mui-btn--primary mui-btn--raised">Login / Sign up</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 {% endblock %}

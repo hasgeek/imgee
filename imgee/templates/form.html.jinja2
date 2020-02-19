@@ -3,8 +3,8 @@
 {% block title %}New image{% endblock %}
 
 {% block maincontent %}
-	<div class="well">
-		<h5><i class="icon-cloud-upload"></i>&nbsp;&nbsp;Upload Image</h5><hr />
+	<div class="mui-panel">
+		<p class="mui--text-title mui--text-bold">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--subhead" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#upload"></use></svg>{% endassets %}&nbsp;&nbsp;Upload Image</p>
 		{{ renderform(form, "upload", multipart=True) }}
 	</div>
 {% endblock %}
