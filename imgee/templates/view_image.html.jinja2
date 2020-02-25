@@ -1,5 +1,6 @@
 {% extends "layout.html.jinja2" %}
 {% from 'baseframe/forms.html.jinja2' import rendersubmit, renderform %}
+{% from "baseframe/components.html.jinja2" import faicon %}
 
 {% block title %}{{ img.title }}{% endblock %}
 
@@ -27,15 +28,15 @@
   <section class="image-view">
     <div class="card">
       <div class="card__header mui--clearfix">
-        <h3 class="mui--text-title heading mui--pull-left {% if g.user %}editable_title{% endif %}" id="{{img.name}}">{{img.title}}</h3><span class="delete-icon">{% if g.user %}<a href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--subhead fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#trash-alt"></use></svg>{% endassets %}</a>{% endif %}</span>
+        <h3 class="mui--text-title heading mui--pull-left {% if g.user %}editable_title{% endif %}" id="{{img.name}}">{{img.title}}</h3><span class="delete-icon">{% if g.user %}<a href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{{ faicon('trash-alt', 'fa5--align-baseline fa5-icon--subhead') }}</a>{% endif %}</span>
         <div class="mui--pull-right">
           {% if prev %}
             {% set p = prev | first %}
-            <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" class="mui-btn mui-btn--small">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#angle-left"></use></svg>{% endassets %}</a>
+            <a href="{{url_for('view_image', profile=profile.name, image=p.name)}}" class="mui-btn mui-btn--small">{{ faicon('angle-left', 'fa5--align-baseline fa5-icon--caption') }}</a>
           {% endif %}
           {% if next %}
             {% set n = next | last %}
-            <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" class="mui-btn mui-btn--small">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#angle-right"></use></svg>{% endassets %}</a>
+            <a href="{{url_for('view_image', profile=profile.name, image=n.name)}}" class="mui-btn mui-btn--small">{{ faicon('angle-right', 'fa5--align-baseline fa5-icon--caption') }}</a>
           {% endif %}
         </div>
       </div>
@@ -72,7 +73,7 @@
     <div class="card zero-bottom-margin">
       <div class="card__body">
         <div id="share">
-          <p class="mui--text-headline mui--text-bold zero-bottom-margin">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--title" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#share-square"></use></svg>{% endassets %}&nbsp;{% if img.extn == ".svg" %}Share image{% else %}Resize and Share{% endif %}</p>
+          <p class="mui--text-headline mui--text-bold zero-bottom-margin">{{ faicon('share-square', 'fa5--align-baseline fa5-icon--title') }}&nbsp;{% if img.extn == ".svg" %}Share image{% else %}Resize and Share{% endif %}</p>
           {% if img.extn != ".svg" %}
             <p class="mui--text-caption mui--text-light"><em>Resize to (max width) x (max height)</em></p>
             <ul id="resize" class="mui-list--unstyled resize">
@@ -142,7 +143,7 @@
         <div class="grid">
           <div class="grid__col-xs-12 grid__col-sm-6">
             {% set action_url=url_for('manage_labels', image=img.name, profile=img.profile.name) %}
-            <p class="mui--text-title">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#tag"></use></svg>{% endassets %}&nbsp;Manage labels</p>
+            <p class="mui--text-title">{{ faicon('tag', 'fa5--align-baseline fa5-icon--caption') }}&nbsp;Manage labels</p>
             <form action='{{action_url}}' method='POST' class="mui-form grid__col-xs-12 grid__col-sm-6 grid-no-left-padding ">
               {{ form.csrf_token() }}
               {{ form.stored_file_id() }}
@@ -155,7 +156,7 @@
             <ul class="labels mui-list--unstyled">
               {% if img.labels %}
                 {% for label in img.labels %}
-                  <li class="mui--text-subhead">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--caption fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#tag"></use></svg>{% endassets %}&nbsp;
+                  <li class="mui--text-subhead">{{ faicon('tag', 'fa5--align-baseline fa5-icon--captio') }}&nbsp;
                     <a href="{{url_for('show_label', profile=img.profile.name, label=label.name)}}">{{label.name}}</a>
                   </span></li>
                 {% endfor %}

@@ -1,5 +1,6 @@
 {% extends "layout.html.jinja2" %}
 {% from 'baseframe/forms.html.jinja2' import renderform %}
+{% from "baseframe/components.html.jinja2" import faicon %}
 
 {% block title %}{{ profile.title }}{% endblock %}
 
@@ -16,14 +17,14 @@
       {% if g.user %}
         <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
           {{ uf_form.hidden_tag() }}
-          <div class="mui--text-center">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--headline mui--text-light" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#upload"></use></svg>{% endassets %}</div>
+          <div class="mui--text-center">{{ faicon('upload', 'fa5-icon--headline fa5--align-baseline mui--text-light') }}</div>
           <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">Drop files to upload</p>
           <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>
         </form>
         <div id="uploaded-files" class="">
           <div class="sample mui--hide">
             <div class="alert alert--dismissable">
-              <a class="alert__close" href="javascript:void(0);" aria-label="close">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5-icon--subhead" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#times"></use></svg>{% endassets %}</a>
+              <a class="alert__close" href="javascript:void(0);" aria-label="close">{{ faicon('times', 'fa5-icon--subhead') }}</a>
               <div>
                 <img class="thumb" src=""/>
                 <p class="heading"></p>
@@ -54,8 +55,8 @@
 
         <div class="mui--pull-right">
           <div class="list-grid-selector">
-            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#th"></use></svg>{% endassets %}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;Grid</span></a>
-            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#list"></use></svg>{% endassets %}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;List</span></a>
+            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{{ faicon('th', 'fa5--align-baseline') }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;Grid</span></a>
+            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{{ faicon('list', 'fa5--align-baseline') }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;List</span></a>
           </div>
         </div>
       </div>
@@ -86,7 +87,7 @@
               <li class="gallery__image">
                 <div class="gallery__image__thumb">
                   <div class="gallery__image__thumb__wrapper">
-                    <a class="gallery__image__thumb" href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
+                    <a class="gallery__image__thumb__wrapper__link" href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
                       <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}">
                     </a>
                   </div>
@@ -99,8 +100,8 @@
             {% endfor %}
             </ul>
             <a href="#" class="js-expandable-control mui--text-light no-hover expandable__control">
-              <span class="js-collapsible-icon mui--text-body1">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--caption" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#caret-circle-down"></use></svg>{% endassets %} <span>Show more</span></span>
-              <span class="js-collapsible-icon mui--hide mui--text-body1">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--caption" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#caret-circle-up"></use></svg>{% endassets %} <span>Hide</span>s</span>
+              <span class="js-collapsible-icon mui--text-body1">{{ faicon('caret-circle-down', 'fa5--align-baseline fa5-icon--caption') }} <span>Show more</span></span>
+              <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon('caret-circle-up', 'fa5--align-baseline fa5-icon--caption') }} <span>Hide</span>s</span>
             </a>
           </div>
         </div>
