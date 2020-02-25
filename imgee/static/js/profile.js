@@ -4,7 +4,7 @@ $(function() {
   var thumbs = $('.gallery');
 
   var valign_thumb = function(thumb, loaded, img_onload) {
-    var t = thumb.find('.gallery__image__wrapper__thumbnail img');
+    var t = thumb.find('.gallery__image__thumb__wrapper img');
     var m = (75 - t.height()) / 2;
     if (m < 0) m = 0;
     t.css({ 'margin-top': m });
@@ -12,7 +12,7 @@ $(function() {
       typeof loaded == 'undefined' ||
       (typeof loaded == 'boolean' && !loaded)
     ) {
-      thumb.find('.gallery__image__wrapper__thumbnail img').load(function() {
+      thumb.find('.gallery__image__thumb__wrapper img').load(function() {
         if (typeof img_onload == 'string') $(this).attr('src', img_onload);
         valign_thumb(thumb, true, img_onload);
       });
@@ -41,7 +41,7 @@ $(function() {
       var new_thumb = thumbs.find('li.gallery__image').first();
       valign_thumb(new_thumb, false, thumb_data.thumb_url);
       new_thumb
-        .find('.gallery__image__wrapper__thumbnail img')
+        .find('.gallery__image__thumb__wrapper img')
         .attr('src', window.Imgee.spinnerFile);
       new_thumb.find('a').attr('href', thumb_data.url);
       new_thumb.find('a').attr('title', thumb_data.title);
