@@ -1,5 +1,6 @@
 {% extends "layout.html.jinja2" %}
 {% from 'baseframe/forms.html.jinja2' import renderform %}
+{% from "baseframe/components.html.jinja2" import faicon %}
 
 {% block basecontent %}
   {% block sidebar %}
@@ -7,10 +8,10 @@
   {% block maincontent %}
   {% endblock %}
   <div class="alert alert--error">
-    <p class="mui--text-title">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--subhead" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#trash-alt"></use></svg>{% endassets %} Confirm delete</p>
+    <p class="mui--text-title">{{ faicon(icon='trash-alt', icon_size='subhead', baseline=true) }} Confirm delete</p>
     <hr/>
     <p class="mui--text-subhead">Are you sure you want to delete the label "{{ label.title }}"?<br/></p>
-    <p>{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#info-circle"></use></svg>{% endassets %}&nbsp;<strong>Info: Even if you delete it, the files associated with the label will NOT be deleted.</strong></p>
+    <p>{{ faicon(icon='info-circle', baseline=true) }}&nbsp;<strong>Info: Even if you delete it, the files associated with the label will NOT be deleted.</strong></p>
     {% set cancel_url=url_for('show_label', profile=profile.name, label=label.name) %}
     <div class="form-submit">{{ renderform(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}</div>
   </div>

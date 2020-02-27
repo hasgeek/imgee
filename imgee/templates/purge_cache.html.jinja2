@@ -1,6 +1,6 @@
 {% extends "layout.html.jinja2" %}
 {% from 'baseframe/forms.html.jinja2' import renderform %}
-
+{% from "baseframe/components.html.jinja2" import faicon %}
 
 {% block basecontent %}
   {% block sidebar %}
@@ -8,7 +8,7 @@
   {% block maincontent %}
   {% endblock %}
   <div class="alert alert--error">
-    <p class="mui--text-title">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--subhead" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#trash-alt"></use></svg>{% endassets %}&nbsp;&nbsp;Confirm purging cache</p>
+    <p class="mui--text-title">{{ faicon(icon='trash-alt', icon_size='subhead', baseline=true) }}&nbsp;&nbsp;Confirm purging cache</p>
     <hr />
     <p class="mui--text-subhead">Are you sure you want to delete all files which are NOT accessed in the last {{config.get('CACHE_PURGE_PERIOD', 24)}} hours?<br/></p>
     <div class="form-submit">{{ renderform(form, "delete", "Yes, Purge now")}}</div>

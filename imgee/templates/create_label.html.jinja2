@@ -1,10 +1,11 @@
 {% extends "layout.html.jinja2" %}
-{% from 'baseframe/forms.html.jinja2' import renderform %}
+{% from 'baseframe/forms.html.jinja2' import renderform, ajaxform %}
+{% from "baseframe/components.html.jinja2" import faicon %}
 
 {% block maincontent %}
   <div class="mui-panel">
-    <p class="mui--text-title mui--text-bold">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--subhead" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#tag"></use></svg>{% endassets %}&nbsp;&nbsp;Create label</p>
+    <p class="mui--text-title mui--text-bold">{{ faicon(icon='tag', icon_size='subhead', baseline=true) }}&nbsp;&nbsp;Create label</p>
     {% set cancel_url=url_for('profile_view', profile=profile.name) %}
     {{ renderform(form, "Create", cancel_url=cancel_url)}}
   </div>
-{% endblock %}
+{% endblock %}`

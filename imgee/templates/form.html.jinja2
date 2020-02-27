@@ -1,10 +1,11 @@
 {% extends "layout.html.jinja2" %}
 {% from 'baseframe/forms.html.jinja2' import renderform %}
+{% from "baseframe/components.html.jinja2" import faicon %}
 {% block title %}New image{% endblock %}
 
 {% block maincontent %}
 	<div class="mui-panel">
-		<p class="mui--text-title mui--text-bold">{% assets "fa5-sprite" %}<svg class="fa5-icon fa5--align-baseline fa5-icon--subhead" aria-hidden="true" role="img"><use xlink:href="{{ ASSET_URL }}#upload"></use></svg>{% endassets %}&nbsp;&nbsp;Upload Image</p>
+		<p class="mui--text-title mui--text-bold">{{ faicon(icon='upload', icon_size='subhead' baseline=true) }}&nbsp;&nbsp;Upload Image</p>
 		{{ renderform(form, "upload", multipart=True) }}
 	</div>
 {% endblock %}
