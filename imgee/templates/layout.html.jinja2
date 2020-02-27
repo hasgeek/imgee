@@ -33,34 +33,34 @@
                   <ul class="mui-list--unstyled expandable__content js-expandable">
                     {% if profile.labels %}
                       {% for label in profile.labels |sort(attribute='name')%}
-                        <li class="mui--text-subhead"><a href="{{ url_for('show_label', profile=profile.name, label=label.name) }}">{{ faicon('tag', 'fa5-icon--caption fa5--align-baseline') }}&nbsp;{{label.name}}</a></li>
+                        <li class="mui--text-subhead"><a href="{{ url_for('show_label', profile=profile.name, label=label.name) }}">{{ faicon(icon='tag', icon_size='caption', baseline=true) }}&nbsp;{{label.name}}</a></li>
                       {% endfor %}
                     {% else %}
                       <li class="mui--text-subhead">No Labels yet.</li>
                     {% endif %}
                   </ul>
                   <a href="#" class="js-expandable-control mui--text-light no-hover">
-                    <span class="js-collapsible-icon mui--text-body1">{{ faicon('caret-circle-down', 'fa5-icon--caption fa5--align-baseline') }}&nbsp;<span>Show more</span></span>
-                    <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon('caret-circle-up', 'fa5-icon--caption fa5--align-baseline') }}&nbsp;<span>Hide</span>
+                    <span class="js-collapsible-icon mui--text-body1">{{ faicon(icon='caret-circle-down', icon_size='caption', baseline=true) }}&nbsp;<span>Show more</span></span>
+                    <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon(icon='caret-circle-up', icon_size='caption', baseline=true) }}&nbsp;<span>Hide</span>
                   </a>
                 </div>
 
                 <ul class="mui-list--unstyled">
                   <li class="mui--text-subhead"><a href="{{url_for('unlabelled_images', profile=profile.name)}}">
                   {% if profile.labels %}
-                    {{ faicon('tag', 'fa5-icon--caption fa5--align-baseline') }}&nbsp;Unlabeled
+                    {{ faicon(icon='tag', icon_size='caption', baseline=true) }}&nbsp;Unlabeled
                   {% else %}
-                    {{ faicon('archive', 'fa5-icon--caption fa5--align-baseline') }}&nbsp;Archive
+                    {{ faicon(icon='archive', icon_size='caption', baseline=true) }}&nbsp;Archive
                   {% endif %}
                   </a></li>
                 </ul>
 
                 <div class="no-jshidden mui--hidden-xs mui--hidden-sm">
-                  <a href="" role="button" title="Upload image" class="js-open-form" data-toggle="modal">{{ faicon('plus', 'fa5-icon--caption fa5--align-baseline') }}&nbsp;New label</a>
+                  <a href="" role="button" title="Upload image" class="js-open-form" data-toggle="modal">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;New label</a>
                   {% if profile %}
                     <div id="newlabel-form" class="modal" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true">
                         <div class="modal__header">
-                          <a class="modal__close" href="javascript:void(0);" aria-label="{% trans %}Close{% endtrans %}" rel="modal:close">{{ faicon('times', 'fa5-icon--subhead fa5--align-baseline') }}</a>
+                          <a class="modal__close" href="javascript:void(0);" aria-label="{% trans %}Close{% endtrans %}" rel="modal:close">{{ faicon(icon='times', icon_size='subhead', baseline=true) }}</a>
                           <h3 class="mui--text-headline">Create label</h3>
                         </div>
                         <div class="modal__body">
@@ -74,10 +74,10 @@
                   {%- endif %}
                 </div>
                 <noscript>
-                  <a title="Create new label" href="{{url_for('create_label', profile=profile.name )}}">{{ faicon('plus', 'fa5-icon--caption fa5--align-baseline') }}&nbsp;Add label</a>
+                  <a title="Create new label" href="{{url_for('create_label', profile=profile.name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;Add label</a>
                 </noscript>
 
-                <a class="mui--hidden-md mui--hidden-lg mui--hidden-xl" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}">{{ faicon('plus', 'fa5-icon--caption fa5--align-baseline') }}&nbsp;New label</a>
+                <a class="mui--hidden-md mui--hidden-lg mui--hidden-xl" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;New label</a>
                 {% endblock %}
               </div>
             </div>
@@ -97,8 +97,8 @@
                     {% endif %}
                   </ul>
                   <a href="#" class="js-expandable-control mui--text-light no-hover">
-                    <span class="js-collapsible-icon mui--text-body1">{{ faicon('caret-circle-down', 'fa5-icon--caption fa5--align-baseline') }} <span>Show more</span></span>
-                    <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon('caret-circle-up', 'fa5-icon--caption fa5--align-baseline') }} <span>Hide</span>s</span>
+                    <span class="js-collapsible-icon mui--text-body1">{{ faicon(icon='caret-circle-down', icon_size='caption', baseline=true) }} <span>Show more</span></span>
+                    <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon(icon='caret-circle-up', icon_size='caption', baseline=true) }} <span>Hide</span>s</span>
                   </a>
                 </div>
               </div>
@@ -111,7 +111,7 @@
         <div class="grid__col-xs-12 grid__col-lg-9 maincontent">
           {% if self.sidebar() %}
             <div class="sidebar-control">
-              <a href="#" class="mui-btn mui-btn--small mui-btn--dark sidebar-control__btn" id="js-sidebar-control">{{ faicon('bars', 'fa5--align-baseline') }}</a>
+              <a href="#" class="mui-btn mui-btn--small mui-btn--dark sidebar-control__btn" id="js-sidebar-control">{{ faicon(icon='bars', baseline=true) }}</a>
             </div>
           {% endif %}
           {% block maincontent %}

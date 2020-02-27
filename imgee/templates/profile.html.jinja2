@@ -17,14 +17,14 @@
       {% if g.user %}
         <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
           {{ uf_form.hidden_tag() }}
-          <div class="mui--text-center">{{ faicon('upload', 'fa5-icon--headline fa5--align-baseline mui--text-light') }}</div>
+          <div class="mui--text-center">{{ faicon(icon='upload', icon_size='headline', baseline=true, css_class='mui--text-light') }}</div>
           <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">Drop files to upload</p>
           <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>
         </form>
         <div id="uploaded-files" class="">
           <div class="sample mui--hide">
             <div class="alert alert--dismissable">
-              <a class="alert__close" href="javascript:void(0);" aria-label="close">{{ faicon('times', 'fa5-icon--subhead') }}</a>
+              <a class="alert__close" href="javascript:void(0);" aria-label="close">{{ faicon(icon='times', icon_size='subhead') }}</a>
               <div>
                 <img class="thumb" src=""/>
                 <p class="heading"></p>
@@ -55,8 +55,8 @@
 
         <div class="mui--pull-right">
           <div class="list-grid-selector">
-            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{{ faicon('th', 'fa5--align-baseline') }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;Grid</span></a>
-            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{{ faicon('list', 'fa5--align-baseline') }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;List</span></a>
+            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{{ faicon(icon='th', baseline=true) }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;Grid</span></a>
+            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{{ faicon(icon='list', baseline=true) }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;List</span></a>
           </div>
         </div>
       </div>
@@ -100,8 +100,8 @@
             {% endfor %}
             </ul>
             <a href="#" class="js-expandable-control mui--text-light no-hover expandable__control">
-              <span class="js-collapsible-icon mui--text-body1">{{ faicon('caret-circle-down', 'fa5--align-baseline fa5-icon--caption') }} <span>Show more</span></span>
-              <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon('caret-circle-up', 'fa5--align-baseline fa5-icon--caption') }} <span>Hide</span>s</span>
+              <span class="js-collapsible-icon mui--text-body1">{{ faicon(icon='caret-circle-down', icon_size='caption', baseline=true) }} <span>Show more</span></span>
+              <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon(icon='caret-circle-up', icon_size='caption', baseline=true) }} <span>Hide</span>s</span>
             </a>
           </div>
         </div>

@@ -5,7 +5,7 @@
 
 {% block maincontent %}
 	<div class="mui-panel">
-		<p class="mui--text-title mui--text-bold">{{ faicon('upload', 'fa5-icon--subhead fa5--align-baseline') }}&nbsp;&nbsp;Upload Image</p>
+		<p class="mui--text-title mui--text-bold">{{ faicon(icon='upload', icon_size='subhead' baseline=true) }}&nbsp;&nbsp;Upload Image</p>
 		{{ renderform(form, "upload", multipart=True) }}
 	</div>
 {% endblock %}

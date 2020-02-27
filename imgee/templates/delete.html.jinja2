@@ -8,10 +8,10 @@
   {% block maincontent %}
   {% endblock %}
   <div class="alert alert--error">
-    <p class="mui--text-title">{{ faicon('trash-alt', 'fa5-icon--subhead fa5--align-baseline') }} Confirm delete</p><hr/>
+    <p class="mui--text-title">{{ faicon(icon='trash-alt', icon_size='subhead', baseline=true) }} Confirm delete</p><hr/>
     <p class="mui--text-subhead">Are you sure you want to delete "<strong>{{file.title}}</strong>"?</p>
     <p id="warning">
-      {{ faicon('info-circle', 'fa5--align-baseline') }}&nbsp;<strong>Warning: If you delete it, you will lose all the links wherever this image appears.</strong>
+      {{ faicon(icon='info-circle', baseline=true) }}&nbsp;<strong>Warning: If you delete it, you will lose all the links wherever this image appears.</strong>
     </p>
     <img src="{{url_for('get_image', image=file.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
     {% set cancel_url=url_for('view_image', profile=profile.name, image=file.name) %}

@@ -6,7 +6,7 @@
     <div class="mui--clearfix">
       <div class="mui--pull-left"><span class="mui-text--title">Images with label</span> <span class="editable_label mui--d-inlineblock" id="{{label.id}}">{{label.name}}</span></div>
       {% if g.user %}
-        <a class="mui-btn mui-btn--small mui-btn--danger mui--pull-right" href="{{url_for('delete_label', profile=profile.name ,label=label.name)}}" title='Delete label "{{label.name}}"'>{{ faicon('trash-alt', 'fa5--align-baseline') }}&nbsp;<span id="delete">Delete Label</span></a>
+        <a class="mui-btn mui-btn--small mui-btn--danger mui--pull-right" href="{{url_for('delete_label', profile=profile.name ,label=label.name)}}" title='Delete label "{{label.name}}"'>{{ faicon(icon='trash-alt', baseline=true) }}&nbsp;<span id="delete">Delete Label</span></a>
         {% endif %}
     </div>
 

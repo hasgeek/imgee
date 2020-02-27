@@ -8,10 +8,10 @@
   {% block maincontent %}
   {% endblock %}
   <div class="alert alert--error">
-    <p class="mui--text-title">{{ faicon('trash-alt', 'fa5-icon--subhead fa5--align-baseline') }} Confirm delete</p>
+    <p class="mui--text-title">{{ faicon(icon='trash-alt', icon_size='subhead', baseline=true) }} Confirm delete</p>
     <hr/>
     <p class="mui--text-subhead">Are you sure you want to delete the label "{{ label.title }}"?<br/></p>
-    <p>{{ faicon('info-circle', 'fa5--align-baseline') }}&nbsp;<strong>Info: Even if you delete it, the files associated with the label will NOT be deleted.</strong></p>
+    <p>{{ faicon(icon='info-circle', baseline=true) }}&nbsp;<strong>Info: Even if you delete it, the files associated with the label will NOT be deleted.</strong></p>
     {% set cancel_url=url_for('show_label', profile=profile.name, label=label.name) %}
     <div class="form-submit">{{ renderform(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}</div>
   </div>

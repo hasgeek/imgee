@@ -31,14 +31,14 @@
     <div role="tabpanel" class="mui-tabs__pane mui--is-active" id="pane-justified-upload">
       <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
         {{ uploadform.hidden_tag() }}
-        <div class="mui--text-center">{{ faicon('upload', 'fa5-icon--headline fa5--align-baseline') }}</div>
+        <div class="mui--text-center">{{ faicon(icon='upload', icon_size='headline', baseline=true) }}</div>
         <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">Drop files to upload</p>
         <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>
       </form>
       <div id="uploaded-files" class="">
         <div class="sample mui--hide">
           <div class="alert alert--dismissable">
-            <a class="alert__close" href="javascript:void(0);" aria-label="close">{{ faicon('times', 'fa5-icon--subhead') }}</a>
+            <a class="alert__close" href="javascript:void(0);" aria-label="close">{{ faicon(icon='times', icon_size='subhead') }}</a>
             <div>
               <img class="thumb" src=""/>
               <p class="heading"></p>
@@ -64,8 +64,8 @@
 
         <div class="mui--pull-right">
           <div class="list-grid-selector">
-            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{{ faicon('th', 'fa5--align-baseline') }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;Grid</span></a>
-            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{{ faicon('list', 'fa5--align-baseline') }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;List</span></a>
+            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{{ faicon(icon='th', baseline=true) }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;Grid</span></a>
+            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{{ faicon(icon='list', baseline=true) }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;List</span></a>
           </div>
         </div>
       </div>
@@ -88,8 +88,8 @@
                     <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}">
                   </div>
                   <div class="js-button">
-                    <a class="mui-btn mui-btn--small mui-btn--dark" href="{{ url_for('get_image', image=img.name) }}" target="_blank">{{ faicon('search-plus', 'fa5--align-baseline') }}</a>
-                    <a class="mui-btn mui-btn--small mui-btn--dark" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{{ faicon('trash-alt', 'fa5--align-baseline') }}</a>
+                    <a class="mui-btn mui-btn--small mui-btn--dark" href="{{ url_for('get_image', image=img.name) }}" target="_blank">{{ faicon(icon='search-plus', baseline=true) }}</a>
+                    <a class="mui-btn mui-btn--small mui-btn--dark" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{{ faicon(icon='trash-alt', baseline=true) }}</a>
                   </div>
                 </div>
                 <div class="gallery__image__thumb__details editable_title" id="{{img.name}}">{{img.title}}</div>
