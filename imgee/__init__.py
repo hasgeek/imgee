@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from flask_lastuser import Lastuser
 from flask_lastuser.sqlalchemy import UserManager
 
-from baseframe import Version, assets, baseframe, Bundle
+from baseframe import Bundle, Version, assets, baseframe
 import coaster.app
 
 from ._version import __version__
@@ -44,10 +44,7 @@ registry.init_app(app)
 app.assets.register(
     'js_dropzone',
     Bundle(
-        assets.require(
-            '!jquery.js',
-            'dropzone.js==5.5.0',
-        ),
+        assets.require('!jquery.js', 'dropzone.js==5.5.0'),
         output='js/dropzone.packed.js',
         filters='uglipyjs',
     ),

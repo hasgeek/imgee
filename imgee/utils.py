@@ -8,16 +8,15 @@ import re
 
 from flask import request
 
+from PIL import Image
 import boto3
 import botocore
-from PIL import Image
 import defusedxml.cElementTree as ElementTree
 import magic
 
 from baseframe import cache
 
 from . import app
-
 
 THUMBNAIL_COMMANDS = {
     'inkscape': "inkscape -z -f {src} -e {src}.original.png && convert -quiet -thumbnail {width}x{height} {src}.original.png -colorspace sRGB -quality 75% {dest}",
@@ -73,11 +72,7 @@ ALLOWED_MIMETYPES = {
         'processor': 'rsvg-convert',
     },
     'image/bmp': {'allowed_extns': ['.bmp'], 'extn': '.bmp', 'thumb_extn': '.jpeg'},
-    'image/x-bmp': {
-        'allowed_extns': ['.bmp'],
-        'extn': '.bmp',
-        'thumb_extn': '.jpeg',
-    },
+    'image/x-bmp': {'allowed_extns': ['.bmp'], 'extn': '.bmp', 'thumb_extn': '.jpeg'},
     'image/x-bitmap': {
         'allowed_extns': ['.bmp'],
         'extn': '.bmp',
@@ -98,11 +93,7 @@ ALLOWED_MIMETYPES = {
         'extn': '.bmp',
         'thumb_extn': '.jpeg',
     },
-    'image/ms-bmp': {
-        'allowed_extns': ['.bmp'],
-        'extn': '.bmp',
-        'thumb_extn': '.jpeg',
-    },
+    'image/ms-bmp': {'allowed_extns': ['.bmp'], 'extn': '.bmp', 'thumb_extn': '.jpeg'},
     'image/x-ms-bmp': {
         'allowed_extns': ['.bmp'],
         'extn': '.bmp',
@@ -223,11 +214,7 @@ ALLOWED_MIMETYPES = {
         'extn': ['.tif', '.tiff'],
         'thumb_extn': '.png',
     },
-    'image/webp': {
-        'allowed_extns': ['.webp'],
-        'extn': '.webp',
-        'thumb_extn': '.jpeg',
-    },
+    'image/webp': {'allowed_extns': ['.webp'], 'extn': '.webp', 'thumb_extn': '.jpeg'},
     'image/x-xcf': {'allowed_extns': ['.xcf'], 'extn': '.xcf', 'thumb_extn': '.jpeg'},
 }
 
@@ -378,7 +365,7 @@ def get_width_height(img_path):
             o = check_output(
                 'identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path),
                 shell=True,
-                universal_newlines=True
+                universal_newlines=True,
             )
             w, h = o.split('x')
         elif extn in ['.cdr']:
@@ -395,8 +382,9 @@ def get_width_height(img_path):
                 w, h = int(round(float(wo))), int(round(float(ho)))
         else:
             o = check_output(
-                'identify -quiet -ping -format "%wx%h" {}'.format(img_path), shell=True,
-                universal_newlines=True
+                'identify -quiet -ping -format "%wx%h" {}'.format(img_path),
+                shell=True,
+                universal_newlines=True,
             )
             w, h = o.split('x')
         return (w, h)

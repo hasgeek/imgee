@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from os import environ
 
 # this will sit inside `app.static_folder`

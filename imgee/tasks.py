@@ -32,9 +32,7 @@ class TaskRegistry(object):
         return bool(self.filename_pattern.match(query))
 
     def key_for(self, taskid):
-        return '{key_prefix}:{taskid}'.format(
-            key_prefix=self.key_prefix, taskid=taskid
-        )
+        return '{key_prefix}:{taskid}'.format(key_prefix=self.key_prefix, taskid=taskid)
 
     def __contains__(self, taskid):
         return len(self.connection.keys(self.key_for(taskid))) > 0
