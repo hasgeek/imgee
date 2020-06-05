@@ -58,6 +58,7 @@ def upload_file(profile):
 )
 def upload_file_json(profile):
     upload_form = UploadImageForm()
+    upload_form.form_nonce.data = upload_form.form_nonce.default()
     if upload_form.validate_on_submit():
         file_ = request.files['upload_file']
         title, stored_file = save_file(file_, profile=profile)
@@ -78,7 +79,11 @@ def upload_file_json(profile):
             image_data=stored_file.dict_data(),
         )
     else:
-        response = jsonify(status=False, message=' '.join(upload_form.errors.values()))
+        response = jsonify(
+            status=False,
+            message='Upload failed',
+            errors=update_form.errors
+        )
         response.status_code = 403
         return response
 
