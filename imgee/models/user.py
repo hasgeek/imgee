@@ -19,7 +19,7 @@ class User(UserBase, db.Model):
     @cached_property
     def profiles(self):
         return [self.profile] + Profile.query.filter(
-            Profile.userid.in_(self.organizations_owned_ids())
+            Profile.userid.in_(self.organizations_adminof_ids())
         ).order_by(Profile.title).all()
 
     @cached_property

@@ -28,7 +28,7 @@
   <section class="image-view">
     <div class="card">
       <div class="card__header mui--clearfix">
-        <h3 class="mui--text-title heading mui--pull-left {% if g.user %}editable_title{% endif %}" id="{{img.name}}">{{img.title}}</h3><span class="delete-icon">{% if g.user %}<a href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{{ faicon(icon='trash-alt', icon_size='subhead', baseline=true) }}</a>{% endif %}</span>
+        <h3 class="mui--text-title heading mui--pull-left {% if current_auth.user %}editable_title{% endif %}" id="{{img.name}}">{{img.title}}</h3><span class="delete-icon">{% if current_auth.user %}<a href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{{ faicon(icon='trash-alt', icon_size='subhead', baseline=true) }}</a>{% endif %}</span>
         <div class="mui--pull-right">
           {% if prev %}
             {% set p = prev | first %}
@@ -137,7 +137,7 @@
       </div>
     </div>
     <hr>
-    {% if g.user %}
+    {% if current_auth.user %}
     <div class="card zero-bottom-margin">
       <div class="card__body image-labels">
         <div class="grid">

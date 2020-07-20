@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask_sqlalchemy import SQLAlchemy
-
-from imgee import app
-
-db = SQLAlchemy(app)
+from coaster.db import db  # NOQA # isort:skip
 
 from .user import *  # NOQA  # isort:skip
 from .stored_file import *  # NOQA  # isort:skip

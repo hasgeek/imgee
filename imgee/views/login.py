@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from flask import Response, flash, g, redirect
+from flask import Response, flash, redirect
 
+from coaster.auth import current_auth
 from coaster.views import get_next_url
-from imgee import app, lastuser
-from imgee.models import Profile, db
+
+from .. import app, lastuser
+from ..models import Profile, db
 
 
 @app.route('/login')
@@ -23,7 +25,7 @@ def logout():
 @app.route('/login/redirect')
 @lastuser.auth_handler
 def lastuserauth():
-    Profile.update_from_user(g.user, db.session)
+    Profile.update_from_user(current_auth.user, db.session)
     db.session.commit()
     return redirect(get_next_url())
 

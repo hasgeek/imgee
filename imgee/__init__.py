@@ -30,6 +30,8 @@ registry = TaskRegistry()
 
 # Configure the application
 coaster.app.init_app(app)
+db.init_app(app)
+db.app = app
 migrate = Migrate(app, db)
 baseframe.init_app(
     app,

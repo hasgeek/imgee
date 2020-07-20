@@ -5,8 +5,9 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from flask_babelhg import gettext, ngettext
 
 from coaster.views import load_model, load_models
-from imgee import app, forms, lastuser
-from imgee.models import Label, Profile, StoredFile, db
+
+from .. import app, forms, lastuser
+from ..models import Label, Profile, StoredFile, db
 
 
 @app.route('/<profile>/<label>')

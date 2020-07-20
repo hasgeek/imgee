@@ -410,7 +410,7 @@ def get_loading_spinner_url():
 
 
 def get_image_url(image, size=None):
-    from imgee import storage
+    from . import storage
 
     extn = image.extn
     if size and extn in EXTNS:

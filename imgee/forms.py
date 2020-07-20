@@ -5,8 +5,8 @@ from wtforms.validators import Length, Required, ValidationError
 
 from baseframe.forms import Form
 from coaster.utils import make_name
-from imgee import app
 
+from . import app
 from .models import Label
 from .utils import is_file_allowed
 

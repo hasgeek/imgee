@@ -77,7 +77,7 @@
                   <a title="Create new label" href="{{url_for('create_label', profile=profile.name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;Add label</a>
                 </noscript>
 
-                <a class="mui--hidden-md mui--hidden-lg mui--hidden-xl" title="Create new label" href="{{url_for('create_label', profile=g.user.profile_name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;New label</a>
+                <a class="mui--hidden-md mui--hidden-lg mui--hidden-xl" title="Create new label" href="{{url_for('create_label', profile=current_auth.user.profile_name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;New label</a>
                 {% endblock %}
               </div>
             </div>
@@ -89,9 +89,9 @@
               <div class="card__body">
                 <div class="js-expandable-wrapper expandable">
                   <ul class="mui-list--unstyled expandable__content js-expandable">
-                    <li><a class="{% if g.user.username == profile.name %}active{% endif %}" title="View your uploads" href="{{ g.user.profile_url }}"><i class="icon-user"></i>{{ g.user.fullname }}</a></li>
-                    {% if g.user %}
-                        {%- for org in g.user.organizations_owned() %}
+                    <li><a class="{% if current_auth.user.username == profile.name %}active{% endif %}" title="View your uploads" href="{{ url_for('account') }}"><i class="icon-user"></i>{{ current_auth.user.fullname }}</a></li>
+                    {% if current_auth.user %}
+                        {%- for org in current_auth.user.organizations_adminof() %}
                           <li><a class="{% if org.name == profile.name %}active{% endif %}" href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
                         {%- endfor %}
                     {% endif %}

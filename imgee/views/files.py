@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-from flask import abort, flash, g, jsonify, redirect, render_template, request, url_for
+from flask import abort, flash, jsonify, redirect, render_template, request, url_for
 
+from coaster.auth import current_auth
 from coaster.views import load_model, load_models
-from imgee import app, lastuser
-from imgee.forms import (
+
+from .. import app, lastuser
+from ..forms import (
     AddLabelForm,
     DeleteImageForm,
     EditTitleForm,
     UpdateTitle,
     UploadImageForm,
 )
-
 from ..models import Profile, StoredFile, db
 from ..storage import delete, save_file
 from ..utils import get_image_url, get_media_domain
@@ -96,7 +97,7 @@ def edit_title(profile):
     form = EditTitleForm()
     if form.validate_on_submit():
         file_name = request.form.get('file_name')
-        if profile.userid not in g.user.user_organizations_owned_ids():
+        if profile.userid not in current_auth.user.user_organizations_adminof_ids():
             abort(403)
         f = StoredFile.query.filter_by(profile=profile, name=file_name).first_or_404()
         f.title = request.form.get('file_title')

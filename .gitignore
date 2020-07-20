@@ -27,3 +27,4 @@ imgee/static/test_uploads
 instance/production.env.sh
 imgee/static/gen
 .pytest_cache
+imgee/static/img/fa5-packed.svg

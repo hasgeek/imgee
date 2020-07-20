@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import not_
 
-from flask import flash, g, render_template, request
+from flask import flash, redirect, render_template, request
 
+from coaster.auth import current_auth
 from coaster.views import load_model
-from imgee import app, forms, lastuser
-from imgee.models import Label, Profile, StoredFile, db
-from imgee.storage import clean_local_cache
-from imgee.utils import ALLOWED_MIMETYPES
+
+from .. import app, forms, lastuser
+from ..models import Label, Profile, StoredFile, db
+from ..storage import clean_local_cache
+from ..utils import ALLOWED_MIMETYPES
 
 
 @app.context_processor
@@ -19,6 +21,14 @@ def global_vars():
 @app.route('/')
 def index():
     return render_template('index.html.jinja2')
+
+
+@app.route('/account')
+@lastuser.requires_login
+def account():
+    lastuser.update_user(current_auth.user)
+    Profile.update_from_user(current_auth.user, db.session)
+    return redirect(current_auth.user.profile_url)
 
 
 @app.route('/<profile>/popup')
@@ -38,7 +48,7 @@ def pop_up_gallery(profile):
     files = files.order_by(db.desc(StoredFile.created_at)).all()
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
-    cp_form.profiles.choices = [(p.id, p.name) for p in g.user.profiles]
+    cp_form.profiles.choices = [(p.id, p.name) for p in current_auth.user.profiles]
     return render_template(
         'pop_up_gallery.html.jinja2',
         files=files,
