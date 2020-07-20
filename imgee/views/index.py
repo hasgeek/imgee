@@ -30,6 +30,7 @@ def account():
     Profile.update_from_user(
         current_auth.user, db.session, make_user_profiles=True, make_org_profiles=True
     )
+    db.session.commit()
     return redirect(current_auth.user.profile_url)
 
 
