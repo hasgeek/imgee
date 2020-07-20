@@ -27,7 +27,9 @@ def index():
 @lastuser.requires_login
 def account():
     lastuser.update_user(current_auth.user)
-    Profile.update_from_user(current_auth.user, db.session)
+    Profile.update_from_user(
+        current_auth.user, db.session, make_user_profiles=True, make_org_profiles=True
+    )
     return redirect(current_auth.user.profile_url)
 
 
