@@ -1,12 +1,35 @@
-{% extends "layout.html.jinja2" %}
+{% extends "baseframe.html.jinja2" -%}
+
 {% from 'baseframe/forms.html.jinja2' import renderform %}
 {% from "baseframe/components.html.jinja2" import faicon %}
 
-{% block header %}{% endblock %}
-
 {% block basecontent %}
-	<div class="mui-panel">
-		<p class="mui--text-title mui--text-bold">{{ faicon(icon='upload', icon_size='subhead', baseline=true) }}&nbsp;&nbsp;Upload Image</p>
-		{{ renderform(form, "upload", multipart=True) }}
-	</div>
+<div class="mui-panel">
+	{{ renderform(form, "upload", multipart=True) }}
+</div>
+{% endblock %}
+
+{% block footerscripts %}
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('#form').on('submit', function (e) {
+			e.preventDefault();
+			var form = $(this);
+
+			$.ajax({
+				type: "POST",
+				url: "{{ url_for('upload_file_json', profile=profile.name) }}",
+				data: new FormData(this),
+				contentType: false,
+				cache: false,
+				processData: false,
+				success: function (data) {
+					if (data.image) {
+						window.opener.postMessage(data.image, '*');
+					}
+				}
+			});
+		})
+	})
+</script>
 {% endblock %}
