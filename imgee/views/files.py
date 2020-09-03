@@ -80,7 +80,12 @@ def upload_file_json(profile):
             image_data=stored_file.dict_data(),
         )
     else:
-        response = jsonify(status=False, message=' '.join(upload_form.errors.values()))
+        response = jsonify(
+            status=False,
+            message=' '.join(
+                ' '.join(message) for message in upload_form.errors.values()
+            ),
+        )
         response.status_code = 403
         return response
 
