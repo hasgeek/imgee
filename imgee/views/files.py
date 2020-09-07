@@ -83,7 +83,7 @@ def upload_file_json(profile):
         response = jsonify(
             status=False,
             message=' '.join(
-                ' '.join(message) for message in upload_form.errors.values()
+                ' '.join(str(message)) for message in upload_form.errors.values()
             ),
         )
         response.status_code = 403
