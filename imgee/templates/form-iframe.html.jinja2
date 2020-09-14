@@ -24,8 +24,9 @@
 				cache: false,
 				processData: false,
 				success: function (data) {
-					if (data.image) {
-						window.opener.postMessage(data.image, '*');
+					console.log(data);
+					if (data.image_data) {
+						window.parent.postMessage(data.image_data, '*');
 					}
 				}
 			});
