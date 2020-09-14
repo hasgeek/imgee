@@ -21,6 +21,7 @@ instance/testing.py
 *packed.css
 *packed.js
 error.log
+error.log.*
 imgee/static/uploads
 imgee/static/test_uploads
 *.bak
