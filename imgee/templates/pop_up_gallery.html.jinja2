@@ -8,6 +8,8 @@
   {%- endassets -%}
 {% endblock %}
 
+{% block bodytag %}<body class="popup">{% endblock %}
+
 {% block header -%}
 {%- endblock %}
 
@@ -18,8 +20,8 @@
 {% endblock %}
 
 {% block basecontent %}
-  <div role="tabpanel" class="grid__col-sm-12 grid__col-md-8 livestream-box" id="livestream">
-    <ul class="mui-tabs__bar project-banner__box" role="tablist">
+  <div role="tabpanel" class="popup__imgee grid__col-sm-12 grid__col-md-8">
+    <ul class="mui-tabs__bar popup__imgee__heading" role="tablist">
       <li role="presentation" class="mui--is-active">
         <a role="tab" data-mui-toggle="tab" data-mui-controls="pane-justified-upload">Upload</a>
         </li>
@@ -28,15 +30,15 @@
         </li>
     </ul>
 
-    <div role="tabpanel" class="mui-tabs__pane mui--is-active" id="pane-justified-upload">
+    <div role="tabpanel" class="popup__imgee__content mui-tabs__pane mui--is-active" id="pane-justified-upload">
       <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
         {{ uploadform.hidden_tag() }}
         <div class="mui--text-center">{{ faicon(icon='upload', icon_size='headline', baseline=true) }}</div>
         <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">Drop files to upload</p>
         <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>
       </form>
-      <div id="uploaded-files" class="">
-        <div class="sample mui--hide">
+      <div id="uploaded-files">
+        <div class="mui--hide">
           <div class="alert alert--dismissable">
             <a class="alert__close" href="javascript:void(0);" aria-label="close">{{ faicon(icon='times', icon_size='subhead', baseline=false) }}</a>
             <div>
@@ -48,7 +50,7 @@
         </div>
       </div>
     </div>
-    <div role="tabpanel" class="mui-tabs__pane" id="pane-justified-gallery">
+    <div role="tabpanel" class="popup__imgee__content mui-tabs__pane" id="pane-justified-gallery">
     {% if files %}
       <div class="mui--clearfix">
         <div class="mui--pull-left">
@@ -84,8 +86,8 @@
             <li class="gallery__image image">
               <div class="gallery__image__thumb">
                 <div class="gallery__image__thumb__wrapper">
-                  <div class="gallery__image__thumb">
-                    <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}">
+                  <div class="gallery__image__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
+                    <img src="{{ url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE')) }}">
                   </div>
                   <div class="js-button">
                     <a class="mui-btn mui-btn--small mui-btn--dark" href="{{ url_for('get_image', image=img.name) }}" target="_blank">{{ faicon(icon='search-plus', baseline=true) }}</a>
@@ -139,16 +141,16 @@
         return d;
       }
 
-      $('div.image-thumb').click(function (){
+      $('.js-img-thumb').click(function (){
         var query_dict = parseQuery();
         var to = query_dict['from'] || '';
         to = decodeURIComponent(to);
-        var img_id = $(this).attr('id');
-        if (!img_id){
-            console.error('image id is missing in div.image-thumb');
-        }
-        window.parent.postMessage(img_id, to, window.opener);
-        window.close();
+        var img_url = $(this).attr('data-url');
+        console.log('img_url', img_url)
+        window.parent.postMessage(JSON.stringify({
+          context: "imgee.upload",
+          embed_url: img_url,
+          }), '*');
       });
 
       $('select#profiles').change(function(){

@@ -87,7 +87,7 @@
               <li class="gallery__image">
                 <div class="gallery__image__thumb">
                   <div class="gallery__image__thumb__wrapper">
-                    <a class="gallery__image__thumb__wrapper__link" href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
+                    <a class="gallery__image__thumb__wrapper__link" href="{{ url_for('view_image', profile=profile.name, image=img.name) }}" title="{{ img.title }}">
                       <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}">
                     </a>
                   </div>

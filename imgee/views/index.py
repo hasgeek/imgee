@@ -52,13 +52,17 @@ def pop_up_gallery(profile):
     form = forms.UploadImageForm()
     cp_form = forms.ChangeProfileForm()
     cp_form.profiles.choices = [(p.id, p.name) for p in current_auth.user.profiles]
-    return render_template(
-        'pop_up_gallery.html.jinja2',
-        files=files,
-        label=label,
-        profile=profile,
-        uploadform=form,
-        cp_form=cp_form,
+    return (
+        render_template(
+            'pop_up_gallery.html.jinja2',
+            files=files,
+            label=label,
+            profile=profile,
+            uploadform=form,
+            cp_form=cp_form,
+        ),
+        200,
+        {'X-Frame-Options': 'ALLOW'}
     )
 
 
