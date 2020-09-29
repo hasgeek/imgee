@@ -214,4 +214,4 @@ def delete_file(profile, img):
         return render_template(
             'delete.html.jinja2', form=form, file=img, profile=profile
         )
-    return redirect(url_for('profile_view', profile=profile.name))
+    return redirect(profile.url_for())

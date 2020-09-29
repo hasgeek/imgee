@@ -43,7 +43,7 @@ def create_label(profile):
         label = form.label.data
         utils_save_label(label, profile)
         flash('The label "%s" was created.' % label)
-        return redirect(url_for('profile_view', profile=profile.name))
+        return redirect(profile.url_for())
     return render_template('create_label.html.jinja2', form=form, profile=profile)
 
 
@@ -60,7 +60,7 @@ def delete_label(profile, label):
     if form.is_submitted():
         utils_delete_label(label)
         flash('The label "%s" was deleted.' % label.name)
-        return redirect(url_for('profile_view', profile=profile.name))
+        return redirect(profile.url_for())
     return render_template(
         'delete_label.html.jinja2', form=form, label=label, profile=profile
     )

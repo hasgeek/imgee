@@ -7,7 +7,7 @@
 {% block extendedsidebar %}
   <div class="card zero-bottom-margin">
     <div class="card__header">
-      <h5 class="mui--text-title mui--text-bold"><a href="{{url_for('profile_view', profile=profile.name)}}">{% trans %}Browse your gallery{% endtrans %}</a></h5>
+      <h5 class="mui--text-title mui--text-bold"><a href="{{ profile.url_for() }}">{% trans %}Browse your gallery{% endtrans %}</a></h5>
     </div>
     <div class="card__body no-padding images">
       {% set images = [None] * (2 - next|length) + next + [img] + prev + [None] * (2 - prev|length) %}
