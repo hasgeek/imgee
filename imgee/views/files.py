@@ -49,25 +49,6 @@ def upload_file(profile):
     return render_template('form.html.jinja2', form=upload_form, profile=profile)
 
 
-@app.route('/<profile>/new/iframe', methods=['GET'])
-@lastuser.requires_login
-@load_model(
-    Profile,
-    {'name': 'profile'},
-    'profile',
-    permission=['new-file', 'siteadmin'],
-    addlperms=lastuser.permissions,
-)
-def upload_file_iframe(profile):
-    upload_form = UploadImageForm()
-    upload_form.form_nonce.data = upload_form.form_nonce.default()
-    return (
-        render_template('form-iframe.html.jinja2', form=upload_form, profile=profile),
-        200,
-        {'X-Frame-Options': 'ALLOW'}
-    )
-
-
 @app.route('/<profile>/new.json', methods=['POST'])
 @lastuser.requires_login
 @load_model(
