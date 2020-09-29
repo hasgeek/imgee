@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import not_
 
-from flask import flash, redirect, render_template, request
+from flask import abort, flash, redirect, render_template
 
 from coaster.auth import current_auth
-from coaster.views import load_model
+from coaster.views import (
+    ModelView,
+    UrlChangeCheck,
+    UrlForView,
+    requestargs,
+    render_with,
+    route,
+)
 
 from .. import app, forms, lastuser
 from ..models import Label, Profile, StoredFile, db
 from ..storage import clean_local_cache
-from ..utils import ALLOWED_MIMETYPES
+from ..utils import ALLOWED_MIMETYPES, abort_null
 
 
 @app.context_processor
@@ -34,77 +41,82 @@ def account():
     return redirect(current_auth.user.profile_url)
 
 
-@app.route('/<profile>/popup')
-@lastuser.requires_login
-@load_model(
-    Profile,
-    {'name': 'profile'},
-    'profile',
-    permission=['view', 'siteadmin'],
-    addlperms=lastuser.permissions,
-)
-def pop_up_gallery(profile):
-    label = request.args.get('label')
-    files = profile.stored_files
-    if label:
-        files = files.join(StoredFile.labels).filter(Label.name == label)
-    files = files.order_by(db.desc(StoredFile.created_at)).all()
-    form = forms.UploadImageForm()
-    cp_form = forms.ChangeProfileForm()
-    cp_form.profiles.choices = [(p.id, p.name) for p in current_auth.user.profiles]
-    return (
-        render_template(
-            'pop_up_gallery.html.jinja2',
-            files=files,
-            label=label,
-            profile=profile,
-            uploadform=form,
-            cp_form=cp_form,
-        ),
-        200,
-        {'X-Frame-Options': 'ALLOW'}
-    )
+@route('/<profile>')
+class ProfileView(UrlChangeCheck, UrlForView, ModelView):
+    model = Profile
+    route_model_map = {'profile': 'name'}
+
+    def loader(self, profile):
+        profileobj = Profile.query.filter_by(name=profile).one_or_none()
+        if profileobj is None:
+            # if there is a logged in user with same username as
+            # the given profile name, create the profile
+            if current_auth.user and current_auth.user.username == profile:
+                profileobj = Profile(
+                    name=profile,
+                    title=current_auth.user.fullname,
+                    userid=current_auth.user.userid
+                )
+                db.session.add(profileobj)
+                db.session.commit()
+            else:
+                abort(404)
+        return profileobj
+
+    @route('')
+    @render_with('profile.html.jinja2')
+    def view(self):
+        files = self.obj.stored_files.order_by(db.desc(StoredFile.created_at)).all()
+        title_form = forms.EditTitleForm()
+        upload_form = forms.UploadImageForm()
+        return {
+            'profile': self.obj,
+            'files': files,
+            'uploadform': upload_form,
+            'title_form': title_form,
+            'mimetypes': ALLOWED_MIMETYPES.keys(),
+        }
+
+    @route('archive')
+    @render_with('profile.html.jinja2')
+    def unlabelled_images(self):
+        """Get all unlabelled images owned by profile"""
+        files = (
+            self.obj.stored_files.filter(not_(StoredFile.labels.any()))
+            .order_by(StoredFile.created_at.desc())
+            .all()
+        )
+        title_form = forms.EditTitleForm()
+        return {
+            'profile': self.obj,
+            'files': files,
+            'title_form': title_form,
+            'unlabelled': True,
+        }
+
+    @route('popup')
+    @lastuser.requires_login
+    @render_with('pop_up_gallery.html.jinja2')
+    @requestargs(('label', abort_null))
+    def pop_up_gallery(self, label=''):
+        files = self.obj.stored_files
+        if label:
+            files = files.join(StoredFile.labels).filter(Label.name == label)
+        files = files.order_by(db.desc(StoredFile.created_at)).all()
+        form = forms.UploadImageForm()
+        return (
+            {
+                'files': files,
+                'label': label,
+                'profile': self.obj,
+                'uploadform': form,
+            },
+            200,
+            {'X-Frame-Options': 'ALLOW'},
+        )
 
 
-@app.route('/<profile>')
-@load_model(Profile, {'name': 'profile'}, 'profile')
-def profile_view(profile):
-    files = profile.stored_files.order_by(db.desc(StoredFile.created_at)).all()
-    title_form = forms.EditTitleForm()
-    upload_form = forms.UploadImageForm()
-    return render_template(
-        'profile.html.jinja2',
-        profile=profile,
-        files=files,
-        uploadform=upload_form,
-        title_form=title_form,
-        mimetypes=ALLOWED_MIMETYPES.keys(),
-    )
-
-
-@app.route('/<profile>/archive')
-@load_model(
-    Profile,
-    {'name': 'profile'},
-    'profile',
-    permission=['view', 'siteadmin'],
-    addlperms=lastuser.permissions,
-)
-def unlabelled_images(profile):
-    """Get all unlabelled images owned by profile"""
-    files = (
-        profile.stored_files.filter(not_(StoredFile.labels.any()))
-        .order_by(StoredFile.created_at.desc())
-        .all()
-    )
-    title_form = forms.EditTitleForm()
-    return render_template(
-        'profile.html.jinja2',
-        profile=profile,
-        files=files,
-        title_form=title_form,
-        unlabelled=True,
-    )
+ProfileView.init_app(app)
 
 
 def get_prev_next_images(profile, img, limit=2):
