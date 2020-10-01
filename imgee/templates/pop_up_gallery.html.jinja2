@@ -38,7 +38,7 @@
         <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>
       </form>
       <div id="uploaded-files">
-        <div class="mui--hide">
+        <div class="sample mui--hide">
           <div class="alert alert--dismissable">
             <a class="alert__close" href="javascript:void(0);" aria-label="close">{{ faicon(icon='times', icon_size='subhead', baseline=false) }}</a>
             <div>
@@ -89,9 +89,8 @@
                   <div class="gallery__image__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
                     <img src="{{ url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE')) }}">
                   </div>
-                  <div class="js-button">
+                  <div>
                     <a class="mui-btn mui-btn--small mui-btn--dark" href="{{ url_for('get_image', image=img.name) }}" target="_blank">{{ faicon(icon='search-plus', baseline=true) }}</a>
-                    <a class="mui-btn mui-btn--small mui-btn--dark" href="{{url_for('delete_file', profile=profile.name, image=img.name)}}">{{ faicon(icon='trash-alt', baseline=true) }}</a>
                   </div>
                 </div>
                 <div class="gallery__image__thumb__details editable_title" id="{{img.name}}">{{img.title}}</div>
@@ -124,44 +123,7 @@
     window.Imgee.profile = {{ profile.name|tojson }};
     window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
     window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
+    window.Imgee.popup = true;
   </script>
   <script type="text/javascript" src="{{url_for('static', filename='js/profile.js')}}"></script>
-
-  <script type="text/javascript">
-    $(function(){
-
-      function parseQuery(s){
-        var s = s || window.location.search;
-        var d = {};
-        var a = s.replace('?', '').split('&');
-        for (var i=0; i<a.length; i++){
-          var x = a[i].split('=');
-          d[x[0]] = x[1];
-        }
-        return d;
-      }
-
-      $('.js-img-thumb').click(function (){
-        var query_dict = parseQuery();
-        var to = query_dict['from'] || '';
-        to = decodeURIComponent(to);
-        var img_url = $(this).attr('data-url');
-        console.log('img_url', img_url)
-        window.parent.postMessage(JSON.stringify({
-          context: "imgee.upload",
-          embed_url: img_url,
-          }), '*');
-      });
-
-      $('select#profiles').change(function(){
-        var profile = $(this).children('option:selected').text();
-        $(this).parents('form')
-          .attr('action', function(i, a){
-            var action = a.replace("PROFILE", profile);
-            return action; })
-          .children('input#from').val(window.location.search.replace('?from=', ''))
-          .parents('form').submit();
-      });
-    });
-  </script>
 {% endblock %}

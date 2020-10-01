@@ -1,9 +1,9 @@
 $(function() {
   var uploaded = $('#uploaded-files');
-  var sample_upload = uploaded.find('.sample').html();
+  var sampleUpload = uploaded.find('.sample').html();
   var thumbs = $('.gallery');
 
-  var valign_thumb = function(thumb, loaded, img_onload) {
+  var valignThumb = function(thumb, loaded, img_onload) {
     var t = thumb.find('.gallery__image__thumb__wrapper img');
     var m = (75 - t.height()) / 2;
     if (m < 0) m = 0;
@@ -14,23 +14,39 @@ $(function() {
     ) {
       thumb.find('.gallery__image__thumb__wrapper img').load(function() {
         if (typeof img_onload == 'string') $(this).attr('src', img_onload);
-        valign_thumb(thumb, true, img_onload);
+        valignThumb(thumb, true, img_onload);
       });
     }
   };
 
-  var align_all = function(loaded) {
+  var alignAll = function(loaded) {
     thumbs.find('li.gallery__image').each(function() {
-      valign_thumb($(this), loaded);
+      valignThumb($(this), loaded);
     });
   };
 
-  align_all();
+  alignAll();
   $('#gridview').click(function() {
-    align_all(true);
+    alignAll(true);
   });
 
-  var add_thumb = function(thumb_data) {
+  if(window.Imgee.popup) {
+    console.log('window.Imgee.popup', window.Imgee.popup)
+    var sendUploadImageUrl = function(imgUrl) {
+      window.parent.postMessage(JSON.stringify({
+        context: "imgee.upload",
+        embed_url: imgUrl,
+        }), '*');
+    }
+
+    $('.js-img-thumb').click(function (){
+      var imgUrl = $(this).attr('data-url');
+      console.log('imgUrl', imgUrl);
+      sendUploadImageUrl(imgUrl);
+    });
+  }
+
+  var addThumb = function(thumbData) {
     var thumb_sample = thumbs
       .find('li.gallery__image')
       .first()
@@ -39,19 +55,22 @@ $(function() {
     else {
       thumbs.prepend('<li class="gallery__image">' + thumb_sample + '</li>');
       var new_thumb = thumbs.find('li.gallery__image').first();
-      valign_thumb(new_thumb, false, thumb_data.thumb_url);
+      valignThumb(new_thumb, false, thumbData.thumb_url);
       new_thumb
         .find('.gallery__image__thumb__wrapper img')
         .attr('src', window.Imgee.spinnerFile);
-      new_thumb.find('a').attr('href', thumb_data.url);
-      new_thumb.find('a').attr('title', thumb_data.title);
-      new_thumb.find('.title').html(thumb_data.title);
-      new_thumb.find('.uploaded').html(thumb_data.uploaded);
-      new_thumb.find('.filesize').html(thumb_data.filesize);
-      new_thumb.find('.imgsize').html(thumb_data.imgsize);
+      new_thumb.find('a').attr('href', thumbData.url);
+      new_thumb.find('a').attr('title', thumbData.title);
+      new_thumb.find('.title').html(thumbData.title);
+      new_thumb.find('.uploaded').html(thumbData.uploaded);
+      new_thumb.find('.filesize').html(thumbData.filesize);
+      new_thumb.find('.imgsize').html(thumbData.imgsize);
+      if(window.Imgee.popup) {
+        sendUploadImageUrl(thumbData.embed_url);
+      }
     }
   };
-  var upload_form_submit = function(current, response) {
+  var uploadFormSubmit = function(current, response) {
     current.find('.form').html(response.form);
     current.find('.form form').submit(function() {
       d = current.find('.form form').serializeArray();
@@ -64,21 +83,21 @@ $(function() {
           if (data.status) {
             current.slideUp(function() {
               $(this).remove();
-              var success_alert = add_alert();
+              var success_alert = addAlert();
               success_alert.find('.heading').html(data.message);
               success_alert.addClass('alert--success');
               success_alert.slideDown();
-              add_thumb(data.image_data);
+              addThumb(data.image_data);
             });
           } else {
-            upload_form_submit(current, data);
+            uploadFormSubmit(current, data);
           }
         },
       });
     });
   };
-  var add_alert = function() {
-    uploaded.append(sample_upload);
+  var addAlert = function() {
+    uploaded.append(sampleUpload);
     var last = uploaded.find('.alert').last();
     last.find('.close').click(function() {
       $(this)
@@ -105,7 +124,7 @@ $(function() {
           .first()
           .html();
         this.removeFile(file);
-        var current = add_alert();
+        var current = addAlert();
         img.load(function() {
           var src = $(this).attr('src');
           var thumb = current.find('.thumb');
@@ -116,10 +135,10 @@ $(function() {
         });
         if (response.status) {
           current.find('.heading').html(response.message);
-          upload_form_submit(current, response);
+          uploadFormSubmit(current, response);
           current.addClass('alert--info');
           current.find('.close').click(function() {
-            add_thumb(response.image_data);
+            addThumb(response.image_data);
           });
         } else {
           current.find('.heading').html('Error uploading ' + title);
