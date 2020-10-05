@@ -74,23 +74,20 @@
       <hr>
       <div id="showcase" class="grid">
         <div class="list-header">
-          <p class="mui--text-title">Image</p>
-          <p class="mui--text-title">Title</p>
-          <p class="mui--text-title">Uploaded at</p>
-          <p class="mui--text-title">File size</p>
-          <p class="mui--text-title">Image size</p>
+          <p class="list-header__item">Image</p>
+          <p class="list-header__item">Title</p>
+          <p class="list-header__item">Uploaded at</p>
+          <p class="list-header__item">File size</p>
+          <p class="list-header__item">Image size</p>
         </div>
         <div>
-          <ul class="gallery mui-list--unstyled">
+          <ul class="gallery js-gallery mui-list--unstyled">
           {% for img in files %}
-            <li class="gallery__image image">
+            <li class="gallery__image gallery__image--popup image">
               <div class="gallery__image__thumb">
                 <div class="gallery__image__thumb__wrapper">
                   <div class="gallery__image__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
-                    <img src="{{ url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE')) }}">
-                  </div>
-                  <div>
-                    <a class="mui-btn mui-btn--small mui-btn--dark" href="{{ url_for('get_image', image=img.name) }}" target="_blank">{{ faicon(icon='search-plus', baseline=true) }}</a>
+                    <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__thumb__img">
                   </div>
                 </div>
                 <div class="gallery__image__thumb__details editable_title" id="{{img.name}}">{{img.title}}</div>

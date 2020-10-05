@@ -15,16 +15,16 @@
         <p class="mui-text--title">There are no images with label "{{label.name}}" yet.</p>
       {% else %}
       <div class="row">
-        <div class="gallery label-category">
+        <div class="gallery js-gallery label-category">
           {% for img in files %}
             <div class="gallery__image">
               <div class="gallery__image__thumb">
                 <div class="gallery__image__thumb__wrapper">
                   <a class="gallery__image__thumb" href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
-                    <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}"/>
+                    <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__thumb__img"/>
                   </a>
                 </div>
-                <p class="mui--text-caption mui--text-center">{{img.title}}</p>
+                <p class="mui--text-caption mui--text-center gallery__image__thumb__wrapper__filename">{{img.title}}</p>
               </div>
             </div>
           {% endfor %}

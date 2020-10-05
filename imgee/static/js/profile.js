@@ -1,37 +1,10 @@
 $(function() {
   var uploaded = $('#uploaded-files');
   var sampleUpload = uploaded.find('.sample').html();
-  var thumbs = $('.gallery');
+  var thumbs = $('.js-gallery');
 
-  var valignThumb = function(thumb, loaded, img_onload) {
-    var t = thumb.find('.gallery__image__thumb__wrapper img');
-    var m = (75 - t.height()) / 2;
-    if (m < 0) m = 0;
-    t.css({ 'margin-top': m });
-    if (
-      typeof loaded == 'undefined' ||
-      (typeof loaded == 'boolean' && !loaded)
-    ) {
-      thumb.find('.gallery__image__thumb__wrapper img').load(function() {
-        if (typeof img_onload == 'string') $(this).attr('src', img_onload);
-        valignThumb(thumb, true, img_onload);
-      });
-    }
-  };
-
-  var alignAll = function(loaded) {
-    thumbs.find('li.gallery__image').each(function() {
-      valignThumb($(this), loaded);
-    });
-  };
-
-  alignAll();
-  $('#gridview').click(function() {
-    alignAll(true);
-  });
 
   if(window.Imgee.popup) {
-    console.log('window.Imgee.popup', window.Imgee.popup)
     var sendUploadImageUrl = function(imgUrl) {
       window.parent.postMessage(JSON.stringify({
         context: "imgee.upload",
@@ -41,7 +14,6 @@ $(function() {
 
     $('.js-img-thumb').click(function (){
       var imgUrl = $(this).attr('data-url');
-      console.log('imgUrl', imgUrl);
       sendUploadImageUrl(imgUrl);
     });
   }
@@ -55,7 +27,6 @@ $(function() {
     else {
       thumbs.prepend('<li class="gallery__image">' + thumb_sample + '</li>');
       var new_thumb = thumbs.find('li.gallery__image').first();
-      valignThumb(new_thumb, false, thumbData.thumb_url);
       new_thumb
         .find('.gallery__image__thumb__wrapper img')
         .attr('src', window.Imgee.spinnerFile);
