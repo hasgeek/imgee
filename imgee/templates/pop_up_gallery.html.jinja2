@@ -32,7 +32,7 @@
 
     <div role="tabpanel" class="popup__imgee__content mui-tabs__pane mui--is-active" id="pane-justified-upload">
       <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
-        {{ uploadform.hidden_tag() }}
+        {{ current_view.UploadImageForm().hidden_tag() }}
         <div class="mui--text-center">{{ faicon(icon='upload', icon_size='headline', baseline=true) }}</div>
         <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">Drop files to upload</p>
         <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>

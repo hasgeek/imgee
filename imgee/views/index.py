@@ -45,6 +45,7 @@ def account():
 class ProfileView(UrlChangeCheck, UrlForView, ModelView):
     model = Profile
     route_model_map = {'profile': 'name'}
+    UploadImageForm = forms.UploadImageForm
 
     def loader(self, profile):
         profileobj = Profile.query.filter_by(name=profile).one_or_none()
@@ -103,13 +104,11 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
         if label:
             files = files.join(StoredFile.labels).filter(Label.name == label)
         files = files.order_by(db.desc(StoredFile.created_at)).all()
-        form = forms.UploadImageForm()
         return (
             {
                 'files': files,
                 'label': label,
                 'profile': self.obj,
-                'uploadform': form,
             },
             200,
             {'X-Frame-Options': 'ALLOW'},
