@@ -23,11 +23,11 @@
   <div class="popup__imgee">
     <div class="popup__imgee__content">
       <div id="showcase" class="profile-grid profile-grid--popup">
-        <p class="mui--text-subhead">Select an image</p>
+        <p class="mui--text-subhead">{% trans %}Select an image{% endtrans %}</p>
         <ul class="gallery js-gallery mui-list--unstyled">
           <li class="gallery__image gallery__image--dropzone">
             <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
-              {{ uploadform.hidden_tag() }}
+              {{ current_view.UploadImageForm().hidden_tag() }}
               <div class="dropzone__uploadicon">{{ faicon(icon='plus', icon_size='headline', baseline=true) }}</div>
             </form>
           </li>
@@ -40,7 +40,7 @@
                   {{ faicon(icon='check-circle-solid', icon_size='subhead', baseline=false, css_class="gallery__image__thumb__icon mui--text-hyperlink") }}
                 </div>
               </div>
-            </a>
+            </div>
           </li>
         {% endfor %}
         </ul>

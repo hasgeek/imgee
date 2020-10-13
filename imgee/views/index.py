@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import not_
 
-from flask import abort, flash, redirect, render_template
+from flask import Markup, abort, flash, redirect, render_template
 
 from coaster.auth import current_auth
 from coaster.views import (
@@ -45,6 +45,7 @@ def account():
 class ProfileView(UrlChangeCheck, UrlForView, ModelView):
     model = Profile
     route_model_map = {'profile': 'name'}
+    UploadImageForm = forms.UploadImageForm
 
     def loader(self, profile):
         profileobj = Profile.query.filter_by(name=profile).one_or_none()
@@ -55,7 +56,7 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
                 profileobj = Profile(
                     name=profile,
                     title=current_auth.user.fullname,
-                    userid=current_auth.user.userid
+                    userid=current_auth.user.userid,
                 )
                 db.session.add(profileobj)
                 db.session.commit()
@@ -103,16 +104,28 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
         if label:
             files = files.join(StoredFile.labels).filter(Label.name == label)
         files = files.order_by(db.desc(StoredFile.created_at)).all()
-        form = forms.UploadImageForm()
         return (
-            {
-                'files': files,
-                'label': label,
-                'profile': self.obj,
-                'uploadform': form,
-            },
+            {'files': files, 'label': label, 'profile': self.obj},
             200,
             {'X-Frame-Options': 'ALLOW'},
+        )
+
+    @route('popup/files')
+    @lastuser.requires_login
+    @requestargs(('label', abort_null), ('page', int), ('per_page', int))
+    def pop_up_files(self, label='', page=None, per_page=10):
+        files = self.obj.stored_files
+        files = files.order_by(db.desc(StoredFile.created_at))
+        if label:
+            files = files.join(StoredFile.labels).filter(Label.name == label)
+        files = files.paginate(page=page, per_page=per_page)
+        return Markup(
+            '\n'.join(
+                [
+                    render_template('pop_up_gallery_file.html.jinja2', img=img)
+                    for img in files.items
+                ]
+            )
         )
 
 

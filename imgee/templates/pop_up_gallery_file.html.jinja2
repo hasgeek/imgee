@@ -1,0 +1,10 @@
+<li class="gallery__image gallery__image--popup image">
+  <div class="gallery__image__thumb">
+    <div class="gallery__image__thumb__wrapper">
+      <div class="gallery__image__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
+        <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__thumb__img">
+        {{ faicon(icon='check-circle-solid', icon_size='subhead', baseline=false, css_class="gallery__image__thumb__icon mui--text-hyperlink") }}
+      </div>
+    </div>
+  </div>
+</li>
