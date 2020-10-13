@@ -656,48 +656,53 @@ a.no-hover:active {
   opacity: 1;
 }
 
-.grid .list-header {
+.profile-grid .list-header {
   display: none;
 }
-.grid .gallery {
+.profile-grid .gallery {
   display: flex;
   width: 100%;
   flex-wrap: wrap;
   align-items: baseline;
 }
-.grid .gallery .gallery__image {
+.profile-grid .gallery .gallery__image {
   min-width: calc(100% / 5);
+  padding: 2px;
 }
-.grid .gallery .gallery__image .gallery__image__thumb__wrapper {
+.profile-grid .gallery .gallery__image .gallery__image__thumb {
+  height: 100%;
+}
+.profile-grid .gallery .gallery__image .gallery__image__thumb .gallery__image__thumb__wrapper {
   text-align: center;
   opacity: 0.8;
   transition: 0.5s opacity;
   width: 100%;
-  padding-top: 100%;
+  height: 100%;
   position: relative;
-  overflow: hidden;
 }
-.grid .gallery .gallery__image .gallery__image__thumb__wrapper .gallery__image__thumb__img {
+.profile-grid .gallery .gallery__image .gallery__image__thumb .gallery__image__thumb__wrapper .gallery__image__thumb__wrapper__link {
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+}
+.profile-grid .gallery .gallery__image .gallery__image__thumb .gallery__image__thumb__wrapper .gallery__image__thumb__img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 8px;
+  object-fit: cover;
 }
-.grid .gallery .gallery__image .gallery__image__thumb__wrapper__filename {
+.profile-grid .gallery .gallery__image .gallery__image__thumb .gallery__image__thumb__wrapper .gallery__image__thumb__img.spinner {
+  width: auto;
+  height: auto;
+  position: absolute;
+  top: 45%;
+}
+.profile-grid .gallery .gallery__image .gallery__image__thumb__wrapper__filename {
   word-break: break-all;
   max-width: 75px;
   margin: auto;
 }
-.grid .gallery .gallery__image .gallery__image__thumb__details {
+.profile-grid .gallery .gallery__image .gallery__image__thumb__details {
   display: none;
-}
-.grid .gallery .gallery__image--popup {
-  min-width: 100px;
 }
 
 .list .list-header {
@@ -821,4 +826,68 @@ a.no-hover:active {
 .image-labels .mui-select {
   margin: 0 0 5px;
   padding-top: 0;
+}
+
+.imgee-popup {
+  background: transparent;
+}
+.imgee-popup #uploaded-files {
+  display: none;
+}
+
+.profile-grid.profile-grid--popup .list-header {
+  display: none;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--popup {
+  min-width: 100px;
+  padding: 0;
+  align-self: center;
+  position: relative;
+  overflow: hidden;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--popup .gallery__image__thumb {
+  padding: 2px;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--popup .gallery__image__thumb .gallery__image__thumb__icon {
+  display: none;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--highlight .gallery__image__thumb.gallery__image__thumb--selected .gallery__image__thumb__icon {
+  display: block;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--dropzone {
+  align-self: center;
+  padding: 0;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--dropzone .dropzone {
+  width: calc(100% - 4px);
+  min-height: 85px;
+  height: calc(100% - 4px);
+  position: relative;
+  padding: 2px;
+  margin: 4px 0 0 2px;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--dropzone .dropzone .dropzone__uploadicon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--dropzone .dropzone .dz-preview.dz-image-preview {
+  margin: 0;
+  min-height: 100%;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--dropzone .dropzone .dz-preview.dz-image-preview .dz-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
 }

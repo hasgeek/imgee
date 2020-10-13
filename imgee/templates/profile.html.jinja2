@@ -73,7 +73,7 @@
 
     {% if files %}
       <div id="expandable3">
-        <div id="showcase" class="grid">
+        <div id="showcase" class="profile-grid">
           <div class="list-header">
             <p class="mui--text-title list-header__item">Image</p>
             <p class="mui--text-title list-header__item">Title</p>
@@ -127,7 +127,7 @@
   {%- endassets -%}
   <script type="text/javascript">
     window.Imgee.profile = {{ profile.name|tojson }};
-    window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
+    window.Imgee.spinnerFile = "{{ url_for('static', filename='img/spinner.gif') }}";
     window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
   </script>
   <script type="text/javascript" src="{{url_for('static', filename='js/profile.js')}}"></script>

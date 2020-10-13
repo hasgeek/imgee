@@ -8,7 +8,7 @@
   {%- endassets -%}
 {% endblock %}
 
-{% block bodytag %}<body class="popup">{% endblock %}
+{% block bodytag %}<body class="imgee-popup">{% endblock %}
 
 {% block header -%}
 {%- endblock %}
@@ -19,91 +19,32 @@
 {% block contenthead %}
 {% endblock %}
 
-{% block basecontent %}
-  <div role="tabpanel" class="popup__imgee grid__col-sm-12 grid__col-md-8">
-    <ul class="mui-tabs__bar popup__imgee__heading" role="tablist">
-      <li role="presentation" class="mui--is-active">
-        <a role="tab" data-mui-toggle="tab" data-mui-controls="pane-justified-upload">Upload</a>
-        </li>
-      <li role="presentation">
-        <a role="tab" data-mui-toggle="tab" data-mui-controls="pane-justified-gallery">Gallery</a>
-        </li>
-    </ul>
-
-    <div role="tabpanel" class="popup__imgee__content mui-tabs__pane mui--is-active" id="pane-justified-upload">
-      <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
-        {{ uploadform.hidden_tag() }}
-        <div class="mui--text-center">{{ faicon(icon='upload', icon_size='headline', baseline=true) }}</div>
-        <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">Drop files to upload</p>
-        <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>
-      </form>
-      <div id="uploaded-files">
-        <div class="sample mui--hide">
-          <div class="alert alert--dismissable">
-            <a class="alert__close" href="javascript:void(0);" aria-label="close">{{ faicon(icon='times', icon_size='subhead', baseline=false) }}</a>
-            <div>
-              <img class="thumb" src=""/>
-              <p class="heading"></p>
-              <div class="form"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div role="tabpanel" class="popup__imgee__content mui-tabs__pane" id="pane-justified-gallery">
-    {% if files %}
-      <div class="mui--clearfix">
-        <div class="mui--pull-left">
-          <h4 class="mui--text-title zero-bottom-margin">{{ profile.title }}'s Gallery</h4>
-          <p class="mui--text-caption zero-bottom-margin">
-            {% if files|count == 1 %}
-              <em>1 image</em>
-            {% else %}
-              <em>{{ files | count }} images</em>
-            {% endif %}
-          </p>
-        </div>
-
-        <div class="mui--pull-right">
-          <div class="list-grid-selector">
-            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{{ faicon(icon='th', baseline=true) }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;Grid</span></a>
-            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{{ faicon(icon='list', baseline=true) }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;List</span></a>
-          </div>
-        </div>
-      </div>
-      <hr>
-      <div id="showcase" class="grid">
-        <div class="list-header">
-          <p class="list-header__item">Image</p>
-          <p class="list-header__item">Title</p>
-          <p class="list-header__item">Uploaded at</p>
-          <p class="list-header__item">File size</p>
-          <p class="list-header__item">Image size</p>
-        </div>
-        <div>
-          <ul class="gallery js-gallery mui-list--unstyled">
-          {% for img in files %}
-            <li class="gallery__image gallery__image--popup image">
-              <div class="gallery__image__thumb">
-                <div class="gallery__image__thumb__wrapper">
-                  <div class="gallery__image__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
-                    <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__thumb__img">
-                  </div>
+{% block contentbox %}
+  <div class="popup__imgee">
+    <div class="popup__imgee__content">
+      <div id="showcase" class="profile-grid profile-grid--popup">
+        <p class="mui--text-subhead">Select an image</p>
+        <ul class="gallery js-gallery mui-list--unstyled">
+          <li class="gallery__image gallery__image--dropzone">
+            <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
+              {{ uploadform.hidden_tag() }}
+              <div class="dropzone__uploadicon">{{ faicon(icon='plus', icon_size='headline', baseline=true) }}</div>
+            </form>
+          </li>
+        {% for img in files %}
+          <li class="gallery__image gallery__image--popup image">
+            <div class="gallery__image__thumb">
+              <div class="gallery__image__thumb__wrapper">
+                <div class="gallery__image__thumb js-img-thumb gallery__image__thumb--selected" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
+                  <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__thumb__img">
+                  {{ faicon(icon='check-circle-solid', icon_size='subhead', baseline=false, css_class="gallery__image__thumb__icon mui--text-hyperlink") }}
                 </div>
-                <div class="gallery__image__thumb__details editable_title" id="{{img.name}}">{{img.title}}</div>
-                <div class="gallery__image__thumb__details">{{ img.created_at.strftime('%B %d, %Y') }}</div>
-                <div class="gallery__image__thumb__details">{{ img.size | filesizeformat }}</div>
-                <div class="gallery__image__thumb__details">{{ img.width }} x {{ img.height }} px</div>
-              </a>
-            </li>
-          {% endfor %}
-          </ul>
-        </div>
-        </div>
+              </div>
+            </a>
+          </li>
+        {% endfor %}
+        </ul>
       </div>
-    {% else %}
-      <div class="mui-panel">There are no images uploaded yet.<a href="">Upload one.</a></div>
-    {% endif %}
     </div>
   </div>
 {%- endblock %}
@@ -122,5 +63,5 @@
     window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
     window.Imgee.popup = true;
   </script>
-  <script type="text/javascript" src="{{url_for('static', filename='js/profile.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/imgee-upload.js')}}"></script>
 {% endblock %}

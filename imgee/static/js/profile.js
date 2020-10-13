@@ -2,21 +2,9 @@ $(function() {
   var uploaded = $('#uploaded-files');
   var sampleUpload = uploaded.find('.sample').html();
   var thumbs = $('.js-gallery');
+  var width = $('.js-gallery').width();
 
-
-  if(window.Imgee.popup) {
-    var sendUploadImageUrl = function(imgUrl) {
-      window.parent.postMessage(JSON.stringify({
-        context: "imgee.upload",
-        embed_url: imgUrl,
-        }), '*');
-    }
-
-    $('.js-img-thumb').click(function (){
-      var imgUrl = $(this).attr('data-url');
-      sendUploadImageUrl(imgUrl);
-    });
-  }
+  $('.gallery__image').width(width/5).height(width/5);
 
   var addThumb = function(thumbData) {
     var thumb_sample = thumbs
@@ -36,9 +24,6 @@ $(function() {
       new_thumb.find('.uploaded').html(thumbData.uploaded);
       new_thumb.find('.filesize').html(thumbData.filesize);
       new_thumb.find('.imgsize').html(thumbData.imgsize);
-      if(window.Imgee.popup) {
-        sendUploadImageUrl(thumbData.embed_url);
-      }
     }
   };
   var uploadFormSubmit = function(current, response) {
@@ -90,21 +75,19 @@ $(function() {
         var img = $(file.previewElement)
           .find('img')
           .first();
+        var src = $(img).attr('src');
         var title = $(file.previewElement)
           .find('.dz-filename>span')
           .first()
           .html();
         this.removeFile(file);
         var current = addAlert();
-        img.load(function() {
-          var src = $(this).attr('src');
+        if (response.status) {
           var thumb = current.find('.thumb');
           thumb.attr('src', src);
           if (src) {
             thumb.addClass('has-data');
           }
-        });
-        if (response.status) {
           current.find('.heading').html(response.message);
           uploadFormSubmit(current, response);
           current.addClass('alert--info');
