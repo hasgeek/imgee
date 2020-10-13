@@ -1,0 +1,13 @@
+<li class="gallery__image gallery__image--popup image">
+  <div class="gallery__image__thumb">
+    <div class="gallery__image__thumb__wrapper">
+      <div class="gallery__image__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
+        <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__thumb__img">
+      </div>
+    </div>
+    <div class="gallery__image__thumb__details editable_title" id="{{img.name}}">{{img.title}}</div>
+    <div class="gallery__image__thumb__details">{{ img.created_at.strftime('%B %d, %Y') }}</div>
+    <div class="gallery__image__thumb__details">{{ img.size | filesizeformat }}</div>
+    <div class="gallery__image__thumb__details">{{ img.width }} x {{ img.height }} px</div>
+  </a>
+</li>
