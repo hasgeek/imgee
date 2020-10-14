@@ -103,9 +103,20 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
         files = self.obj.stored_files
         if label:
             files = files.join(StoredFile.labels).filter(Label.name == label)
-        files = files.order_by(db.desc(StoredFile.created_at)).all()
+        files = files.order_by(StoredFile.created_at.desc())[:10]
         return (
-            {'files': files, 'label': label, 'profile': self.obj},
+            {
+                'files': Markup(
+                    '\n'.join(
+                        [
+                            render_template('pop_up_gallery_file.html.jinja2', img=img)
+                            for img in files
+                        ]
+                    )
+                ),
+                'label': label,
+                'profile': self.obj,
+            },
             200,
             {'X-Frame-Options': 'ALLOW'},
         )
