@@ -2,7 +2,7 @@ $(function() {
   var uploaded = $('#uploaded-files');
   var sampleUpload = uploaded.find('.sample').html();
   var imgWidth = Math.floor($('.js-gallery').width()/4);
-  var page = 2;
+  var nextPage = 2;
 
   var resizeThumbImg = function() {
     $('.gallery__image').width(imgWidth).height(imgWidth);
@@ -15,8 +15,8 @@ $(function() {
       url: window.Imgee.paginateUrl + '?page=' + page,
       type: 'GET',
       success: function(data) {
-        page += 1;
-        $('.js-gallery').find('#loadmore').before(data);
+        nextPage = data.current_page + 1;
+        $('.js-gallery').find('#loadmore').before(data.files);
         resizeThumbImg();
       },
     });

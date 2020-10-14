@@ -13,8 +13,8 @@ $(function() {
       url: window.Imgee.paginateUrl + '?page=' + nextPage,
       type: 'GET',
       success: function(data) {
-        nextPage += 1;
-        $('.js-gallery').find('#loadmore').before(data);
+        nextPage = data.current_page + 1;
+        $('.js-gallery').find('#loadmore').before(data.files);
         resizeThumbImg();
       },
     });
