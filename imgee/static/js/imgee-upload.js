@@ -14,6 +14,7 @@ $(function() {
       type: 'GET',
       success: function(data) {
         nextPage = data.current_page + 1;
+        console.log('nextPage', nextPage);
         $('.js-gallery').find('#loadmore').before(data.files);
         resizeThumbImg();
       },
