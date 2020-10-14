@@ -31,18 +31,17 @@
               <div class="dropzone__uploadicon">{{ faicon(icon='plus', icon_size='headline', baseline=true) }}</div>
             </form>
           </li>
-        {% for img in files %}
-          <li class="gallery__image gallery__image--popup image">
-            <div class="gallery__image__thumb">
-              <div class="gallery__image__thumb__wrapper">
-                <div class="gallery__image__thumb js-img-thumb gallery__image__thumb--selected" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
-                  <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__thumb__img">
-                  {{ faicon(icon='check-circle-solid', icon_size='subhead', baseline=false, css_class="gallery__image__thumb__icon mui--text-hyperlink") }}
+          {% for img in files.items %}
+            <li class="gallery__image img">
+              <div class="gallery__image__wrapper">
+                <div class="gallery__image__wrapper__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
+                  <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__wrapper__thumb__img">
+                  {{ faicon(icon='check-circle-solid', icon_size='subhead', baseline=false, css_class="gallery__image__wrapper__thumb__icon mui--text-hyperlink") }}
                 </div>
               </div>
-            </div>
-          </li>
-        {% endfor %}
+            </li>
+          {% endfor %}
+          <a href="javascript:void(0);" id="loadmore">Loading more…<span class="loading">&nbsp;</span></a>
         </ul>
       </div>
     </div>
@@ -61,7 +60,7 @@
     window.Imgee.profile = {{ profile.name|tojson }};
     window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
     window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
-    window.Imgee.popup = true;
+    window.Imgee.paginateUrl = {{ profile.url_for('pop_up_files')|tojson }};
   </script>
   <script type="text/javascript" src="{{url_for('static', filename='js/imgee-upload.js')}}"></script>
 {% endblock %}

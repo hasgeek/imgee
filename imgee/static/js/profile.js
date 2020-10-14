@@ -1,20 +1,38 @@
 $(function() {
   var uploaded = $('#uploaded-files');
   var sampleUpload = uploaded.find('.sample').html();
-  var thumbs = $('.js-gallery');
-  var width = $('.js-gallery').width();
+  var imgWidth = Math.floor($('.js-gallery').width()/4);
+  var page = 2;
 
-  $('.gallery__image').width(width/5).height(width/5);
+  var resizeThumbImg = function() {
+    $('.gallery__image').width(imgWidth).height(imgWidth);
+  }
+
+  resizeThumbImg();
+
+  $('#loadmore').appear().on('appear', function (event, element) {
+    $.ajax({
+      url: window.Imgee.paginateUrl + '?page=' + page,
+      type: 'GET',
+      success: function(data) {
+        page += 1;
+        $('.js-gallery').find('#loadmore').before(data);
+        resizeThumbImg();
+      },
+    });
+  });
+
+  $.force_appear();
 
   var addThumb = function(thumbData) {
-    var thumb_sample = thumbs
-      .find('li.gallery__image')
+    var thumb_sample = $('.js-gallery')
+      .find('li.gallery__image.img')
       .first()
       .html();
     if (!thumb_sample) location.reload();
     else {
-      thumbs.prepend('<li class="gallery__image">' + thumb_sample + '</li>');
-      var new_thumb = thumbs.find('li.gallery__image').first();
+      $('.js-gallery').prepend('<li class="gallery__image img">' + thumb_sample + '</li>');
+      var new_thumb = $('.js-gallery').find('li.gallery__image').first();
       new_thumb
         .find('.gallery__image__thumb__wrapper img')
         .attr('src', window.Imgee.spinnerFile);

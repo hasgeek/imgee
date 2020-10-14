@@ -1,8 +1,26 @@
 $(function() {
-  var imgGallery = $('.js-gallery');
-  var imgWidth = imgGallery.width()/4;
+  var imgWidth = Math.floor($('.js-gallery').width()/3);
+  var nextPage = 2;
 
-  $('.gallery__image').width(imgWidth).height(imgWidth);
+  var resizeThumbImg = function() {
+    $('.gallery__image').width(imgWidth).height(imgWidth);
+  }
+
+  resizeThumbImg();
+
+  $('#loadmore').appear().on('appear', function (event) {
+    $.ajax({
+      url: window.Imgee.paginateUrl + '?page=' + nextPage,
+      type: 'GET',
+      success: function(data) {
+        nextPage += 1;
+        $('.js-gallery').find('#loadmore').before(data);
+        resizeThumbImg();
+      },
+    });
+  });
+
+  $.force_appear();
 
   var sendUploadImageUrl = function(imgUrl) {
     window.parent.postMessage(JSON.stringify({
@@ -12,45 +30,43 @@ $(function() {
   }
 
   var removeSelected = function() {
-    $('.gallery__image__thumb').removeClass('gallery__image__thumb--selected');
+    $('.gallery__image__wrapper__thumb').removeClass('gallery__image__thumb--selected');
   };
 
   $('body').on('click', '.js-img-thumb', function () {
     var imgUrl = $(this).attr('data-url');
     removeSelected();
-    $(this).addClass('gallery__image__thumb--selected');
-    $(this).parents('.gallery__image--popup')
-      .addClass('gallery__image--highlight');
+    $(this).addClass('gallery__image__wrapper__thumb--selected');
     sendUploadImageUrl(imgUrl);
   });
 
   var addNewThumb = function() {
-    var innerThumb = imgGallery
-      .find('li.gallery__image--popup')
+    var innerThumb = $('.js-gallery')
+      .find('li.gallery__image.img')
       .first()
       .html();
     var newThumb = $(
-        '<li class="gallery__image gallery__image--popup gallery__image--highlight"></li>'
+        '<li class="gallery__image img"></li>'
       )
         .html(innerThumb);
-    imgGallery.find('li.gallery__image--dropzone').after(newThumb);
+    $('.js-gallery').find('li.gallery__image--dropzone').after(newThumb);
     newThumb
-      .find('.gallery__image__thumb__wrapper img')
+      .find('.gallery__image__wrapper__thumb img')
       .addClass('spinner')
       .attr('src', window.Imgee.spinnerFile);
-    var newThumbDom = imgGallery.find('li.gallery__image--highlight').first();
-    newThumbDom.width(imgWidth).height(imgWidth);
+    var newThumbDom = $('.js-gallery').find('li.gallery__image.img').first();
+    resizeThumbImg();
     return newThumbDom;
   }
 
   var addThumb = function(thumbData, thumbDom) {
     thumbDom
-      .find('.gallery__image__thumb__wrapper img')
+      .find('.gallery__image__wrapper__thumb img')
       .removeClass('spinner')
       .attr('src', thumbData.image_data.embed_url);
     removeSelected();
-    thumbDom.find('.gallery__image__thumb')
-      .addClass('gallery__image__thumb--selected');
+    thumbDom.find('.gallery__image__wrapper__thumb')
+      .addClass('gallery__image__wrapper__thumb-selected');
     sendUploadImageUrl(thumbData.image_data.embed_url);
   };
 
