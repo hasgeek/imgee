@@ -3,7 +3,7 @@
   <div class="gallery__image__wrapper">
     <div class="gallery__image__wrapper__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
       <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__wrapper__thumb__img">
-      {{ faicon(icon='check-circle-solid', icon_size='subhead', baseline=false, css_class="gallery__image__wrapper__thumb__icon mui--text-hyperlink") }}
+      <input type="radio" class="gallery__image__wrapper__thumb__icon" name="selected-image">
     </div>
   </div>
 </li>

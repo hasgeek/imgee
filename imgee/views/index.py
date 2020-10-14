@@ -67,7 +67,7 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
     @route('')
     @render_with('profile.html.jinja2')
     def view(self):
-        files = self.obj.stored_files.order_by(StoredFile.created_at.desc())[:10]
+        files = self.obj.stored_files.order_by(StoredFile.created_at.desc()).all()
         title_form = forms.EditTitleForm()
         upload_form = forms.UploadImageForm()
         return {
@@ -131,7 +131,7 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
             files = files.join(StoredFile.labels).filter(Label.name == label)
         files = files.paginate(page=page, per_page=per_page)
         data = {
-            'current_page': files.page,
+            'next_page': files.page + 1 if files.page < files.pages else None,
             'total_pages': files.pages,
             'files': Markup(
                 '\n'.join(

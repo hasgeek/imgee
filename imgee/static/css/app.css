@@ -676,10 +676,10 @@ a.no-hover:active {
   height: 100%;
 }
 .profile-grid .gallery .gallery__image .gallery__image__wrapper .gallery__image__wrapper__thumb {
-  padding: 2px;
+  background: #eee;
+  border: 2px solid #fff;
   text-align: center;
   opacity: 0.8;
-  transition: 0.5s opacity;
   width: 100%;
   height: 100%;
   position: relative;
@@ -699,6 +699,9 @@ a.no-hover:active {
   position: absolute;
   top: 8px;
   left: 8px;
+  -webkit-transform: scale(1.3);
+  -ms-transform: scale(1.3);
+  transform: scale(1.3);
 }
 .profile-grid .gallery .gallery__image .gallery__image__wrapper .gallery__image__wrapper__thumb .gallery__image__wrapper__thumb__img.spinner {
   width: auto;
@@ -710,50 +713,44 @@ a.no-hover:active {
   display: none;
 }
 
-.list .list-header {
+.profile-grid.list .list-header {
   display: flex;
   width: 100%;
   flex-wrap: nowrap;
   overflow: scroll;
   justify-content: space-between;
 }
-.list .list-header .list-header__item {
+.profile-grid.list .list-header .list-header__item {
   min-width: 150px;
 }
-.list .gallery {
+.profile-grid.list .gallery {
   display: block;
   width: 100%;
 }
-.list .gallery .gallery__image {
-  width: 100%;
+.profile-grid.list .gallery .gallery__image {
+  width: 100% !important;
   display: flex;
   border-top: 1px solid #e5e5e5;
 }
-.list .gallery .gallery__image .gallery__image__thumb {
+.profile-grid.list .gallery .gallery__image .gallery__image__wrapper {
   display: flex;
   width: 100%;
   justify-content: space-between;
   flex-wrap: nowrap;
   overflow: scroll;
 }
-.list .gallery .gallery__image .gallery__image__thumb__wrapper {
-  text-align: center;
-  opacity: 0.8;
-  transition: 0.5s opacity;
-  padding: 8px 8px 8px 0;
-  min-width: 100px;
+.profile-grid.list .gallery .gallery__image .gallery__image__wrapper .gallery__image__wrapper__thumb {
+  min-width: 150px;
 }
-.list .gallery .gallery__image .gallery__image__thumb__img {
-  width: 100%;
+.profile-grid.list .gallery .gallery__image .gallery__image__wrapper .gallery__image__wrapper__thumb .gallery__image__wrapper__thumb__img {
   object-fit: contain;
 }
-.list .gallery .gallery__image .gallery__image__thumb__details {
+.profile-grid.list .gallery .gallery__image .gallery__image__wrapper .gallery__image__wrapper__thumb__details {
   display: flex;
   align-items: center;
   min-width: 150px;
-  padding-right: 20px;
+  padding: 8px;
   word-break: break-word;
-  margin-right: 20px;
 }
 
 #uploaded-files {
@@ -843,15 +840,15 @@ a.no-hover:active {
 .profile-grid.profile-grid--popup .list-header {
   display: none;
 }
-.profile-grid.profile-grid--popup .gallery .gallery__image__wrapper__thumb.gallery__image__wrapper__thumb--selected
-.gallery__image__wrapper__thumb__icon {
+.profile-grid.profile-grid--popup .gallery .gallery__image .gallery__image__wrapper .gallery__image__wrapper__thumb .gallery__image__wrapper__thumb__icon {
   display: block;
 }
 .profile-grid.profile-grid--popup .gallery .gallery__image--dropzone {
-  align-self: center;
   padding: 0;
 }
 .profile-grid.profile-grid--popup .gallery .gallery__image--dropzone .dropzone {
+  background-color: #0f73ed;
+  color: #fff;
   width: calc(100% - 2px);
   min-height: 50px;
   height: calc(100% - 2px);
@@ -863,7 +860,11 @@ a.no-hover:active {
   position: absolute;
   top: 50%;
   left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  border: 1px dashed;
+  padding: 2%;
 }
 .profile-grid.profile-grid--popup .gallery .gallery__image--dropzone .dropzone .dz-preview.dz-image-preview {
   margin: 0;
@@ -874,10 +875,17 @@ a.no-hover:active {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .profile-grid.profile-grid--popup .gallery .gallery__image--dropzone .dropzone .dz-preview.dz-image-preview .dz-image {
   width: 100%;
   height: 100%;
   border-radius: 0;
+}
+.profile-grid.profile-grid--popup .gallery .gallery__image--dropzone .dropzone .dz-preview.dz-image-preview .dz-image img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }

@@ -77,11 +77,11 @@
             <p class="mui--text-title list-header__item">Image size</p>
           </div>
           <ul class="gallery js-gallery mui-list--unstyled js-expandable expandable__content expandable__content--gallery">
-            {% for img in files.items %}
-              <li class="gallery__image img">
+            {% for img in files %}
+              <li class="gallery__image image">
                 <div class="gallery__image__wrapper">
-                  <div class="gallery__image__wrapper__thumb">
-                    <a class="gallery__image__wrapper__thumb__link" href="{{ url_for('view_image', profile=profile.name, image=img.name) }}" title="{{ img.title }}">
+                  <div class="gallery__image__wrapper__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
+                    <a class="gallery__image__thumb__wrapper__link" href="{{ url_for('view_image', profile=profile.name, image=img.name) }}" title="{{ img.title }}">
                       <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__wrapper__thumb__img">
                     </a>
                   </div>
@@ -92,7 +92,6 @@
                 </div>
               </li>
             {% endfor %}
-            <a href="javascript:void(0);" id="loadmore">Loading more…<span class="loading">&nbsp;</span></a>
           </ul>
         </div>
       </div>

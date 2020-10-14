@@ -9,14 +9,18 @@
     display: none;
   }
   .gallery {
-    .gallery__image__wrapper__thumb.gallery__image__wrapper__thumb--selected
-      .gallery__image__wrapper__thumb__icon {
-      display: block;
+    .gallery__image {
+      .gallery__image__wrapper .gallery__image__wrapper__thumb{
+        .gallery__image__wrapper__thumb__icon {
+          display: block;
+        }
+      }
     }
     .gallery__image--dropzone {
-      align-self: center;
       padding: 0;
       .dropzone {
+        background-color: #0f73ed;
+        color: #fff;
         width: calc(100% - 2px);
         min-height: 50px;
         height: calc(100% - 2px);
@@ -27,7 +31,11 @@
           position: absolute;
           top: 50%;
           left: 50%;
+          -webkit-transform: translate(-50%, -50%);
+          -ms-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
+          border: 1px dashed;
+          padding: 2%;
         }
         .dz-preview.dz-image-preview {
           margin: 0;
@@ -38,11 +46,18 @@
           width: 100%;
           height: 100%;
           overflow: hidden;
+          position: absolute;
+          top: 0;
+          left: 0;
           .dz-image {
             width: 100%;
             height: 100%;
             border-radius: 0;
-            object-fit: cover;
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
           }
         }
       }
