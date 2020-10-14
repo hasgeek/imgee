@@ -119,14 +119,23 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
         if label:
             files = files.join(StoredFile.labels).filter(Label.name == label)
         files = files.paginate(page=page, per_page=per_page)
-        return Markup(
-            '\n'.join(
-                [
-                    render_template('pop_up_gallery_file.html.jinja2', img=img)
-                    for img in files.items
-                ]
+        data = {
+            'current_page': files.page,
+            'total_pages': files.pages,
+            'files': Markup(
+                '\n'.join(
+                    [
+                        render_template('pop_up_gallery_file.html.jinja2', img=img)
+                        for img in files.items
+                    ]
+                )
+            ),
+        }
+        if files.pages > files.page:
+            data['next_url'] = self.obj.url_for(
+                'pop_up_files', page=files.page + 1, _external=True
             )
-        )
+        return data
 
 
 ProfileView.init_app(app)
