@@ -21,6 +21,8 @@ before_install:
   - sudo rm -f /etc/boto.cfg  # https://github.com/travis-ci/travis-ci/issues/7940#issuecomment-310759657
 install:
   - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff5-dev librsvg2-dev ghostscript imagemagick pandoc inkscape librsvg2-bin
+  - pip install -U pip wheel
+  - pip install git+https://github.com/hasgeek/flask-babelhg.git
   - pip install -r requirements.txt
   - pip install -r test_requirements.txt
 before_script:
