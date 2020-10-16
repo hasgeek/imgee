@@ -106,13 +106,8 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
         files = files.order_by(StoredFile.created_at.desc())[:10]
         return (
             {
-                'files': Markup(
-                    '\n'.join(
-                        [
-                            render_template('pop_up_gallery_file.html.jinja2', img=img)
-                            for img in files
-                        ]
-                    )
+                'files': render_template(
+                    'pop_up_gallery_files.html.jinja2', files=files
                 ),
                 'label': label,
                 'profile': self.obj,
@@ -133,13 +128,8 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
         data = {
             'next_page': files.page + 1 if files.page < files.pages else None,
             'total_pages': files.pages,
-            'files': Markup(
-                '\n'.join(
-                    [
-                        render_template('pop_up_gallery_file.html.jinja2', img=img)
-                        for img in files.items
-                    ]
-                )
+            'files': render_template(
+                'pop_up_gallery_files.html.jinja2', files=files.items
             ),
         }
         if files.pages > files.page:

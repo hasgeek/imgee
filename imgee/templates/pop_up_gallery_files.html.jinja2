@@ -1,4 +1,5 @@
 {% from "baseframe/components.html.jinja2" import faicon %}
+{% for img in files %}
 <li class="gallery__image image">
   <div class="gallery__image__wrapper">
     <div class="gallery__image__wrapper__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
@@ -7,3 +8,4 @@
     </div>
   </div>
 </li>
+{% endfor %}
