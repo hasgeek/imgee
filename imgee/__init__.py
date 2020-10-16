@@ -35,7 +35,7 @@ db.app = app
 migrate = Migrate(app, db)
 baseframe.init_app(
     app,
-    requires=['baseframe-mui', 'picturefill', 'imgee', 'jquery_jeditable'],
+    requires=['baseframe-mui', 'picturefill', 'imgee', 'jquery_jeditable', 'jquery.appear'],
     theme='mui',
     asset_modules=('baseframe_private_assets',),
 )

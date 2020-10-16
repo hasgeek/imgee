@@ -1,0 +1,66 @@
+.imgee-popup {
+  background: transparent;
+  #uploaded-files {
+    display: none;
+  }
+}
+.profile-grid.profile-grid--popup {
+  .list-header {
+    display: none;
+  }
+  .gallery {
+    .gallery__image {
+      .gallery__image__wrapper .gallery__image__wrapper__thumb{
+        .gallery__image__wrapper__thumb__icon {
+          display: block;
+        }
+      }
+    }
+    .gallery__image--dropzone {
+      padding: 0;
+      .dropzone {
+        background-color: #0f73ed;
+        color: #fff;
+        width: calc(100% - 2px);
+        min-height: 50px;
+        height: calc(100% - 2px);
+        position: relative;
+        padding: 2px;
+        margin: 2px 0 0 2px;
+        .dropzone__uploadicon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          -webkit-transform: translate(-50%, -50%);
+          -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+          border: 1px dashed;
+          padding: 2%;
+        }
+        .dz-preview.dz-image-preview {
+          margin: 0;
+          min-height: 100%;
+          padding: 0;
+          border-radius: 0;
+          border: none;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          position: absolute;
+          top: 0;
+          left: 0;
+          .dz-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+        }
+      }
+    }
+  }
+}

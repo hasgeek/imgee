@@ -18,8 +18,8 @@
         <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
           {{ uf_form.hidden_tag() }}
           <div class="mui--text-center">{{ faicon(icon='upload', icon_size='headline', baseline=true, css_class='mui--text-light') }}</div>
-          <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">Drop files to upload</p>
-          <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>
+          <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">{% trans %}Drop files to upload{% endtrans %}</p>
+          <p class="mui--text-center mui--text-light">(<em>{% trans %}or click here{% endtrans %}</em>)</p>
         </form>
         <div id="uploaded-files" class="">
           <div class="sample mui--hide">
@@ -43,13 +43,8 @@
     {% if files %}
       <div class="mui--clearfix">
         <div class="mui--pull-left">
-          <h4 class="mui--text-title zero-bottom-margin">{{ profile.title }}'s Gallery</h4>
+          <h4 class="mui--text-title zero-bottom-margin">{% trans profile=profile.title %}{{ profile }}'s Gallery{% endtrans %}</h4>
           <p class="mui--text-caption zero-bottom-margin">
-            {% if files|count == 1 %}
-              <em>1 image</em>
-            {% else %}
-              <em>{{ files | count }} images</em>
-            {% endif %}
           </p>
         </div>
 
@@ -73,7 +68,7 @@
 
     {% if files %}
       <div id="expandable3">
-        <div id="showcase" class="grid">
+        <div id="showcase" class="profile-grid">
           <div class="list-header">
             <p class="mui--text-title list-header__item">Image</p>
             <p class="mui--text-title list-header__item">Title</p>
@@ -81,29 +76,23 @@
             <p class="mui--text-title list-header__item">File size</p>
             <p class="mui--text-title list-header__item">Image size</p>
           </div>
-          <div class="js-expandable-wrapper expandable">
-            <ul class="gallery mui-list--unstyled js-expandable expandable__content expandable__content--gallery">
+          <ul class="gallery js-gallery mui-list--unstyled js-expandable expandable__content expandable__content--gallery">
             {% for img in files %}
-              <li class="gallery__image">
-                <div class="gallery__image__thumb">
-                  <div class="gallery__image__thumb__wrapper">
-                    <a class="gallery__image__thumb__wrapper__link" href="{{url_for('view_image', profile=profile.name, image=img.name)}}" title="{{ img.title }}">
-                      <img src="{{url_for('get_image', image=img.name, size=config.get('THUMBNAIL_SIZE'))}}">
+              <li class="gallery__image image">
+                <div class="gallery__image__wrapper">
+                  <div class="gallery__image__wrapper__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
+                    <a class="gallery__image__thumb__wrapper__link" href="{{ url_for('view_image', profile=profile.name, image=img.name) }}" title="{{ img.title }}">
+                      <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__wrapper__thumb__img">
                     </a>
                   </div>
-                  <p class="gallery__image__thumb__details"><span class="editable_title" id="{{img.name}}">{{img.title}}</span></p>
-                  <p class="gallery__image__thumb__details">{{ img.created_at.strftime('%B %d, %Y') }}</p>
-                  <p class="gallery__image__thumb__details">{{ img.size | filesizeformat }}</p>
-                  <p class="gallery__image__thumb__details">{{ img.width }} x {{ img.height }} px</div>
-                </a>
+                  <p class="gallery__image__wrapper__thumb__details"><span class="editable_title" id="{{img.name}}">{{img.title}}</span></p>
+                  <p class="gallery__image__wrapper__thumb__details">{{ img.created_at.strftime('%B %d, %Y') }}</p>
+                  <p class="gallery__image__wrapper__thumb__details">{{ img.size | filesizeformat }}</p>
+                  <p class="gallery__image__wrapper__thumb__details">{{ img.width }} x {{ img.height }} px</p>
+                </div>
               </li>
             {% endfor %}
-            </ul>
-            <a href="#" class="js-expandable-control mui--text-light no-hover expandable__control">
-              <span class="js-collapsible-icon mui--text-body1">{{ faicon(icon='caret-circle-down', icon_size='caption', baseline=true) }} <span>Show more</span></span>
-              <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon(icon='caret-circle-up', icon_size='caption', baseline=true) }} <span>Hide</span>s</span>
-            </a>
-          </div>
+          </ul>
         </div>
       </div>
     {% else %}
@@ -127,8 +116,9 @@
   {%- endassets -%}
   <script type="text/javascript">
     window.Imgee.profile = {{ profile.name|tojson }};
-    window.Imgee.spinnerFile = '{{ url_for('static', filename='img/spinner.gif') }}';
+    window.Imgee.spinnerFile = "{{ url_for('static', filename='img/spinner.gif') }}";
     window.Imgee.acceptedFile = {{ ','.join(mimetypes)|tojson }};
+    window.Imgee.paginateUrl = {{ profile.url_for('pop_up_files')|tojson }};
   </script>
   <script type="text/javascript" src="{{url_for('static', filename='js/profile.js')}}"></script>
 {% endblock %}

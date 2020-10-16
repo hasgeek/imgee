@@ -46,7 +46,7 @@
                 </div>
 
                 <ul class="mui-list--unstyled">
-                  <li class="mui--text-subhead"><a href="{{url_for('unlabelled_images', profile=profile.name)}}">
+                  <li class="mui--text-subhead"><a href="{{ profile.url_for('unlabelled_images') }}">
                   {% if profile.labels %}
                     {{ faicon(icon='tag', icon_size='caption', baseline=true) }}&nbsp;Unlabeled
                   {% else %}
@@ -92,7 +92,7 @@
                     <li><a class="{% if current_auth.user.username == profile.name %}active{% endif %}" title="View your uploads" href="{{ url_for('account') }}"><i class="icon-user"></i>{{ current_auth.user.fullname }}</a></li>
                     {% if current_auth.user %}
                         {%- for org in current_auth.user.organizations_adminof() %}
-                          <li><a class="{% if org.name == profile.name %}active{% endif %}" href="{{ url_for('profile_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
+                          <li><a class="{% if org.name == profile.name %}active{% endif %}" href="{{ url_for('ProfileView_view', profile=org['name']) }}"><i class="icon-group"></i>{{ org.title }}</a></li>
                         {%- endfor %}
                     {% endif %}
                   </ul>

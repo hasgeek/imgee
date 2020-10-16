@@ -80,7 +80,12 @@ class StoredFile(BaseNameMixin, db.Model):
             'uploaded': self.created_at.isoformat() + 'Z',
             'filesize': app.jinja_env.filters['filesizeformat'](self.size),
             'imgsize': '%s×%s px' % (self.width, self.height),
-            'url': url_for('view_image', profile=self.profile.name, image=self.name),
+            'url': url_for(
+                'view_image', profile=self.profile.name, image=self.name, _external=True
+            ),
+            'embed_url': url_for(
+                'get_image', image=self.name, _external=True
+            ),
             'thumb_url': url_for(
                 'get_image', image=self.name, size=app.config.get('THUMBNAIL_SIZE')
             ),

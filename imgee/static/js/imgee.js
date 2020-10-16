@@ -1,113 +1,91 @@
-/* Imgee plugin
-Dependencies: Jquery>=1.8.3, Jquery PostMessage plugin (jquery.ba-postmessage.js)
-*/
+$(function() {
+  var imgWidth = Math.floor($('.js-gallery').width()/4);
+  var nextPage = 1;
 
-function putURL(imgee_holder, imgname, settings) {
-  var image_url = settings['imgee_url'] + settings['file_endpoint'] + imgname;
-  if (settings['size']) {
-    image_url += '?size=' + settings['size'];
+  var resizeThumbImg = function() {
+    $('.gallery__image').width(imgWidth).height(imgWidth);
   }
-  $(imgee_holder).val(image_url);
-}
 
-(function($) {
-  $.fn.imgee = function(options) {
-    $.fn.imgee.defaults = {
-      imgee_url: 'http://images.hasgeek.com/',
-      button_desc: 'Select or Upload Image',
-      label: $(this).data('img-label'),
-      profile: $(this).data('profile'),
-      size: $(this).data('img-size'),
-      popup_endpoint: '/popup', // enpoint for pop_up_gallery in Imgee
-      file_endpoint: '/embed/file/',
-      callback: putURL,
-      debug: false,
-      // pop-up window attributes
-      window_name: 'imgee',
-      window_height: 600,
-      window_width: 800,
-      window_resizable: true,
-      window_scrollbars: true,
-    };
+  resizeThumbImg();
 
-    var settings = $.extend({}, $.fn.imgee.defaults, options);
-    settings['imgee_host'] = settings.imgee_url.match('.*://.*')[0];
-    setup.apply(this, [settings]);
-    recv_messages_from(this, settings.imgee_host, settings);
+  $('#loadmore').appear().on('appear', function (event) {
+    if(nextPage) {
+      $.ajax({
+        url: window.Imgee.paginateUrl + '?page=' + nextPage,
+        type: 'GET',
+        success: function(data) {
+          nextPage = data.next_page;
+          if(!nextPage) {
+            $('.js-gallery').find('#loadmore').addClass('mui--hide');
+          }
+          $('.js-gallery').find('#loadmore').before(data.files);
+          resizeThumbImg();
+          if( $('#loadmore').is(':appeared')) {
+            $.force_appear()
+          }
+        },
+      });
+    }
+  });
+
+  // Initial load of images
+  $.force_appear();
+
+  var sendUploadImageUrl = function(imgUrl) {
+    window.parent.postMessage(JSON.stringify({
+      context: "imgee.upload",
+      embed_url: imgUrl,
+      }), '*');
+  }
+
+  $('body').on('click', '.js-img-thumb', function () {
+    var imgUrl = $(this).attr('data-url');
+    $(this).find('.gallery__image__wrapper__thumb__icon').attr('checked', true);
+    sendUploadImageUrl(imgUrl);
+  });
+
+  var addNewThumb = function() {
+    var innerThumb = $('.js-gallery')
+      .find('li.gallery__image.image')
+      .first()
+      .html();
+    var newThumb = $(
+        '<li class="gallery__image image"></li>'
+      )
+        .html(innerThumb);
+    $('.js-gallery').find('li.gallery__image--dropzone').after(newThumb);
+    newThumb
+      .find('.gallery__image__wrapper__thumb__img')
+      .addClass('spinner')
+      .attr('src', window.Imgee.spinnerFile);
+    resizeThumbImg();
+    return newThumb;
+  }
+
+  var addThumb = function(thumbData, thumbDom) {
+    thumbDom
+      .find('.gallery__image__wrapper__thumb__img')
+      .removeClass('spinner')
+      .attr('src', thumbData.image_data.embed_url);
+    thumbDom.find('.gallery__image__wrapper__thumb__icon').attr('checked', true);
+    sendUploadImageUrl(thumbData.image_data.embed_url);
   };
 
-  function recv_messages_from(imgee_holder, from, options) {
-    $.receiveMessage(function(e) {
-      if (options.debug) {
-        debug('Recieved from ' + options.imgee_host + ' :' + e.data);
-      }
-      options.callback.apply(this, [imgee_holder, e.data, options]);
-    }, from);
-  }
-
-  function setup(options) {
-    var imgee_block = $("<div class='imgee-block' />")
-      .prepend("<div class='imgee-container' />")
-      .prepend("<div class='image-holder' />")
-      .append("<div class='button-holder' />")
-      .prepend(
-        '<button id="select_imgee" type="button">' +
-          options.button_desc +
-          '</button>'
-      );
-    $(this).after(imgee_block);
-    $(this)
-      .siblings('div.imgee-block')
-      .find('button#select_imgee')
-      .click(function() {
-        openPopupWindow(options);
+  Dropzone.options.uploadimage = {
+    paramName: 'upload_file',
+    acceptedFiles: window.Imgee.acceptedFile,
+    init: function() {
+      var sampleThumb;
+      this.on('addedfile', function() {
+        sampleThumb = addNewThumb();
       });
-  }
-
-  function openPopupWindow(options) {
-    // remove trailing slash in imgee_url, if exists
-    var url = options.imgee_url.replace(/\/$/, '');
-
-    var props = 'width=' + options.window_width;
-    props += ',height=' + options.window_height;
-    if (options.window_resizable) props += ',resizable';
-    if (options.window_scrollbars) props += ',scrollbars';
-    if (options.profile) {
-      url += '/' + options.profile + options.popup_endpoint;
-    } else {
-      url += options.popup_endpoint;
-    }
-    url += '?from=' + window.location.href;
-    if (options.label) {
-      url += '&label=' + options.label;
-    }
-    win = window.open(url, options.window_name, props);
-    return win;
-  }
-
-  function debug(obj) {
-    if (window.console && window.console.log) window.console.log(obj);
-  }
-})(jQuery);
-
-/* Example Usage */
-/*
-<html>
-<head>
-<script type="text/javascript" src="static/jquery.min.js"></script>
-<script type="text/javascript" src="static/jquery.ba-postmessage.js"></script>
-<script type="text/javascript" src="static/imgee.js"></script>
-<script>
-$(function(){
-    $(".imgee_holder").imgee({
-            'imgee_url': 'http://0.0.0.0:4500/<profile>/popup',
-             debug:true
-    });
+      this.on('complete', function(file) {
+        var response = $.parseJSON(file.xhr.response);
+        this.removeFile(file);
+        if (response.status) {
+          addThumb(response, sampleThumb);
+        }
+      });
+    },
+  };
 });
-</script>
-</head>
-<body>
-    <div class='imgee_holder'></div>
-</body>
-</html>
-*/

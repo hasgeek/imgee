@@ -6,7 +6,7 @@ from uuid import uuid4
 import os.path
 import re
 
-from flask import request
+from flask import abort, request
 
 from PIL import Image
 import boto3
@@ -227,6 +227,17 @@ for mimetype, data in ALLOWED_MIMETYPES.items():
     else:
         EXTNS.append(data['extn'])
 EXTNS = list(set(EXTNS))
+
+
+def abort_null(text):
+    """
+    Abort request if text contains null characters.
+    Throws HTTP (400) Bad Request if text is tainted, returns text otherwise.
+    """
+    if text is not None:
+        if '\x00' in text:
+            abort(400)
+        return text
 
 
 def newid():

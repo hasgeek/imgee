@@ -24,4 +24,4 @@ class User(UserBase, db.Model):
 
     @cached_property
     def profile_url(self):
-        return url_for('profile_view', profile=self.profile_name)
+        return self.profile.url_for()
