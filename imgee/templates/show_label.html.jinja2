@@ -11,8 +11,8 @@
     </div>
 
     <div class="mui-panel top-margin">
-      {%if not files %}
-        <p class="mui-text--title">There are no images with label "{{label.name}}" yet.</p>
+      {% if not files %}
+        <p class="mui-text--title">{% trans label=label.name %}There are no images with label "{{ label }}" yet.{% endtrans %}</p>
       {% else %}
       <div class="row">
         <div class="gallery js-gallery label-category">

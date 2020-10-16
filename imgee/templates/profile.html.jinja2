@@ -18,8 +18,8 @@
         <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
           {{ uf_form.hidden_tag() }}
           <div class="mui--text-center">{{ faicon(icon='upload', icon_size='headline', baseline=true, css_class='mui--text-light') }}</div>
-          <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">Drop files to upload</p>
-          <p class="mui--text-center mui--text-light">(<em>or click here</em>)</p>
+          <p class="mui--text-title mui--text-bold mui--text-center zero-bottom-margin mui--text-light">{% trans %}Drop files to upload{% endtrans %}</p>
+          <p class="mui--text-center mui--text-light">(<em>{% trans %}or click here{% endtrans %}</em>)</p>
         </form>
         <div id="uploaded-files" class="">
           <div class="sample mui--hide">
@@ -43,7 +43,7 @@
     {% if files %}
       <div class="mui--clearfix">
         <div class="mui--pull-left">
-          <h4 class="mui--text-title zero-bottom-margin">{{ profile.title }}'s Gallery</h4>
+          <h4 class="mui--text-title zero-bottom-margin">{% trans profile=profile.title %}{{ profile }}'s Gallery{% endtrans %}</h4>
           <p class="mui--text-caption zero-bottom-margin">
           </p>
         </div>

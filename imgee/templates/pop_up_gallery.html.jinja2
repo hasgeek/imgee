@@ -28,7 +28,7 @@
           <li class="gallery__image gallery__image--dropzone">
             <form action="{{ url_for('upload_file_json', profile=profile.name) }}" class="dropzone profile-dropzone" id="uploadimage" method="POST" enctype="multipart/form-data">
               {{ current_view.UploadImageForm().hidden_tag() }}
-              <p class="mui--text-subhead mui--text-center">Upload</p>
+              <p class="mui--text-subhead mui--text-center">{% trans %}Upload{% endtrans %}</p>
               <div class="dropzone__uploadicon">{{ faicon(icon='plus', icon_size='headline', baseline=true) }}</div>
             </form>
           </li>
