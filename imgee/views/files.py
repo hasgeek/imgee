@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import abort, flash, jsonify, redirect, render_template, request, url_for
+from furl import furl
 
 from coaster.auth import current_auth
 from coaster.views import load_model, load_models
@@ -35,11 +36,7 @@ def upload_file(profile):
         if imgfile.filename != '':
             title, stored_file = save_file(imgfile, profile=profile)
             flash('"%s" uploaded successfully.' % title)
-            referrer = request.referrer or ''
-            if profile.url_for('pop_up_gallery') in referrer:
-                return redirect(referrer)
-            else:
-                return redirect(profile.url_for())
+            return redirect(profile.url_for())
     return render_template('form.html.jinja2', form=upload_form, profile=profile)
 
 
