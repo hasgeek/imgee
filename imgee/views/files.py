@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from flask import abort, flash, jsonify, redirect, render_template, request, url_for
-from furl import furl
 
 from coaster.auth import current_auth
 from coaster.views import load_model, load_models
