@@ -18,16 +18,6 @@ from ..utils import get_image_url, get_media_domain
 from .index import get_prev_next_images
 
 
-def _redirect_url_frm_upload(profile_name):
-    # if the referrer is from 'pop_up_gallery' redirect back to referrer.
-    referrer = request.referrer or ''
-    if url_for('pop_up_gallery', profile=profile_name) in referrer:
-        url = request.referrer
-    else:
-        url = url_for('profile_view', profile=profile_name)
-    return url
-
-
 @app.route('/<profile>/new', methods=['GET', 'POST'])
 @lastuser.requires_login
 @load_model(
@@ -45,7 +35,7 @@ def upload_file(profile):
         if imgfile.filename != '':
             title, stored_file = save_file(imgfile, profile=profile)
             flash('"%s" uploaded successfully.' % title)
-            return redirect(_redirect_url_frm_upload(profile.name))
+            return redirect(profile.url_for())
     return render_template('form.html.jinja2', form=upload_form, profile=profile)
 
 
