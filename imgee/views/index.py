@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import not_
 
-from flask import Markup, abort, flash, redirect, render_template
+from flask import abort, flash, redirect, render_template
 
 from coaster.auth import current_auth
 from coaster.views import (
@@ -97,6 +97,7 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
 
     @route('popup')
     @lastuser.requires_login
+    @lastuser.requires_permission('new-file')
     @render_with('pop_up_gallery.html.jinja2')
     @requestargs(('label', abort_null))
     def pop_up_gallery(self, label=''):
@@ -118,6 +119,7 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
 
     @route('popup/files')
     @lastuser.requires_login
+    @lastuser.requires_permission('view')
     @requestargs(('label', abort_null), ('page', int), ('per_page', int))
     def pop_up_files(self, label='', page=None, per_page=10):
         files = self.obj.stored_files
