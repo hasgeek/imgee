@@ -70,11 +70,11 @@
       <div id="expandable3">
         <div id="showcase" class="profile-grid">
           <div class="list-header">
-            <p class="mui--text-title list-header__item">Image</p>
-            <p class="mui--text-title list-header__item">Title</p>
-            <p class="mui--text-title list-header__item">Uploaded at</p>
-            <p class="mui--text-title list-header__item">File size</p>
-            <p class="mui--text-title list-header__item">Image size</p>
+            <p class="mui--text-title list-header__item">{% trans %}Image{% endtrans %}</p>
+            <p class="mui--text-title list-header__item">{% trans %}Title{% endtrans %}</p>
+            <p class="mui--text-title list-header__item">{% trans %}Uploaded at{% endtrans %}</p>
+            <p class="mui--text-title list-header__item">{% trans %}File size{% endtrans %}</p>
+            <p class="mui--text-title list-header__item">{% trans %}Image size{% endtrans %}</p>
           </div>
           <ul class="gallery js-gallery mui-list--unstyled js-expandable expandable__content expandable__content--gallery">
             {% for img in files %}
@@ -99,9 +99,9 @@
       <div class="mui-panel">
         <p class="mui--text-subhead zero-bottom-margin">
         {% if unlabelled %}
-          Hurray! Not a single image is without a label.
+          {% trans %}Hurray! Not a single image is without a label.{% endtrans %}
         {% else %}
-          There are no images uploaded yet. <a href="{{url_for('upload_file', profile=profile.name)}}">Upload them.</a>
+          {% trans %}There are no images uploaded yet.{% endtrans %} <a href="{{url_for('upload_file', profile=profile.name)}}">{% trans %}Upload them.{% endtrans %}</a>
         {% endif %}
         </p>
       </div>
