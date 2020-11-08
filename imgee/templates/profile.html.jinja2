@@ -101,7 +101,7 @@
         {% if unlabelled %}
           {% trans %}Hurray! Not a single image is without a label.{% endtrans %}
         {% else %}
-          {% trans %}There are no images uploaded yet.{% endtrans %} <a href="{{url_for('upload_file', profile=profile.name)}}">{% trans %}Upload them.{% endtrans %}</a>
+          {% trans %}No images{% endtrans %}
         {% endif %}
         </p>
       </div>
