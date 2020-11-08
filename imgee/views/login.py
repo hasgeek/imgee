@@ -2,6 +2,7 @@
 
 from flask import Response, flash, redirect
 
+from baseframe import _
 from coaster.auth import current_auth
 from coaster.views import get_next_url
 
@@ -18,7 +19,7 @@ def login():
 @app.route('/logout')
 @lastuser.logout_handler
 def logout():
-    flash("You are now logged out", category='info')
+    flash(_("You are now logged out", category='info'))
     return get_next_url()
 
 
@@ -40,7 +41,7 @@ def lastusernotify(user):
 @lastuser.auth_error_handler
 def lastuser_error(error, error_description=None, error_uri=None):
     if error == 'access_denied':
-        flash("You denied the request to login", category='error')
+        flash(_("You denied the request to login", category='error'))
         return redirect(get_next_url())
     return Response(
         "Error: %s\n"

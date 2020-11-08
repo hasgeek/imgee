@@ -3,6 +3,7 @@ from sqlalchemy import not_
 
 from flask import abort, flash, redirect, render_template
 
+from baseframe import _
 from coaster.auth import current_auth
 from coaster.views import (
     ModelView,
@@ -175,5 +176,5 @@ def purge_cache():
     form = forms.PurgeCacheForm()
     if form.is_submitted():
         removed = clean_local_cache(app.config.get('CACHE_PURGE_PERIOD', 24))
-        flash("%s files are deleted from the cache." % removed)
+        flash(_("%s files are deleted from the cache." % removed))
     return render_template('purge_cache.html.jinja2', form=form)
