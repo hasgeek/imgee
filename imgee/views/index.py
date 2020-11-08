@@ -8,9 +8,9 @@ from coaster.views import (
     ModelView,
     UrlChangeCheck,
     UrlForView,
+    render_with,
     requestargs,
     requires_permission,
-    render_with,
     route,
 )
 
@@ -175,5 +175,5 @@ def purge_cache():
     form = forms.PurgeCacheForm()
     if form.is_submitted():
         removed = clean_local_cache(app.config.get('CACHE_PURGE_PERIOD', 24))
-        flash('%s files are deleted from the cache.' % removed)
+        flash("%s files are deleted from the cache." % removed)
     return render_template('purge_cache.html.jinja2', form=form)

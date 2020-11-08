@@ -34,7 +34,7 @@ def upload_file(profile):
         imgfile = request.files['upload_file']
         if imgfile.filename != '':
             title, stored_file = save_file(imgfile, profile=profile)
-            flash('"%s" uploaded successfully.' % title)
+            flash("“%s” uploaded successfully." % title)
             return redirect(profile.url_for())
     return render_template('form.html.jinja2', form=upload_form, profile=profile)
 
