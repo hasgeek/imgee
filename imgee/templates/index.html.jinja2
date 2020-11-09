@@ -14,7 +14,7 @@
       <div>
         <p class="mui--text-title">{% trans %}Hasgeek’s image library{% endtrans %}</p><hr />
         {% if current_auth.user %}
-          <p class="mui--text-subhead">Welcome <strong>{{ current_auth.user.fullname }}!</strong></p>
+          <p class="mui--text-subhead">{% trans user=current_auth.user.fullname %}Welcome <strong>{{ user }}!</strong>{% endtrans %}</p>
           <a href="{{ url_for('account') }}" class="mui-btn mui-btn--primary mui-btn--raised">{% trans %}View your images{% endtrans %}</a></h4>
         {% else %}
           <a href="{{ url_for('login') }}" class="mui-btn mui-btn--primary mui-btn--raised">{% trans %}Login / Sign up{% endtrans %}</a>
