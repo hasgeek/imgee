@@ -50,8 +50,8 @@
 
         <div class="mui--pull-right">
           <div class="list-grid-selector">
-            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{{ faicon(icon='th', baseline=true) }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;Grid</span></a>
-            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{{ faicon(icon='list', baseline=true) }}<span class="mui--hidden-xs mui--hidden-sm">&nbsp;List</span></a>
+            <a href="#" id="gridview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout active">{{ faicon(icon='th', baseline=true, css_class='fa-icon--margin') }}<span class="mui--hidden-xs mui--hidden-sm">{% trans %}Grid{% endtrans %}</span></a>
+            <a href="#" id="listview" class="mui-btn mui-btn--small mui-btn--raised mui-btn--dark js-switch-layout">{{ faicon(icon='list', baseline=true, css_class='fa-icon--margin') }}<span class="mui--hidden-xs mui--hidden-sm">{% trans %}List{% endtrans %}</span></a>
           </div>
         </div>
       </div>
@@ -60,9 +60,9 @@
 
     {% if unlabelled %}
       {% if profile.labels %}
-        <div class="heading note">Unlabeled-image Archive</div>
+        <div class="heading note">{% trans %}Unlabeled-image Archive{% endtrans %}</div>
       {% else %}
-        <div class="heading note">Archived Images</div>
+        <div class="heading note">{% trans %}Archived Images{% endtrans %}</div>
       {% endif %}
     {% endif %}
 

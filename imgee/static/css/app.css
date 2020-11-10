@@ -213,6 +213,10 @@ a.no-hover:active {
   margin: 0 5px;
 }
 
+.fa-icon--margin {
+  margin-right: 8px;
+}
+
 .header-logo {
   height: 40px;
 }

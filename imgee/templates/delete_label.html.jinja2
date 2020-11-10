@@ -11,7 +11,7 @@
     <p class="mui--text-title">{{ faicon(icon='trash-alt', icon_size='subhead', baseline=true) }} Confirm delete</p>
     <hr/>
     <p class="mui--text-subhead">{% trans label=label.title %}Are you sure you want to delete the label "{{ label }}"?{% endtrans %}<br/></p>
-    <p>{{ faicon(icon='info-circle', baseline=true) }}&nbsp;<strong>{% trans %}Removing this label will dissociate it from images, but will not remove those images.{% endtrans %}</strong></p>
+    <p>{{ faicon(icon='info-circle', baseline=true, css_class='fa-icon--margin') }}<strong>{% trans %}Removing this label will dissociate it from images, but will not remove those images.{% endtrans %}</strong></p>
     {% set cancel_url=url_for('show_label', profile=profile.name, label=label.name) %}
     <div class="form-submit">{{ renderform(form, "delete", "Yes, delete it", cancel_url=cancel_url)}}</div>
   </div>
