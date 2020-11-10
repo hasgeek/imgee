@@ -106,7 +106,7 @@
                 <input id='img_width' placeholder="w" class="mui--d-inlineblock"/>
                 &nbsp;<span class="mui--text-caption">X</span>&nbsp;
                 <input id='img_height' placeholder="h" class="mui--d-inlineblock"/>
-                <a href='{{img_url}}' id='img_link' class="mui--d-block">here</a>
+                <a href="{{url_for('get_image', image=img.name, _external=True) }}" id='img_link' class="mui--d-block">here</a>
               </li>
             </ul>
           {% endif %}
@@ -118,7 +118,7 @@
               </div>
               <div class="img-share__content">
                 <div class="mui-textfield">
-                  <input type="text" name="direct-link" value="{{img_url}}" onClick="this.select();"/>
+                  <input type="text" name="direct-link" value="{{ img_url }}" onClick="this.select();"/>
                 </div>
               </div>
             </div>
@@ -128,7 +128,7 @@
               </div>
               <div class="img-share__content">
                 <div class="mui-textfield">
-                  <input type="text" name="html-code" value="<img src=&quot;{{img_url}}&quot; /></a>" onClick="this.select();">
+                  <input type="text" name="html-code" value="<img src=&quot;{{ img_url }}&quot; /></a>" onClick="this.select();">
                 </div>
               </div>
             </div>

@@ -4,23 +4,23 @@ $(function() {
   $('input#img_link').width(420);
 
   function set_resize_url(a) {
-    var file_url = "{{url_for('get_image', image=img.name)}}";
+    var file_url = a.attr('href');
     var url_with_size =
       file_url +
       '?size=' +
       $('input#img_width').val() +
       'x' +
       ($('input#img_height').val() || '0');
-    a.attr('href', url_with_size);
+    $("input:text[name='direct-link']").val(url_with_size);
+    $("input:text[name='html-code']").val(
+      '<a href="' + url_with_size + '"><img src="' + url_with_size + '" />'
+    );
   }
 
-  $('a#img_link')
-    .hover(function() {
-      set_resize_url($(this));
-    })
-    .click(function() {
-      set_resize_url($(this));
-    });
+  $('a#img_link').click(function(event) {
+    event.preventDefault();
+    set_resize_url($(this));
+  });
 
   $('#resize li button').click(function() {
     var text = $(this).text();
