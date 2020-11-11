@@ -45,14 +45,14 @@ def label_doesnt_exist(form, field):
     label_name = make_name(field.data)
     if label_name in reserved_words():
         raise ValidationError(
-            '"%s" is reserved and cannot be used as a label. Please try another name.'
+            "“%s” is reserved and cannot be used as a label. Please try another name."
             % label_name
         )
 
     exists = Label.query.filter_by(profile_id=profile_id, name=label_name).first()
     if exists:
         raise ValidationError(
-            'Label "%s" already exists. Please try another name.' % field.data
+            "Label “%s” already exists. Please try another name." % field.data
         )
 
 

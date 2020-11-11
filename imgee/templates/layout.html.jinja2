@@ -33,35 +33,35 @@
                   <ul class="mui-list--unstyled expandable__content js-expandable">
                     {% if profile.labels %}
                       {% for label in profile.labels |sort(attribute='name')%}
-                        <li class="mui--text-subhead"><a href="{{ url_for('show_label', profile=profile.name, label=label.name) }}">{{ faicon(icon='tag', icon_size='caption', baseline=true) }}&nbsp;{{label.name}}</a></li>
+                        <li class="mui--text-subhead"><a href="{{ url_for('show_label', profile=profile.name, label=label.name) }}">{{ faicon(icon='tag', icon_size='caption', baseline=true, css_class='fa-icon--margin') }}{{label.name}}</a></li>
                       {% endfor %}
                     {% else %}
-                      <li class="mui--text-subhead">No Labels yet.</li>
+                      <li class="mui--text-subhead">{% trans %}No Labels yet.{% endtrans %}</li>
                     {% endif %}
                   </ul>
                   <a href="#" class="js-expandable-control mui--text-light no-hover">
-                    <span class="js-collapsible-icon mui--text-body1">{{ faicon(icon='caret-circle-down', icon_size='caption', baseline=true) }}&nbsp;<span>Show more</span></span>
-                    <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon(icon='caret-circle-up', icon_size='caption', baseline=true) }}&nbsp;<span>Hide</span>
+                    <span class="js-collapsible-icon mui--text-body1">{{ faicon(icon='caret-circle-down', icon_size='caption', baseline=true, css_class='fa-icon--margin') }}<span>{% trans %}Show more{% endtrans %}</span></span>
+                    <span class="js-collapsible-icon mui--hide mui--text-body1">{{ faicon(icon='caret-circle-up', icon_size='caption', baseline=true, css_class='fa-icon--margin') }}<span>{% trans %}Hide{% endtrans %}</span>
                   </a>
                 </div>
 
                 <ul class="mui-list--unstyled">
                   <li class="mui--text-subhead"><a href="{{ profile.url_for('unlabelled_images') }}">
                   {% if profile.labels %}
-                    {{ faicon(icon='tag', icon_size='caption', baseline=true) }}&nbsp;Unlabeled
+                    {{ faicon(icon='tag', icon_size='caption', baseline=true, css_class='fa-icon--margin') }}{% trans %}Unlabeled{% endtrans %}
                   {% else %}
-                    {{ faicon(icon='archive', icon_size='caption', baseline=true) }}&nbsp;Archive
+                    {{ faicon(icon='archive', icon_size='caption', baseline=true, css_class='fa-icon--margin') }}{% trans %}Archive{% endtrans %}
                   {% endif %}
                   </a></li>
                 </ul>
 
                 <div class="no-jshidden mui--hidden-xs mui--hidden-sm">
-                  <a href="" role="button" title="Upload image" class="js-open-form" data-toggle="modal">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;New label</a>
+                  <a href="" role="button" title="Upload image" class="js-open-form" data-toggle="modal">{{ faicon(icon='plus', icon_size='caption', baseline=true, css_class='fa-icon--margin') }}{% trans %}New label{% endtrans %}</a>
                   {% if profile %}
                     <div id="newlabel-form" class="modal" tabindex="-1" role="dialog" aria-labelledby="labelModalLabel" aria-hidden="true">
                         <div class="modal__header">
                           <a class="modal__close" href="javascript:void(0);" aria-label="{% trans %}Close{% endtrans %}" rel="modal:close">{{ faicon(icon='times', icon_size='subhead', baseline=true) }}</a>
-                          <h3 class="mui--text-headline">Create label</h3>
+                          <h3 class="mui--text-headline">{% trans %}Create label{% endtrans %}</h3>
                         </div>
                         <div class="modal__body">
                           <div class="mui-panel">
@@ -74,10 +74,10 @@
                   {%- endif %}
                 </div>
                 <noscript>
-                  <a title="Create new label" href="{{url_for('create_label', profile=profile.name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;Add label</a>
+                  <a title="Create new label" href="{{url_for('create_label', profile=profile.name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true, css_class='fa-icon--margin') }}{% trans %}Add label{% endtrans %}</a>
                 </noscript>
 
-                <a class="mui--hidden-md mui--hidden-lg mui--hidden-xl" title="Create new label" href="{{url_for('create_label', profile=current_auth.user.profile_name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true) }}&nbsp;New label</a>
+                <a class="mui--hidden-md mui--hidden-lg mui--hidden-xl" title="Create new label" href="{{url_for('create_label', profile=current_auth.user.profile_name )}}">{{ faicon(icon='plus', icon_size='caption', baseline=true, css_class='fa-icon--margin') }}{% trans %}New label{% endtrans %}</a>
                 {% endblock %}
               </div>
             </div>

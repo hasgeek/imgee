@@ -4,6 +4,7 @@ from flask import abort, flash, redirect, render_template, request, url_for
 
 from flask_babelhg import gettext, ngettext
 
+from baseframe import _
 from coaster.views import load_model, load_models
 
 from .. import app, forms, lastuser
@@ -42,7 +43,7 @@ def create_label(profile):
     if form.validate_on_submit():
         label = form.label.data
         utils_save_label(label, profile)
-        flash('The label "%s" was created.' % label)
+        flash(_("The label “%s” was created." % label))
         return redirect(profile.url_for())
     return render_template('create_label.html.jinja2', form=form, profile=profile)
 
@@ -59,7 +60,7 @@ def delete_label(profile, label):
     form = forms.RemoveLabelForm()
     if form.is_submitted():
         utils_delete_label(label)
-        flash('The label "%s" was deleted.' % label.name)
+        flash(_("The label “%s” was deleted." % label.name))
         return redirect(profile.url_for())
     return render_template(
         'delete_label.html.jinja2', form=form, label=label, profile=profile

@@ -4,7 +4,7 @@
 
 {% block maincontent %}
   <div class="mui-panel">
-    <p class="mui--text-title mui--text-bold">{{ faicon(icon='tag', icon_size='subhead', baseline=true) }}&nbsp;&nbsp;Create label</p>
+    <p class="mui--text-title mui--text-bold">{{ faicon(icon='tag', icon_size='subhead', baseline=true, css_class='fa-icon--margin') }}{% trans %}Create label{% endtrans %}</p>
     {% set cancel_url=profile.url_for() %}
     {{ renderform(form, "Create", cancel_url=cancel_url)}}
   </div>

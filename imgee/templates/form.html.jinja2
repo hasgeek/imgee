@@ -1,11 +1,11 @@
 {% extends "layout.html.jinja2" %}
 {% from 'baseframe/forms.html.jinja2' import renderform %}
 {% from "baseframe/components.html.jinja2" import faicon %}
-{% block title %}New image{% endblock %}
+{% block title %}{% trans %}New image{% endtrans %}{% endblock %}
 
 {% block maincontent %}
 	<div class="mui-panel">
-		<p class="mui--text-title mui--text-bold">{{ faicon(icon='upload', icon_size='subhead', baseline=true) }}&nbsp;&nbsp;Upload Image</p>
+		<p class="mui--text-title mui--text-bold">{{ faicon(icon='upload', icon_size='subhead', baseline=true, css_class='fa-icon--margin') }}{% trans %}Upload image{% endtrans %}</p>
 		{{ renderform(form, "upload", multipart=True) }}
 	</div>
 {% endblock %}

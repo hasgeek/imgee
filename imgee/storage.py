@@ -87,7 +87,7 @@ def save_file(fp, profile, title=None):
     content_type = get_file_type(fp, fp.filename)
     name, extn = os.path.splitext(fp.filename)
     extn = guess_extension(content_type, extn)
-    img_name = "%s%s" % (id_, extn)
+    img_name = '%s%s' % (id_, extn)
     local_path = path_for(img_name)
 
     with open(local_path, 'wb') as img:

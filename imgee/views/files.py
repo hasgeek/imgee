@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import abort, flash, jsonify, redirect, render_template, request, url_for
 
+from baseframe import _
 from coaster.auth import current_auth
 from coaster.views import load_model, load_models
 
@@ -34,7 +35,7 @@ def upload_file(profile):
         imgfile = request.files['upload_file']
         if imgfile.filename != '':
             title, stored_file = save_file(imgfile, profile=profile)
-            flash('"%s" uploaded successfully.' % title)
+            flash(_("“%s” uploaded successfully." % title))
             return redirect(profile.url_for())
     return render_template('form.html.jinja2', form=upload_form, profile=profile)
 
@@ -180,7 +181,7 @@ def delete_file(profile, img):
     form = DeleteImageForm()
     if form.validate_on_submit():
         delete(img)
-        flash("%s is deleted" % img.title)
+        flash(_("%s is deleted" % img.title))
     else:
         return render_template(
             'delete.html.jinja2', form=form, file=img, profile=profile
