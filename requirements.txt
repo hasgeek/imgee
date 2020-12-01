@@ -7,7 +7,7 @@ Flask-SQLAlchemy==2.4.4
 psycopg2==2.8.6
 git+https://github.com/hasgeek/flask-lastuser.git
 git+https://github.com/jace/flask-alembic.git
-boto3==1.16.9
+boto3==1.16.26
 redis==3.5.3
 python-magic==0.4.18
 defusedxml==0.6.0
