@@ -11,5 +11,5 @@ boto3==1.16.63
 redis==3.5.3
 python-magic==0.4.20
 defusedxml==0.6.0
-Flask-Migrate==2.5.3
+Flask-Migrate==2.6.0
 pillow==8.1.0
