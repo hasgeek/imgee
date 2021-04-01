@@ -10,6 +10,6 @@ git+https://github.com/jace/flask-alembic.git
 boto3==1.17.42
 redis==3.5.3
 python-magic==0.4.22
-defusedxml==0.6.0
+defusedxml==0.7.1
 Flask-Migrate==2.7.0
 pillow==8.1.1
