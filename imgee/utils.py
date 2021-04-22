@@ -44,8 +44,8 @@ ALLOWED_MIMETYPES = {
         'processor': 'convert-layered',
     },
     'application/pdf': {
-        'allowed_extns': ['.pdf', '.ai'],
-        'extn': ['.pdf', '.ai'],
+        'allowed_extns': ['.pdf'],
+        'extn': ['.pdf'],
         'thumb_extn': '.png',
         'processor': 'convert-pdf',
     },
@@ -53,6 +53,7 @@ ALLOWED_MIMETYPES = {
         'allowed_extns': ['.ai'],
         'extn': '.ai',
         'thumb_extn': '.png',
+        'processor': 'inkscape',
     },
     'application/postscript': {
         'allowed_extns': ['.eps'],
@@ -379,7 +380,7 @@ def get_width_height(img_path):
                 universal_newlines=True,
             )
             w, h = o.split('x')
-        elif extn in ['.cdr']:
+        elif extn in ['.cdr', '.ai']:
             wo = check_output('inkscape -z -W {}'.format(img_path), shell=True)
             ho = check_output('inkscape -z -H {}'.format(img_path), shell=True)
             w, h = int(round(float(wo))), int(round(float(ho)))
