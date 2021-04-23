@@ -3,7 +3,12 @@
 <li class="gallery__image image">
   <div class="gallery__image__wrapper">
     <div class="gallery__image__wrapper__thumb js-img-thumb" data-url="{{ url_for('get_image', image=img.name, _external=True) }}">
-      <img src="{{ url_for('get_image', image=img.name) }}" class="gallery__image__wrapper__thumb__img">
+      {% if img.width > 0 and img.width < 150 %}
+        {%- set img_size = img.width %}
+      {% else %}
+        {%- set img_size = 150 %}
+      {% endif %}
+      <img src="{{ url_for('get_image', image=img.name, size=img_size) }}" class="gallery__image__wrapper__thumb__img" alt="{{ img.title }}">
       <input type="radio" class="gallery__image__wrapper__thumb__icon" name="selected-image">
     </div>
   </div>
