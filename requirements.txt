@@ -2,12 +2,12 @@ Flask==1.1.2
 git+https://github.com/hasgeek/coaster.git
 git+https://github.com/hasgeek/baseframe.git
 SQLAlchemy==1.3.24
-SQLAlchemy-Utils==0.36.8
+SQLAlchemy-Utils==0.37.0
 Flask-SQLAlchemy==2.5.1
 psycopg2==2.8.6
 git+https://github.com/hasgeek/flask-lastuser.git
 git+https://github.com/jace/flask-alembic.git
-boto3==1.17.42
+boto3==1.17.62
 redis==3.5.3
 python-magic==0.4.22
 defusedxml==0.7.1
