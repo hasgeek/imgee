@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """update image attrs
 
 Revision ID: 347ba3ac054f

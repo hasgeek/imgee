@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """remove size column from thumnail table
 
 Revision ID: 200442fae8bd

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from coaster.sqlalchemy import BaseMixin
 
 from ..utils import newid

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """related names for thumbnails
 
 Revision ID: 4b2844325813

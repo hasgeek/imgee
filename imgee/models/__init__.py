@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from coaster.db import db  # NOQA # isort:skip
 
 from .user import *  # NOQA  # isort:skip

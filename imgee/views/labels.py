@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from flask import abort, flash, redirect, render_template, request, url_for
 
 from flask_babelhg import gettext, ngettext
@@ -113,9 +111,9 @@ def utils_save_labels(form_label_data, img, profile):
     form_lns = set()
 
     if form_label_data:
-        form_lns = {l.strip() for l in form_label_data.split(',') if l.strip()}
-    profile_lns = {l.title for l in profile.labels}
-    labels = [l for l in profile.labels if l.title in form_lns]
+        form_lns = {_l.strip() for _l in form_label_data.split(',') if _l.strip()}
+    profile_lns = {_l.title for _l in profile.labels}
+    labels = [_l for _l in profile.labels if _l.title in form_lns]
     for lname in form_lns - profile_lns:
         label = utils_save_label(lname, profile, commit=False)
         labels.append(label)
@@ -132,7 +130,7 @@ def utils_save_labels(form_label_data, img, profile):
                 continue
 
             total_saved += num_saved
-            label_names = "', '".join(l.title for l in status[s])
+            label_names = "', '".join(_l.title for _l in status[s])
             status_template = {
                 '+': ngettext(
                     'Added %(num)s label to', 'Added %(num)s labels to', num_saved

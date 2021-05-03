@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """add mimetype
 
 Revision ID: 2c7e25599132

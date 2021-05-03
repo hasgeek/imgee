@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """add height, width and size to stored_file
 
 Revision ID: 555bc8d5cbd7
