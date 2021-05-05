@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """StoredFile.no_previews
 
 Revision ID: 5a1014061968

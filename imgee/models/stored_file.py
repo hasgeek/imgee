@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from flask import url_for
 
 from coaster.sqlalchemy import BaseNameMixin, BaseScopedNameMixin
@@ -83,9 +82,7 @@ class StoredFile(BaseNameMixin, db.Model):
             'url': url_for(
                 'view_image', profile=self.profile.name, image=self.name, _external=True
             ),
-            'embed_url': url_for(
-                'get_image', image=self.name, _external=True
-            ),
+            'embed_url': url_for('get_image', image=self.name, _external=True),
             'thumb_url': url_for(
                 'get_image', image=self.name, size=app.config.get('THUMBNAIL_SIZE')
             ),

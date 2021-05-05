@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """StoredFile.orig_extn
 
 Revision ID: 1036f2d710dc

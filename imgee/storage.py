@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from datetime import datetime, timedelta
 from glob import glob
 from subprocess import CalledProcessError, check_call

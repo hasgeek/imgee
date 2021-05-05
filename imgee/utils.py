@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from subprocess import CalledProcessError, check_output
 from urllib.parse import urljoin
 from uuid import uuid4

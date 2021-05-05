@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from wtforms import FileField, HiddenField, SelectField, TextField
 from wtforms.validators import Length, Required, ValidationError
 

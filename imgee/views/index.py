@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from sqlalchemy import not_
 
 from flask import abort, flash, redirect, render_template
@@ -11,7 +10,6 @@ from coaster.views import (
     UrlForView,
     render_with,
     requestargs,
-    requires_permission,
     route,
 )
 

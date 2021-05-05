@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """change thumbnail size to width and height
 
 Revision ID: 2122dff4c223
