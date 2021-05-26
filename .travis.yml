@@ -8,13 +8,12 @@ env:
       SQ9lTuSD5jg3NSM8yMfMU58ppAYBgd+6VQP01wUPFrV/JSsbfgnVjMTm/Nbk
       EGeHYvQUiyAg7zM4KdNJr6txj+jBE8MAeh7EwYNHoh9B7Vx//GxmXFnWyjXV
       9cJkFroDW1Zfs2SZjLtzMQC8YXE30jmMxg+XHCQewKzRa4u1320=
-  # this is already being set in runtests.sh,
-  # but need to set it for `./manage.py init` too.
-  # could set it before running manage.py, but chose to put it here
+  # this is already being set in runtests.sh, but need to set it for `flask init` too.
+  # could set it before running `flask init`, but chose to put it here
   - FLASK_ENV=TESTING
 language: python
 python:
-  - 3.7
+  - 3.9
 services:
   - redis-server
 before_install:
@@ -26,7 +25,7 @@ install:
   - pip install -r requirements.txt
   - pip install -r test_requirements.txt
 before_script:
-  - ./manage.py init  # creates the test upload directory
+  - flask init  # creates the test upload directory
 script:
   - ./runtests.sh
 notifications:

@@ -20,7 +20,7 @@ lastuser = Lastuser()
 
 assets['imgee.css'][version] = 'css/app.css'
 
-from . import models, views  # NOQA # isort:skip
+from . import cli, models, views  # NOQA # isort:skip
 from .models import db  # NOQA # isort:skip
 from .tasks import TaskRegistry  # NOQA # isort:skip
 
