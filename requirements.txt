@@ -12,4 +12,4 @@ psycopg2==2.8.6
 python-magic==0.4.22
 redis==3.5.3
 SQLAlchemy==1.4.17
-SQLAlchemy-Utils==0.37.0
+SQLAlchemy-Utils==0.37.5
