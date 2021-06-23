@@ -1,4 +1,5 @@
 from subprocess import CalledProcessError, check_output
+from threading import Lock
 from urllib.parse import urljoin
 from uuid import uuid4
 import os.path
@@ -319,13 +320,18 @@ def is_file_allowed(fp, provided_mimetype=None, filename=None):
 
 # -- s3 related --
 
+boto_s3_lock = Lock()
+
 
 def get_s3_client():
-    return boto3.resource(
-        's3',
-        aws_access_key_id=app.config['AWS_ACCESS_KEY'],
-        aws_secret_access_key=app.config['AWS_SECRET_KEY'],
-    )
+    # Boto client creation is not thread-safe, so we must use a thread lock:
+    # https://github.com/boto/boto3/issues/801
+    with boto_s3_lock:
+        return boto3.resource(
+            's3',
+            aws_access_key_id=app.config['AWS_ACCESS_KEY'],
+            aws_secret_access_key=app.config['AWS_SECRET_KEY'],
+        )
 
 
 def get_s3_bucket():
