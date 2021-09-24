@@ -104,6 +104,16 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
     @render_with('pop_up_gallery.html.jinja2')
     @requestargs(('label', abort_null))
     def pop_up_gallery(self, label=''):
+        if current_auth.user:
+            # XXX: Temp fix: sync to ensure user has appropriate data rights
+            lastuser.update_user(current_auth.user)
+            Profile.update_from_user(
+                current_auth.user,
+                db.session,
+                make_user_profiles=True,
+                make_org_profiles=True,
+            )
+            db.session.commit()
         files = self.obj.stored_files
         if label:
             files = files.join(StoredFile.labels).filter(Label.name == label)
