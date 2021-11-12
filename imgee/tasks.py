@@ -3,7 +3,7 @@ import re
 import redis
 
 
-class InvalidRedisQueryException(Exception):
+class InvalidRedisQueryError(Exception):
     pass
 
 
@@ -46,7 +46,7 @@ class TaskRegistry(object):
     def search(self, query):
         # >> KEYS imgee:registry:default:*query*
         if not self.is_valid_query(query):
-            raise InvalidRedisQueryException(
+            raise InvalidRedisQueryError(
                 'Invalid query for searching redis keys: {}'.format(query)
             )
         return self.connection.keys(self.key_for('*{}*'.format(query)))
@@ -60,7 +60,7 @@ class TaskRegistry(object):
         # chances are that we'll use this function to find the
         # thumbnail keys, which look like "name_wNN_hNN", hence the _
         if not self.is_valid_query(query):
-            raise InvalidRedisQueryException(
+            raise InvalidRedisQueryError(
                 'Invalid query for searching redis keys, starting with: {}'.format(
                     query
                 )
