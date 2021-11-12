@@ -1,12 +1,12 @@
 from werkzeug.utils import cached_property
 
-from flask_lastuser.sqlalchemy import UserBase
+from flask_lastuser.sqlalchemy import UserBase2
 
 from . import db
 from .profile import Profile
 
 
-class User(UserBase, db.Model):
+class User(UserBase2, db.Model):
     __tablename__ = 'user'
 
     @cached_property
