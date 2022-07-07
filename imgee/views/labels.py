@@ -1,6 +1,6 @@
 from flask import abort, flash, redirect, render_template, request, url_for
 
-from flask_babelhg import gettext, ngettext
+from flask_babel import ngettext
 
 from baseframe import _
 from coaster.views import load_model, load_models
@@ -148,7 +148,7 @@ def utils_save_labels(form_label_data, img, profile):
             )
     else:
         # no new labels were added or removed
-        msg = gettext('No new labels were added or removed.')
+        msg = _('No new labels were added or removed.')
     return total_saved, msg
 
 
