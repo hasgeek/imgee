@@ -1,31 +1,30 @@
 env:
   global:
-  - secure: |-
-      G5Dn+zkbN/BeNoopxtM2idC2Hy1ebJxRxprD7XEAmH6VO26ANgWYLI1dMrdH
-      uQc9F317STawQ/Um6KnqjErOKkC2BUYTOTj8AzoPVFz6NcK/Ca4d9Vfbtf5u
-      B4RrIjSmx1GlAlPFjjoaawjBYVj9QRua06/n6e1/Z8h1t3kn1jw=
-  - secure: |-
-      SQ9lTuSD5jg3NSM8yMfMU58ppAYBgd+6VQP01wUPFrV/JSsbfgnVjMTm/Nbk
-      EGeHYvQUiyAg7zM4KdNJr6txj+jBE8MAeh7EwYNHoh9B7Vx//GxmXFnWyjXV
-      9cJkFroDW1Zfs2SZjLtzMQC8YXE30jmMxg+XHCQewKzRa4u1320=
-  # this is already being set in runtests.sh, but need to set it for `flask init` too.
-  # could set it before running `flask init`, but chose to put it here
-  - FLASK_ENV=TESTING
+    - secure: |-
+        G5Dn+zkbN/BeNoopxtM2idC2Hy1ebJxRxprD7XEAmH6VO26ANgWYLI1dMrdH
+        uQc9F317STawQ/Um6KnqjErOKkC2BUYTOTj8AzoPVFz6NcK/Ca4d9Vfbtf5u
+        B4RrIjSmx1GlAlPFjjoaawjBYVj9QRua06/n6e1/Z8h1t3kn1jw=
+    - secure: |-
+        SQ9lTuSD5jg3NSM8yMfMU58ppAYBgd+6VQP01wUPFrV/JSsbfgnVjMTm/Nbk
+        EGeHYvQUiyAg7zM4KdNJr6txj+jBE8MAeh7EwYNHoh9B7Vx//GxmXFnWyjXV
+        9cJkFroDW1Zfs2SZjLtzMQC8YXE30jmMxg+XHCQewKzRa4u1320=
+    # this is already being set in runtests.sh, but need to set it for `flask init` too.
+    # could set it before running `flask init`, but chose to put it here
+    - FLASK_ENV=TESTING
 language: python
 python:
   - 3.9
 services:
   - redis-server
 before_install:
-  - sudo rm -f /etc/boto.cfg  # https://github.com/travis-ci/travis-ci/issues/7940#issuecomment-310759657
+  - sudo rm -f /etc/boto.cfg # https://github.com/travis-ci/travis-ci/issues/7940#issuecomment-310759657
 install:
   - sudo apt-get -qq install zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev libjpeg-dev libpng-dev libfreetype6-dev libtiff5-dev librsvg2-dev ghostscript imagemagick pandoc inkscape librsvg2-bin
   - pip install -U pip wheel
-  - pip install git+https://github.com/hasgeek/flask-babelhg.git
   - pip install -r requirements.txt
   - pip install -r test_requirements.txt
 before_script:
-  - flask init  # creates the test upload directory
+  - flask init # creates the test upload directory
 script:
   - ./runtests.sh
 notifications:
