@@ -1,4 +1,4 @@
-boto3==1.22.4
+boto3==1.24.21
 defusedxml==0.7.1
 Flask==2.1.2
 Flask-Migrate==3.1.0
@@ -6,9 +6,9 @@ Flask-SQLAlchemy==2.5.1
 git+https://github.com/hasgeek/baseframe.git
 git+https://github.com/hasgeek/coaster.git
 git+https://github.com/hasgeek/flask-lastuser.git
-Pillow==9.1.0
+Pillow==9.1.1
 psycopg2==2.9.3
-python-magic==0.4.25
-redis==4.2.2
-SQLAlchemy==1.4.36
+python-magic==0.4.27
+redis==4.3.4
+SQLAlchemy==1.4.39
 SQLAlchemy-Utils==0.38.2
