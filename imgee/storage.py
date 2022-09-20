@@ -53,8 +53,8 @@ def get_resized_image(img, size, is_thumbnail=False):
     if size_t:
         # Limit maximum size of resized image to image size (if known) or max limit
         size_t = (
-            max(img.width or 0, size_t[0], MAX_RESIZE_SIZE),
-            max(img.height or 0, size_t[1], MAX_RESIZE_SIZE),
+            max(img.width or MAX_RESIZE_SIZE, size_t[0]),
+            max(img.height or MAX_RESIZE_SIZE, size_t[1]),
         )
     if (size_t and size_t[0] != img.width and size_t[1] != img.height) or (
         'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]
