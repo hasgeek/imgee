@@ -30,6 +30,8 @@ class ImgeeTestCase(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.testing = True
+        self.ctx = app.app_context()
+        self.ctx.push()
 
         db.create_all()
         self.test_user_name = 'testuser'
@@ -44,3 +46,4 @@ class ImgeeTestCase(unittest.TestCase):
         for s in StoredFile.query.all():
             storage.delete(s)
         db.drop_all()
+        self.ctx.pop()
