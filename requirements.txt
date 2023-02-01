@@ -1,4 +1,4 @@
-boto3==1.26.41
+boto3==1.26.61
 defusedxml==0.7.1
 Flask==2.2.2
 Flask-Migrate==4.0.0
