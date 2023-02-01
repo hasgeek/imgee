@@ -9,6 +9,6 @@ git+https://github.com/hasgeek/flask-lastuser.git
 Pillow==9.4.0
 psycopg2==2.9.5
 python-magic==0.4.27
-redis==4.4.0
+redis==4.4.2
 SQLAlchemy==1.4.45
 SQLAlchemy-Utils==0.39.0
