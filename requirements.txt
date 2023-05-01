@@ -1,6 +1,6 @@
 boto3==1.26.123
 defusedxml==0.7.1
-Flask==2.2.3
+Flask==2.3.2
 Flask-Migrate==4.0.4
 Flask-SQLAlchemy==3.0.3
 git+https://github.com/hasgeek/baseframe.git
