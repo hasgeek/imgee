@@ -41,7 +41,6 @@ baseframe.init_app(
         'jquery.appear',
     ],
     theme='mui',
-    asset_modules=('baseframe_private_assets',),
 )
 lastuser.init_app(app)
 lastuser.init_usermanager(UserManager(db, models.User))
