@@ -1,5 +1,4 @@
 from flask import abort, flash, redirect, render_template, request, url_for
-
 from flask_babel import ngettext
 
 from baseframe import _
