@@ -6,10 +6,9 @@ from flask import Flask, redirect, url_for
 from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 
+from baseframe import Bundle, Version, assets, baseframe
 from flask_lastuser import Lastuser
 from flask_lastuser.sqlalchemy import UserManager
-
-from baseframe import Bundle, Version, assets, baseframe
 import coaster.app
 
 from ._version import __version__
@@ -51,7 +50,7 @@ app.assets.register(
     Bundle(
         assets.require('!jquery.js', 'dropzone.js==5.5.0'),
         output='js/dropzone.packed.js',
-        filters='uglipyjs',
+        filters='rjsmin',
     ),
 )
 app.assets.register(

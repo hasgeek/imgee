@@ -6,7 +6,6 @@ import os.path
 import re
 
 from flask import abort, request
-
 from PIL import Image
 import boto3
 import botocore

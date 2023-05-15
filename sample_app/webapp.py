@@ -1,7 +1,6 @@
 from flask import Flask, render_template
-from wtforms.validators import Required
-
 from flask_wtf import Form
+from wtforms.validators import Required
 
 from baseframe import baseframe
 from baseframe.forms.fields import ImgeeField

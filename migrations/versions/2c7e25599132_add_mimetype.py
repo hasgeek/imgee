@@ -6,12 +6,7 @@ Create Date: 2013-07-08 15:52:59.918942
 
 """
 
-# revision identifiers, used by Alembic.
-revision = '2c7e25599132'
-down_revision = '347ba3ac054f'
-
 from mimetypes import guess_type
-import sys
 
 from alembic import op
 from sqlalchemy.sql import bindparam, select
@@ -19,7 +14,9 @@ import sqlalchemy as sa
 
 from imgee.models import StoredFile
 
-sys.path.append('../../')
+# revision identifiers, used by Alembic.
+revision = '2c7e25599132'
+down_revision = '347ba3ac054f'
 
 
 def upgrade():

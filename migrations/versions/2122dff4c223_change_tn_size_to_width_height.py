@@ -6,11 +6,6 @@ Create Date: 2013-10-18 18:15:47.189909
 
 """
 
-# revision identifiers, used by Alembic.
-revision = '2122dff4c223'
-down_revision = '4b2844325813'
-
-import sys
 
 from alembic import op
 from sqlalchemy.sql import bindparam, column, select
@@ -18,7 +13,9 @@ import sqlalchemy as sa
 
 from imgee.models import Thumbnail
 
-sys.path.append('../../')
+# revision identifiers, used by Alembic.
+revision = '2122dff4c223'
+down_revision = '4b2844325813'
 
 
 def upgrade():
