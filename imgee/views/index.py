@@ -1,6 +1,5 @@
-from sqlalchemy import not_
-
 from flask import abort, flash, redirect, render_template
+from sqlalchemy import not_
 
 from baseframe import _
 from coaster.auth import current_auth

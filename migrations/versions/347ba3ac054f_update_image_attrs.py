@@ -6,23 +6,20 @@ Create Date: 2013-06-06 22:44:36.482379
 
 """
 
-# revision identifiers, used by Alembic.
-revision = '347ba3ac054f'
-down_revision = '555bc8d5cbd7'
-
-
 from glob import glob
 import os.path
-import sys
 
-from alembic import op
 from sqlalchemy.orm import load_only
 from sqlalchemy.orm.session import sessionmaker
+
+from alembic import op
 
 from imgee.models import StoredFile
 from imgee.storage import get_width_height, path_for
 
-sys.path.append('../../')
+# revision identifiers, used by Alembic.
+revision = '347ba3ac054f'
+down_revision = '555bc8d5cbd7'
 
 
 def upgrade():

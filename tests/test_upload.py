@@ -1,7 +1,6 @@
 import unittest
 
 from werkzeug.datastructures import FileStorage
-
 import requests
 
 from imgee import app, db, url_for

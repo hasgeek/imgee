@@ -1,6 +1,5 @@
-from flask_lastuser.sqlalchemy import ProfileMixin
-
 from coaster.sqlalchemy import BaseNameMixin
+from flask_lastuser.sqlalchemy import ProfileMixin
 
 from . import db
 
