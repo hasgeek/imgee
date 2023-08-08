@@ -6,8 +6,10 @@ Flask
 git+https://github.com/hasgeek/flask-lastuser.git#egg=flask-lastuser
 Flask-Migrate
 Flask-SQLAlchemy
+gunicorn
 Pillow
 psycopg2-binary
+python-dotenv
 python-magic
 redis
 SQLAlchemy
