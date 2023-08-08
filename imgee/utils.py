@@ -18,7 +18,7 @@ from . import app
 
 THUMBNAIL_COMMANDS = {
     'inkscape': "inkscape -z -f {src} -e {src}.original.png && convert -quiet -thumbnail {width}x{height} {src}.original.png -colorspace sRGB -quality 75% {dest}",
-    'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio=TRUE --format={format} {src} > {dest}",
+    'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio --format={format} {src} > {dest}",
     'convert': "convert -quiet -thumbnail {width}x{height} {src} -colorspace sRGB -quality 75% {dest}",
     'convert-pdf': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% -background white -flatten {dest}",
     'convert-layered': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% {dest}",
