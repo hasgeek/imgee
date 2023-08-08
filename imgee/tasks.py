@@ -23,7 +23,7 @@ class TaskRegistry:
         self.app = app
 
         if not self.connection:
-            url = self.app.config.get('REDIS_URL')
+            url = self.app.config.get('REDIS_URL', 'redis://localhost:6379/')
             self.connection = redis.from_url(url)
             self.pipe = self.connection.pipeline()
 
