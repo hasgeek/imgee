@@ -1,5 +1,6 @@
 import unittest
 
+import pytest
 from werkzeug.datastructures import FileStorage
 
 from imgee.models import Label, StoredFile
@@ -11,7 +12,7 @@ from .fixtures import ImgeeTestCase
 
 class LabelTestCase(ImgeeTestCase):
     def setUp(self):
-        super(LabelTestCase, self).setUp()
+        super().setUp()
         self.img_id = None
         self.test_files = ['imgee/static/img/imgee.png']
         self.test_labels = ['logos', 'banners', 'profile-photos']
@@ -32,6 +33,7 @@ class LabelTestCase(ImgeeTestCase):
         utils_save_label(label_title, self.get_test_profile())
         self.assertEqual(len(Label.query.filter_by(title=label_title).all()), 1)
 
+    @pytest.mark.enable_socket()
     def test_add_remove_label(self):
         # upload image
         img = self.upload()

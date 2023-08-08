@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta
-from glob import glob
-from subprocess import CalledProcessError, check_call
 import os
 import os.path
 import re
 import time
+from datetime import datetime, timedelta
+from glob import glob
+from subprocess import CalledProcessError, check_call
 
 from sqlalchemy import or_
 from werkzeug.utils import secure_filename
@@ -92,7 +92,7 @@ def save_file(fp, profile, title=None):
     content_type = get_file_type(fp, fp.filename)
     name, extn = os.path.splitext(fp.filename)
     extn = guess_extension(content_type, extn)
-    img_name = '%s%s' % (id_, extn)
+    img_name = f'{id_}{extn}'
     local_path = path_for(img_name)
 
     with open(local_path, 'wb') as img:
@@ -252,11 +252,11 @@ def get_resized_filename(img, size):
     """
     w, h = size
     if w and h:
-        name = '%s_w%s_h%s' % (img.name, w, h)
+        name = f'{img.name}_w{w}_h{h}'
     elif w:
-        name = '%s_w%s' % (img.name, w)
+        name = f'{img.name}_w{w}'
     elif h:
-        name = '%s_h%s' % (img.name, h)
+        name = f'{img.name}_h{h}'
     else:
         name = img.name
     if 'thumb_extn' in ALLOWED_MIMETYPES[img.mimetype]:

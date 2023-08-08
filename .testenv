@@ -1,0 +1,10 @@
+# this will sit inside `app.static_folder`
+
+FLASK_UPLOADED_FILES_DIR=test_uploads
+FLASK_AWS_FOLDER=test/
+#: S3 Configuration; AWS credentials with restricted access
+FLASK_AWS_S3_FOLDER=test
+FLASK_AWS_S3_DOMAIN=https://${FLASK_AWS_S3_BUCKET}.s3.amazonaws.com
+FLASK_SQLALCHEMY_DATABASE_URI=sqlite://
+FLASK_WTF_CSRF_ENABLED=false
+FLASK_THUMBNAIL_SIZE=75x75

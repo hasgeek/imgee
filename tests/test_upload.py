@@ -1,7 +1,8 @@
 import unittest
 
-from werkzeug.datastructures import FileStorage
+import pytest
 import requests
+from werkzeug.datastructures import FileStorage
 
 from imgee import app, db, url_for
 from imgee.storage import delete, save_file
@@ -12,7 +13,7 @@ from .fixtures import ImgeeTestCase
 
 class UploadTestCase(ImgeeTestCase):
     def setUp(self):
-        super(UploadTestCase, self).setUp()
+        super().setUp()
         self.img_id = None
         self.test_files = [
             'imgee/static/img/imgee.png',
@@ -24,7 +25,7 @@ class UploadTestCase(ImgeeTestCase):
         self.files = self.upload_all()
 
     def tearDown(self):
-        super(UploadTestCase, self).tearDown()
+        super().tearDown()
 
     def upload_all(self):
         files = []
@@ -41,6 +42,7 @@ class UploadTestCase(ImgeeTestCase):
                 title, sf = save_file(fs, profile)
             return sf
 
+    @pytest.mark.enable_socket()
     def test_save_file(self):
         with app.test_request_context('/'):
             for test_file in self.files:
@@ -50,6 +52,7 @@ class UploadTestCase(ImgeeTestCase):
                     resp.headers.get('Content-Type', ''), test_file.mimetype
                 )
 
+    @pytest.mark.enable_socket()
     def test_resize(self):
         with app.test_request_context('/'):
             for test_file in self.files:
@@ -65,6 +68,7 @@ class UploadTestCase(ImgeeTestCase):
                     resp.headers.get('Location'), get_thumbnail_url(test_file)
                 )
 
+    @pytest.mark.enable_socket()
     def test_delete_file(self):
         for test_file in self.files:
             delete(test_file, commit=False)

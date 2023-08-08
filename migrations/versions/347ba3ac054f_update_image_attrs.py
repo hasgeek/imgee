@@ -6,8 +6,8 @@ Create Date: 2013-06-06 22:44:36.482379
 
 """
 
-from glob import glob
 import os.path
+from glob import glob
 
 from alembic import op
 from sqlalchemy.orm import load_only

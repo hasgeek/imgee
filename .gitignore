@@ -25,7 +25,8 @@ error.log.*
 imgee/static/uploads
 imgee/static/test_uploads
 *.bak
-instance/production.env.sh
 imgee/static/gen
 .pytest_cache
 imgee/static/img/fa5-packed.svg
+.env
+.env.testing

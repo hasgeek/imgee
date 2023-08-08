@@ -8,9 +8,9 @@ Create Date: 2013-07-08 15:52:59.918942
 
 from mimetypes import guess_type
 
+import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.sql import bindparam, select
-import sqlalchemy as sa
 
 from imgee.models import StoredFile
 
