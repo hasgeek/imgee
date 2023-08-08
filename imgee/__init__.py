@@ -69,7 +69,7 @@ def error403(error):
 
 
 if app.config.get('AWS_S3_DOMAIN', '').lower().startswith(('http://', 'https://')):
-    app.config['AWS_S3_DOMAIN'] = app.config['AWS_S3_DOMAIN'].split(':', 1)[1]
+    app.config['AWS_S3_DOMAIN'] = app.config['AWS_S3_DOMAIN'].split(':', 1)[1][2:]
 
 app.upload_folder = os.path.join(
     app.static_folder, secure_filename(app.config.get('UPLOADED_FILES_DIR', 'uploads'))

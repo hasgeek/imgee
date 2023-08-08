@@ -245,7 +245,7 @@ def newid():
 
 def get_media_domain(scheme=None):
     scheme = scheme or request.scheme
-    return '{}:{}'.format(scheme, app.config.get('AWS_S3_DOMAIN'))
+    return '{}://{}'.format(scheme, app.config.get('AWS_S3_DOMAIN'))
 
 
 def get_file_url(scheme=None):
