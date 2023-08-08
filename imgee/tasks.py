@@ -7,7 +7,7 @@ class InvalidRedisQueryError(Exception):
     pass
 
 
-class TaskRegistry(object):
+class TaskRegistry:
     def __init__(self, app=None, name='default', connection=None):
         self.name = name
         self.connection = connection
@@ -23,7 +23,7 @@ class TaskRegistry(object):
         self.app = app
 
         if not self.connection:
-            url = self.app.config.get('REDIS_URL')
+            url = self.app.config.get('REDIS_URL', 'redis://localhost:6379/')
             self.connection = redis.from_url(url)
             self.pipe = self.connection.pipeline()
 
@@ -31,7 +31,7 @@ class TaskRegistry(object):
         return bool(self.filename_pattern.match(query))
 
     def key_for(self, taskid):
-        return '{key_prefix}:{taskid}'.format(key_prefix=self.key_prefix, taskid=taskid)
+        return f'{self.key_prefix}:{taskid}'
 
     def __contains__(self, taskid):
         return len(self.connection.keys(self.key_for(taskid))) > 0
@@ -47,9 +47,9 @@ class TaskRegistry(object):
         # >> KEYS imgee:registry:default:*query*
         if not self.is_valid_query(query):
             raise InvalidRedisQueryError(
-                'Invalid query for searching redis keys: {}'.format(query)
+                f'Invalid query for searching redis keys: {query}'
             )
-        return self.connection.keys(self.key_for('*{}*'.format(query)))
+        return self.connection.keys(self.key_for(f'*{query}*'))
 
     def get_all_keys(self):
         # >> KEYS imgee:registry:default:*
@@ -65,7 +65,7 @@ class TaskRegistry(object):
                     query
                 )
             )
-        return self.connection.keys(self.key_for('{}_*'.format(query)))
+        return self.connection.keys(self.key_for(f'{query}_*'))
 
     def remove(self, taskid):
         # remove a key with the taskid

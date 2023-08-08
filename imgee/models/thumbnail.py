@@ -20,7 +20,7 @@ class Thumbnail(BaseMixin, db.Model):
     stored_file_id = db.Column(None, db.ForeignKey('stored_file.id'), nullable=False)
 
     def __init__(self, **kwargs):
-        super(Thumbnail, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if not self.name:
             self.name = newid()
 

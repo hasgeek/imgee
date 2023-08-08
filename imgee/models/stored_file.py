@@ -29,7 +29,7 @@ class Label(BaseScopedNameMixin, db.Model):
     parent = db.synonym('profile')
 
     def __repr__(self):
-        return "<%s> of <%s>" % (self.name, self.profile.name)
+        return f"<{self.name}> of <{self.profile.name}>"
 
 
 class StoredFile(BaseNameMixin, db.Model):
@@ -58,7 +58,7 @@ class StoredFile(BaseNameMixin, db.Model):
     )
 
     def __init__(self, **kwargs):
-        super(StoredFile, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if not self.name:
             self.name = newid()
 
@@ -78,7 +78,7 @@ class StoredFile(BaseNameMixin, db.Model):
             'title': self.title,
             'uploaded': self.created_at.isoformat() + 'Z',
             'filesize': app.jinja_env.filters['filesizeformat'](self.size),
-            'imgsize': '%s×%s px' % (self.width, self.height),
+            'imgsize': f'{self.width}×{self.height} px',
             'url': url_for(
                 'view_image', profile=self.profile.name, image=self.name, _external=True
             ),

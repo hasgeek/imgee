@@ -16,7 +16,7 @@ class Profile(ProfileMixin, BaseNameMixin, db.Model):
     )
 
     def permissions(self, user, inherited=None):
-        perms = super(Profile, self).permissions(user, inherited)
+        perms = super().permissions(user, inherited)
         if user is not None and self.userid in user.user_organizations_adminof_ids():
             perms.add('view')
             perms.add('edit')

@@ -6,10 +6,10 @@ from flask import Flask, redirect, url_for
 from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 
+import coaster.app
 from baseframe import Bundle, Version, assets, baseframe
 from flask_lastuser import Lastuser
 from flask_lastuser.sqlalchemy import UserManager
-import coaster.app
 
 from ._version import __version__
 
@@ -20,13 +20,13 @@ lastuser = Lastuser()
 assets['imgee.css'][version] = 'css/app.css'
 
 from . import cli, models, views  # NOQA # isort:skip
-from .models import db  # NOQA # isort:skip
-from .tasks import TaskRegistry  # NOQA # isort:skip
+from .models import db  # isort:skip
+from .tasks import TaskRegistry  # isort:skip
 
 registry = TaskRegistry()
 
 # Configure the application
-coaster.app.init_app(app)
+coaster.app.init_app(app, ['py', 'env'], env_prefix=['FLASK', 'APP_IMGEE'])
 db.init_app(app)
 db.app = app
 migrate = Migrate(app, db)
@@ -68,9 +68,10 @@ def error403(error):
     return redirect(url_for('login'))
 
 
-if app.config.get('MEDIA_DOMAIN', '').lower().startswith(('http://', 'https://')):
-    app.config['MEDIA_DOMAIN'] = app.config['MEDIA_DOMAIN'].split(':', 1)[1]
+if app.config.get('AWS_S3_DOMAIN', '').lower().startswith(('http://', 'https://')):
+    app.config['AWS_S3_DOMAIN'] = app.config['AWS_S3_DOMAIN'].split(':', 1)[1][2:]
 
 app.upload_folder = os.path.join(
-    app.static_folder, secure_filename(app.config.get('UPLOADED_FILES_DIR'))
+    app.static_folder, secure_filename(app.config.get('UPLOADED_FILES_DIR', 'uploads'))
 )
+app.config.setdefault('THUMBNAIL_SIZE', '75x75')

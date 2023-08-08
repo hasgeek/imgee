@@ -1,16 +1,16 @@
+import os.path
+import re
 from subprocess import CalledProcessError, check_output
 from threading import Lock
 from urllib.parse import urljoin
 from uuid import uuid4
-import os.path
-import re
 
-from flask import abort, request
-from PIL import Image
 import boto3
 import botocore
 import defusedxml.cElementTree as ElementTree
 import magic
+from flask import abort, request
+from PIL import Image
 
 from baseframe import cache
 
@@ -18,7 +18,7 @@ from . import app
 
 THUMBNAIL_COMMANDS = {
     'inkscape': "inkscape -z -f {src} -e {src}.original.png && convert -quiet -thumbnail {width}x{height} {src}.original.png -colorspace sRGB -quality 75% {dest}",
-    'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio=TRUE --format={format} {src} > {dest}",
+    'rsvg-convert': "rsvg-convert --width={width} --height={height} --keep-aspect-ratio --format={format} {src} > {dest}",
     'convert': "convert -quiet -thumbnail {width}x{height} {src} -colorspace sRGB -quality 75% {dest}",
     'convert-pdf': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% -background white -flatten {dest}",
     'convert-layered': "convert -quiet -thumbnail {width}x{height} {src}[0] -colorspace sRGB -quality 75% {dest}",
@@ -220,7 +220,7 @@ ALLOWED_MIMETYPES = {
 
 EXTNS = []
 for mimetype, data in ALLOWED_MIMETYPES.items():
-    if type(data['extn']) == list:
+    if isinstance(data['extn'], list):
         for extn in data['extn']:
             EXTNS.append(extn)
     else:
@@ -245,7 +245,7 @@ def newid():
 
 def get_media_domain(scheme=None):
     scheme = scheme or request.scheme
-    return '%s:%s' % (scheme, app.config.get('MEDIA_DOMAIN'))
+    return '{}://{}'.format(scheme, app.config.get('AWS_S3_DOMAIN'))
 
 
 def get_file_url(scheme=None):
@@ -262,11 +262,11 @@ def path_for(img_name):
 def guess_extension(mimetype, orig_extn):
     if mimetype in ALLOWED_MIMETYPES:
         if orig_extn not in ALLOWED_MIMETYPES[mimetype]['allowed_extns']:
-            if type(ALLOWED_MIMETYPES[mimetype]['extn']) == str:
+            if isinstance(ALLOWED_MIMETYPES[mimetype]['extn'], str):
                 orig_extn = ALLOWED_MIMETYPES[mimetype]['extn']
             else:
                 orig_extn = ALLOWED_MIMETYPES[mimetype]['extn'][0]
-        if type(ALLOWED_MIMETYPES[mimetype]['extn']) == list:
+        if isinstance(ALLOWED_MIMETYPES[mimetype]['extn'], list):
             if orig_extn in ALLOWED_MIMETYPES[mimetype]['extn']:
                 return orig_extn
             else:
@@ -334,11 +334,11 @@ def get_s3_client():
 
 
 def get_s3_bucket():
-    return get_s3_client().Bucket(app.config['AWS_BUCKET'])
+    return get_s3_client().Bucket(app.config['AWS_S3_BUCKET'])
 
 
 def get_s3_folder(f=''):
-    f = f or app.config.get('AWS_FOLDER', '')
+    f = f or app.config.get('AWS_S3_FOLDER', '')
     if f and not f.endswith('/'):
         f = f + '/'
     return f or ''
@@ -378,28 +378,28 @@ def get_width_height(img_path):
     try:
         if extn in ['.pdf', '.gif']:
             o = check_output(
-                'identify -quiet -ping -format "%wx%h" {}[0]'.format(img_path),
+                f'identify -quiet -ping -format "%wx%h" {img_path}[0]',
                 shell=True,
-                universal_newlines=True,
+                text=True,
             )
             w, h = o.split('x')
         elif extn in ['.cdr', '.ai']:
-            wo = check_output('inkscape -z -W {}'.format(img_path), shell=True)
-            ho = check_output('inkscape -z -H {}'.format(img_path), shell=True)
+            wo = check_output(f'inkscape -z -W {img_path}', shell=True)
+            ho = check_output(f'inkscape -z -H {img_path}', shell=True)
             w, h = int(round(float(wo))), int(round(float(ho)))
         elif extn in ['.psd']:
             # identify command doesn't seem to work on psd files
             # hence using file command and extracting resolution from there
-            fo = check_output('file {}'.format(img_path), shell=True)
+            fo = check_output(f'file {img_path}', shell=True)
             possible_size = re.findall(r'\d+\ x\ \d+', fo)
             if len(possible_size) == 1:
                 wo, ho = possible_size[0].split(' x ')
                 w, h = int(round(float(wo))), int(round(float(ho)))
         else:
             o = check_output(
-                'identify -quiet -ping -format "%wx%h" {}'.format(img_path),
+                f'identify -quiet -ping -format "%wx%h" {img_path}',
                 shell=True,
-                universal_newlines=True,
+                text=True,
             )
             w, h = o.split('x')
         return (w, h)

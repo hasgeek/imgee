@@ -8,12 +8,12 @@ from .fixtures import ImgeeTestCase
 
 class RegistryTestCase(ImgeeTestCase):
     def setUp(self):
-        super(RegistryTestCase, self).setUp()
+        super().setUp()
         self.test_key = 'testkey'
         self.test_key2 = self.test_key + '_second'
 
     def tearDown(self):
-        super(RegistryTestCase, self).tearDown()
+        super().tearDown()
         registry.remove_all()  # this is called after every test method runs
 
     def test_invalid_query(self):

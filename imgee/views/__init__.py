@@ -1,4 +1,4 @@
-import imgee.views.files  # NOQA
-import imgee.views.index  # NOQA
-import imgee.views.labels  # NOQA
+import imgee.views.files
+import imgee.views.index
+import imgee.views.labels
 import imgee.views.login  # NOQA
