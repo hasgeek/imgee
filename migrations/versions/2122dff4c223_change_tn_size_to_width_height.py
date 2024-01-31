@@ -6,7 +6,6 @@ Create Date: 2013-10-18 18:15:47.189909
 
 """
 
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.sql import bindparam, column, select
