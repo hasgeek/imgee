@@ -29,7 +29,6 @@ from .index import get_prev_next_images
 )
 def upload_file(profile):
     upload_form = UploadImageForm()
-    upload_form.form_nonce.data = upload_form.form_nonce.default()
     if upload_form.validate_on_submit():
         imgfile = request.files['upload_file']
         if imgfile.filename != '':
