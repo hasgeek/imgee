@@ -30,3 +30,4 @@ imgee/static/gen
 imgee/static/img/fa5-packed.svg
 .env
 .env.testing
+.envrc

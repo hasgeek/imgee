@@ -24,7 +24,7 @@ from .index import get_prev_next_images
     Profile,
     {'name': 'profile'},
     'profile',
-    permission=['new-file', 'siteadmin'],
+    permission={'new-file', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def upload_file(profile):
@@ -44,7 +44,7 @@ def upload_file(profile):
     Profile,
     {'name': 'profile'},
     'profile',
-    permission=['new-file', 'siteadmin'],
+    permission={'new-file', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def upload_file_json(profile):
@@ -85,7 +85,7 @@ def upload_file_json(profile):
     Profile,
     {'name': 'profile'},
     'profile',
-    permission=['edit', 'siteadmin'],
+    permission={'edit', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def edit_title(profile):
@@ -107,7 +107,7 @@ def edit_title(profile):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'file', 'profile': 'profile'}, 'stored_file'),
-    permission=['edit', 'siteadmin'],
+    permission={'edit', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def update_title_json(profile, stored_file):
@@ -141,7 +141,7 @@ def update_title_json(profile, stored_file):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['view', 'siteadmin'],
+    permission={'view', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def view_image(profile, img):
@@ -172,7 +172,7 @@ def get_image(image):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['delete', 'siteadmin'],
+    permission={'delete', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def delete_file(profile, img):

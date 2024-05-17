@@ -28,7 +28,7 @@ registry = TaskRegistry()
 # Configure the application
 coaster.app.init_app(app, ['py', 'env'], env_prefix=['FLASK', 'APP_IMGEE'])
 db.init_app(app)
-db.app = app
+db.app = app  # type: ignore[attr-defined]
 migrate = Migrate(app, db)
 baseframe.init_app(
     app,

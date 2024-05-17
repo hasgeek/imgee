@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from coaster.sqlalchemy import BaseMixin
 
 from ..utils import newid
-from . import db
+from . import Mapped, Model, sa, sa_orm
 
 
-class Thumbnail(BaseMixin, db.Model):
+class Thumbnail(BaseMixin, Model):
     """
     A thumbnail is a resized version of an image file. Imgee can
     generate thumbnails at user-specified sizes for recognized
@@ -14,10 +16,14 @@ class Thumbnail(BaseMixin, db.Model):
 
     __tablename__ = 'thumbnail'
 
-    name = db.Column(db.Unicode(64), nullable=False, unique=True, index=True)
-    width = db.Column(db.Integer, default=0, index=True)
-    height = db.Column(db.Integer, default=0, index=True)
-    stored_file_id = db.Column(None, db.ForeignKey('stored_file.id'), nullable=False)
+    name: Mapped[str] = sa_orm.mapped_column(
+        sa.Unicode(64), nullable=False, unique=True, index=True
+    )
+    width: Mapped[int | None] = sa_orm.mapped_column(sa.Integer, default=0, index=True)
+    height: Mapped[int | None] = sa_orm.mapped_column(sa.Integer, default=0, index=True)
+    stored_file_id: Mapped[int] = sa_orm.mapped_column(
+        sa.ForeignKey('stored_file.id'), nullable=False
+    )
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
