@@ -3,7 +3,7 @@
 
 [tool.black]
 line-length = 88
-target-version = ['py37']
+target-version = ['py311']
 skip-string-normalization = true
 include = '\.pyi?$'
 exclude = '''
@@ -73,102 +73,39 @@ exclude_dirs = ['node_modules']
 skips = ['**/*_test.py', '**/test_*.py', '**/conftest.py']
 
 [tool.ruff]
-# This is a slight customisation of the default rules
-# 1. Funnel still targets Python 3.7 pending an upgrade of production environment
-# 2. Rule E402 (module-level import not top-level) is disabled as isort handles it
-# 3. Rule E501 (line too long) is left to Black; some strings are worse for wrapping
-
-# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
-select = ["E", "F"]
-ignore = ["E402", "E501"]
-
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "I",
-  "N",
-  "Q",
-  "S",
-  "T",
-  "W",
-  "ANN",
-  "ARG",
-  "BLE",
-  "COM",
-  "DJ",
-  "DTZ",
-  "EM",
-  "ERA",
-  "EXE",
-  "FBT",
-  "ICN",
-  "INP",
-  "ISC",
-  "NPY",
-  "PD",
-  "PGH",
-  "PIE",
-  "PL",
-  "PT",
-  "PTH",
-  "PYI",
-  "RET",
-  "RSE",
-  "RUF",
-  "SIM",
-  "SLF",
-  "TCH",
-  "TID",
-  "TRY",
-  "UP",
-  "YTT",
-]
-unfixable = []
-
-# Exclude a variety of commonly ignored directories.
-exclude = [
-  ".bzr",
-  ".direnv",
-  ".eggs",
-  ".git",
-  ".hg",
-  ".mypy_cache",
-  ".nox",
-  ".pants.d",
-  ".pytype",
-  ".ruff_cache",
-  ".svn",
-  ".tox",
-  ".venv",
-  "__pypackages__",
-  "_build",
-  "buck-out",
-  "build",
-  "dist",
-  "node_modules",
-  "venv",
-]
 
 # Same as Black.
 line-length = 88
 
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+# Target Python 3.11
+target-version = "py311"
 
-# Target Python 3.7
-target-version = "py37"
+[tool.ruff.format]
+docstring-code-format = true
+quote-style = "preserve"
 
-[tool.ruff.mccabe]
-# Unlike Flake8, default to a complexity level of 10.
-max-complexity = 10
+[tool.ruff.lint]
+select = ["A", "BLE", "C4", "E", "F", "I", "G", "N", "T20"]
+ignore = [
+  "D105",
+  "D106",
+  "D107",
+  "D203",
+  "D212",
+  "D213",
+  "E402",
+  "E501",
+  "EM101",
+  "EM102",
+  "ISC001",
+  "RUF012",
+]
 
-[tool.ruff.isort]
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.isort]
 # These config options should match isort config above under [tool.isort]
 combine-as-imports = true
 extra-standard-library = ['typing_extensions']
@@ -184,5 +121,5 @@ section-order = [
   'local-folder',
 ]
 
-[tool.ruff.isort.sections]
+[tool.ruff.lint.isort.sections]
 repo = ['imgee']

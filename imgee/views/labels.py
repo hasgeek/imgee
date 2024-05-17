@@ -5,18 +5,18 @@ from baseframe import _
 from coaster.views import load_model, load_models
 
 from .. import app, forms, lastuser
-from ..models import Label, Profile, StoredFile, db
+from ..models import Label, Profile, StoredFile, db, sa
 
 
 @app.route('/<profile>/<label>')
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['view', 'siteadmin'],
+    permission={'view', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def show_label(profile, label):
-    files = label.stored_files.order_by(db.desc(StoredFile.created_at)).all()
+    files = label.stored_files.order_by(sa.desc(StoredFile.created_at)).all()
     form = forms.EditLabelForm()
     return render_template(
         'show_label.html.jinja2', form=form, label=label, files=files, profile=profile
@@ -29,7 +29,7 @@ def show_label(profile, label):
     Profile,
     {'name': 'profile'},
     'profile',
-    permission=['new-label', 'siteadmin'],
+    permission={'new-label', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def create_label(profile):
@@ -50,7 +50,7 @@ def create_label(profile):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['delete', 'siteadmin'],
+    permission={'delete', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def delete_label(profile, label):
@@ -69,7 +69,7 @@ def delete_label(profile, label):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (Label, {'name': 'label', 'profile': 'profile'}, 'label'),
-    permission=['edit', 'siteadmin'],
+    permission={'edit', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def edit_label(profile, label):
@@ -90,7 +90,7 @@ def edit_label(profile, label):
 @load_models(
     (Profile, {'name': 'profile'}, 'profile'),
     (StoredFile, {'name': 'image', 'profile': 'profile'}, 'img'),
-    permission=['edit', 'siteadmin'],
+    permission={'edit', 'siteadmin'},
     addlperms=lastuser.permissions,
 )
 def manage_labels(profile, img):

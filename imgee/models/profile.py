@@ -1,16 +1,19 @@
+from __future__ import annotations
+
 from coaster.sqlalchemy import BaseNameMixin
 from flask_lastuser.sqlalchemy import ProfileMixin
 
-from . import db
+from . import DynamicMapped, Mapped, Model, backref, relationship, sa, sa_orm
 
 
-class Profile(ProfileMixin, BaseNameMixin, db.Model):
+class Profile(ProfileMixin, BaseNameMixin, Model):
     __tablename__ = 'profile'
 
-    userid = db.Column(db.Unicode(22), nullable=False, unique=True)
-    stored_files = db.relationship(
-        'StoredFile',
-        backref=db.backref('profile'),
+    userid: Mapped[str] = sa_orm.mapped_column(
+        sa.Unicode(22), nullable=False, unique=True
+    )
+    stored_files: DynamicMapped[StoredFile] = relationship(
+        backref=backref('profile'),
         lazy='dynamic',
         cascade='all, delete-orphan',
     )
@@ -24,3 +27,6 @@ class Profile(ProfileMixin, BaseNameMixin, db.Model):
             perms.add('new-file')
             perms.add('new-label')
         return perms
+
+
+from .stored_file import StoredFile

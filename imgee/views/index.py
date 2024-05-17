@@ -13,7 +13,7 @@ from coaster.views import (
 )
 
 from .. import app, forms, lastuser
-from ..models import Label, Profile, StoredFile, db
+from ..models import Label, Profile, StoredFile, db, sa
 from ..storage import clean_local_cache
 from ..utils import ALLOWED_MIMETYPES, abort_null
 
@@ -133,7 +133,7 @@ class ProfileView(UrlChangeCheck, UrlForView, ModelView):
     @requestargs(('label', abort_null), ('page', int), ('per_page', int))
     def pop_up_files(self, label='', page=None, per_page=10):
         files = self.obj.stored_files
-        files = files.order_by(db.desc(StoredFile.created_at))
+        files = files.order_by(sa.desc(StoredFile.created_at))
         if label:
             files = files.join(StoredFile.labels).filter(Label.name == label)
         files = files.paginate(page=page, per_page=per_page)
@@ -161,7 +161,7 @@ def get_prev_next_images(profile, img, limit=2):
         profile.stored_files.filter(
             StoredFile.created_at <= img.created_at, StoredFile.id != img.id
         )
-        .order_by(db.desc(StoredFile.created_at))
+        .order_by(sa.desc(StoredFile.created_at))
         .limit(limit)
         .all()
     )
@@ -169,7 +169,7 @@ def get_prev_next_images(profile, img, limit=2):
         profile.stored_files.filter(
             StoredFile.created_at >= img.created_at, StoredFile.id != img.id
         )
-        .order_by(db.asc(StoredFile.created_at))
+        .order_by(sa.asc(StoredFile.created_at))
         .limit(limit)
         .all()
     )
